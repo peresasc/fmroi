@@ -1,8 +1,8 @@
 function menuconfig_cleartpl_callback(hObject,~)
-% menuconfig_imptpl_callback is an internal function of fMROI.
+% menuconfig_cleartpl_callback is an internal function of fMROI.
 %
 % Syntax:
-%   menuconfig_imptpl_callback(hObject,~)
+%   menuconfig_cleartpl_callback(hObject,~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
