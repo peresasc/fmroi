@@ -13,6 +13,13 @@ figw = ceil(scnsize(3)*0.9);
 figh = floor(scnsize(4)*0.8);
 [fmroirootdir,~,~] = fileparts(mfilename('fullpath'));
 
+addpath(fullfile(fmroirootdir,'callback'),...
+    fullfile(fmroirootdir,'gui'),...
+    fullfile(fmroirootdir,'methods'));
+
+addpath(genpath(fullfile(fmroirootdir,'toolbox')));
+addpath(genpath(fullfile(fmroirootdir,'roimethods')));
+
 tmpdir = fullfile(fmroirootdir,'tmp');
 if exist(tmpdir,'dir')
     rmdir(tmpdir, 's');

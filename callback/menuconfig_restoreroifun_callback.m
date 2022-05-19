@@ -20,7 +20,7 @@ copyfile(fullfile(handles.fmroirootdir,'etc','default_roimethods'),...
     roimethdir);
 
 addpath(fullfile(roimethdir,'methods'),fullfile(roimethdir,'gui'))
-savepath
+
 % Update the popup_roitype
 guidata(hObject,handles);
 updatepopuproitype(hObject)
