@@ -1,0 +1,19 @@
+% funcname fun description 
+%
+% Syntax:
+%   [out1,out2,...,outN] = find3d(in1,in2,...,inM)
+%
+% Inputs:
+%   in1: Description
+%   in2: Description
+%   ...
+%   inM: Description
+%
+% Outputs:
+%   out1: Description
+%   out2: Description
+%   ...
+%   outN: Description
+%
+% Author: Author Name, year, email
+% Last update: Developer Name, dd/mm/yyyy, email
