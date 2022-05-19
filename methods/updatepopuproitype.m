@@ -1,5 +1,6 @@
 function updatepopuproitype(hObject)
-% updatepopuproitype is an internal function of fMROI.
+% updatepopuproitype is an internal function of fMROI. It updates the
+% popu_up roi_type contents.
 %
 % Syntax:
 %   updatepopuproitype(hObject)
