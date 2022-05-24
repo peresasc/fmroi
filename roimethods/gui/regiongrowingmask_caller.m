@@ -31,4 +31,4 @@ else
 end
 
 nvox = str2double(get(handles.edit_roinvox,'String'));           
-mask = regiongrowingmask(srcvol, curpos, inf, false, 'max', nvox, premask);
+mask = regiongrowingmask(srcvol, curpos, inf, 'max', nvox, premask);
