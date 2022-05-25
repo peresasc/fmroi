@@ -23,9 +23,6 @@ if ~isempty(n_image)
             handles.ax{n-1,i}.ly = handles.ax{n,i}.ly;
             set(handles.ax{n-1,i}.lx,'Parent',handles.ax{n-1,i}.ax)
             set(handles.ax{n-1,i}.ly,'Parent',handles.ax{n-1,i}.ax)
-        else
-            set(handles.panel_control,'Visible','off')
-            set(handles.menuhelp_showctrlpanel,'Enable','off')
         end
         delete(handles.ax{n,i}.ax)
     end
@@ -40,6 +37,14 @@ if ~isempty(n_image)
     handles.imgprop(n)=[];
     st.vols(n)=[];
     st.vols{end+1}=[];
+    
+    if isempty(find(~cellfun(@isempty,st.vols), 1, 'last'))
+        set(handles.panel_control,'Visible','off')
+        set(handles.menuhelp_showctrlpanel,'Enable','off')
+        delete(handles.axannot)
+        handles = rmfield(handles,'axannot');
+        guidata(hObject,handles);
+    end
     
     tdata = get(handles.table_listimg,'Data');
     delfilename = tdata{n,3};

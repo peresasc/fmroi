@@ -36,7 +36,7 @@ axtags{1} = ['transversal_', num2str(n_image)];
 axtags{2} = ['coronal_', num2str(n_image)];
 axtags{3} = ['sagital_', num2str(n_image)];
 axtags{4} = ['rendering_', num2str(n_image)];
-
+         
 % deletes the cursor
 if n_image > 1
     for j = 1:n_image-1
@@ -106,8 +106,29 @@ for i = 1:4
     txy = text(0, 0, '+', 'Parent', ax, 'Color',[1 0 0],...
         'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
     set(txy,'Visible','off')
-
+    
     handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,'txy',txy);
+    end
+end
+
+
+tleftpos = {[0,.2,.05,.05],'L';...
+            [0,.7,.05,.05],'L';...
+            [.5,.7,.05,.05],'A'};
+        
+trightpos = {[.45,.2,.05,.05],'R';...
+            [.45,.7,.05,.05],'R';...
+            [.95,.7,.05,.05],'P'};
+
+if ~isfield(handles,'axannot')
+    for i = 1:3
+        handles.axannot(i,1) = annotation(handles.panel_graph,'textbox',...
+            'Position',tleftpos{i,1},'String',tleftpos{i,2},...
+            'Color','w','FitBoxToText','on','LineStyle','none');
+        
+        handles.axannot(i,2) = annotation(handles.panel_graph,'textbox',...
+            'Position',trightpos{i,1},'String',trightpos{i,2},...
+            'Color','w','FitBoxToText','on','LineStyle','none');
     end
 end
 
