@@ -12,8 +12,10 @@ function show_slices(hObject,fn)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 global st
-
 handles = guidata(hObject);
+
+set(handles.panel_control,'Visible','on');
+set(handles.menuhelp_showctrlpanel,'Enable','on')
 
 st = stgen(fn,st);
 

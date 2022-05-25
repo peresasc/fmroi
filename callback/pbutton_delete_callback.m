@@ -23,6 +23,9 @@ if ~isempty(n_image)
             handles.ax{n-1,i}.ly = handles.ax{n,i}.ly;
             set(handles.ax{n-1,i}.lx,'Parent',handles.ax{n-1,i}.ax)
             set(handles.ax{n-1,i}.ly,'Parent',handles.ax{n-1,i}.ax)
+        else
+            set(handles.panel_control,'Visible','off')
+            set(handles.menuhelp_showctrlpanel,'Enable','off')
         end
         delete(handles.ax{n,i}.ax)
     end
