@@ -12,7 +12,7 @@ function mousemove(hObject, ~)
 
 global st
 
-if isfield(st,'vols')
+if isfield(st,'vols')% && handles.mousehold
     handles = guidata(hObject);
     n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
     
@@ -21,6 +21,10 @@ if isfield(st,'vols')
         h = getoverobj('type','axes');
         if ~isempty(h)
             update_coordinates(hObject,h)
+            handles = guidata(hObject);
+            if handles.mousehold
+                draw_slices(hObject)
+            end
         end
     end
 end
