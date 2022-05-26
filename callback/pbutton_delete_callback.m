@@ -40,7 +40,7 @@ if ~isempty(n_image)
     
     if isempty(find(~cellfun(@isempty,st.vols), 1, 'last'))
         set(handles.panel_control,'Visible','off')
-        set(handles.menuhelp_showctrlpanel,'Enable','off')
+        set(handles.menuview_showctrlpanel,'Enable','off')
         delete(handles.axannot)
         handles = rmfield(handles,'axannot');
         guidata(hObject,handles);

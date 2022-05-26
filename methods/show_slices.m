@@ -15,7 +15,7 @@ global st
 handles = guidata(hObject);
 
 set(handles.panel_control,'Visible','on');
-set(handles.menuhelp_showctrlpanel,'Enable','on')
+set(handles.menuview_showctrlpanel,'Enable','on')
 
 st = stgen(fn,st);
 

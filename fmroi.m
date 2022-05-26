@@ -31,48 +31,46 @@ if ~exist(templatedir,'dir')
    mkdir(templatedir);
 end
 handles.tpldir = templatedir;
-% templatestruc = dir(templatedir);
-% tpldirstruc = templatestruc([templatestruc(:).isdir]);
-% tpldirstruc = tpldirstruc(~startsWith({tpldirstruc(:).name},'.'));
-% templatedirname = {tpldirstruc(:).name};
 
+%--------------------------------------------------------------------------
+% Create main Figure
+hObject = figure('Name','fMROI Alpha 1.0.0','Color','w', ...
+    'MenuBar','none','ToolBar','none','NumberTitle','off',...
+    'DockControls','off','Render','opengl','Units','Pixels',...
+    'Position', [0 0 figw figh],'windowbuttonmotionfcn',@mousemove);
+%     'WindowButtonDownFcn',@mousehold,'WindowButtonUpFcn',@mouserelease);
 
-% Figure creation
-% hObject is the handle to the figure
-hObject = figure('Name', 'Parameters Detection', 'Color', [255 255 255]/255, ...
-    'MenuBar', 'none', 'ToolBar', 'none',... , 'CloseRequestFcn', @close_signalhunter,...
-    'DockControls', 'off', 'NumberTitle','off','Render','opengl', 'Visible', 'off');
+set(hObject,'Visible','off');
 
-set(hObject, 'Units', 'Pixels', 'Position', [0 0 figw figh],'windowbuttonmotionfcn',@mousemove);
 % center the figure window on the screen
 movegui(hObject, 'center');
-
+handles.mousehold = 0;
 %--------------------------------------------------------------------------
-% creates the menu bar 1 with 1 submenu
+% creates the menu File
 hmenufile = uimenu('Label', 'File', 'Parent', hObject);
 
-%--------------------------------------------------------------------------
-% creates the File submenus
+% Open submenus
 hmenufile_open = uimenu(hmenufile, 'Label', 'Open',...
     'Callback', @menufile_open_callback);
 
+% Load Template submenu
 handles.hmenufile_templates(1) = uimenu(hmenufile, 'Label', 'Load Template');
 
-%--------------------------------------------------------------------------
-% Create the templates submenus automatically
+% Create the Load Templates submenus automatically
 guidata(hObject,handles);
 updatemenutemplate(hObject);
 handles = guidata(hObject);
-%--------------------------------------------------------------------------
 
+% Load ROIs submenu
 hmenufile_roi = uimenu(hmenufile, 'Label', 'Load ROIs',...
     'Callback', @menufile_roiopen_callback);
 
+% Exit submenu
 hmenufile_exit = uimenu(hmenufile, 'Label', 'Exit',...
     'Callback', @menufile_exit_callback);
 
 %--------------------------------------------------------------------------
-% creates the menu bar 2 with 1 submenu
+% Create Config Menu
 hmenuconfig = uimenu('Label', 'Config', 'Parent', hObject);
 
 hmenuconfig_dplres = uimenu(hmenuconfig, 'Label', 'Display resolution');%,...
@@ -80,11 +78,6 @@ hmenuconfig_dplres = uimenu(hmenuconfig, 'Label', 'Display resolution');%,...
 
 hmenuconfig_imptpl = uimenu(hmenuconfig, 'Label', 'Import template',...
      'Callback', @menuconfig_imptpl_callback);
-% hmenuconfig_imptpl_file = uimenu(hmenuconfig_imptpl, 'Label', 'Files',...
-%     'Callback', @menuconfig_imptpl_callback);
-% 
-% hmenuconfig_imptpl_file = uimenu(hmenuconfig_imptpl, 'Label', 'Folder',...
-%     'Callback', @menuconfig_imptpl_callback);
 
 hmenuconfig_cleartpl = uimenu(hmenuconfig,'Label','Clear template folder',...
     'Callback', @menuconfig_cleartpl_callback);
@@ -99,21 +92,33 @@ hmenuconfig_restoreroifun = uimenu(hmenuconfig, 'Label', 'Restore default ROI fu
     'Callback', @menuconfig_restoreroifun_callback);
 
 %--------------------------------------------------------------------------
-% creates the menu bar 3 with 1 submenu
-hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
+% Create View menu
+hmenuview = uimenu('Label', 'View', 'Parent', hObject);
 
-%--------------------------------------------------------------------------
-% creates the menu bar 4 with 1 submenu
-hmenuhelp = uimenu('Label', 'Help', 'Parent', hObject);
-hmenuhelp_showquickguide = uimenu(hmenuhelp,'Label','Show quick guide',...
+hmenuview_showquickguide = uimenu(hmenuview,'Label','Show quick guide',...
     'Callback', @menuhelp_showquickguide_callback);
-handles.menuhelp_showctrlpanel = uimenu(hmenuhelp,...
+
+handles.menuview_showctrlpanel = uimenu(hmenuview,...
     'Label','Show Control Panel','Enable','off',...
     'Callback', @menuhelp_showctrlpanel_callback);
 
+
+%--------------------------------------------------------------------------
+% Create Tools menu
+hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
+
+%--------------------------------------------------------------------------
+% Create Help menu
+hmenuhelp = uimenu('Label', 'Help', 'Parent', hObject);
+
+hmenuhelp_about = uimenu(hmenuhelp,'Label','About');
+%     'Callback', @menuhelp_showctrlpanel_callback);
+
+hmenuhelp_showquickguide = uimenu(hmenuhelp,'Label','Show quick guide',...
+    'Callback', @menuhelp_showquickguide_callback);
+
 %--------------------------------------------------------------------------
 % creates the Axes Panel
-
 panelgraph_pos = [0.26, 0.01, 0.73, 0.98];
 
 handles.panel_graph = uipanel(hObject, 'BackgroundColor', 'k', ...
@@ -166,14 +171,16 @@ textwelcomepos = [0.01, 0.35, 0.98, 0.64];
 annotation(handles.panel_logo,'textbox','Position',textwelcomepos,...
     'String',wt,'EdgeColor',[.8 .8 .8]);
 
-%--------------------------------------------------------------------------
-% creates the Logo axis and text
+% %--------------------------------------------------------------------------
+% % creates the Logo axis and text
 axeslogo_pos = [0.2545,0.12,0.4711,0.2000];
 
-axes('Parent', handles.panel_logo,'Position',axeslogo_pos, 'Box', 'off',...
-                'Units', 'normalized','XTick', [],'YTick', []);
+handles.axislogo = axes('Parent', handles.panel_logo,'Position',axeslogo_pos, 'Box', 'off',...
+    'Units', 'normalized','XTick', [],'YTick', []);
             
 imshow(fullfile(fmroirootdir,'etc','figs','fmroi_logo.png'))
+
+set(handles.axislogo, 'Tag', 'axislogo')
 
 logocaption = {'Developed by members and colaborators of';...
     'Proaction Lab - FPCE, University of Coimbra';...
@@ -200,7 +207,7 @@ handles.fig = hObject;
 handles.fmroirootdir = fmroirootdir;
 handles.tmpdir = tmpdir;
 handles.hmenufile = hmenufile;
-handles.hmenuhelp = hmenuhelp;
+handles.hmenuhelp = hmenuview;
 handles.hsubopen = hmenufile_open;
 % handles.hsub2open = hmenufile_templates2;
 % handles.hsub3open = hmenufile_templates3;
