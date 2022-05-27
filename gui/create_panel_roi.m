@@ -14,7 +14,7 @@ function create_panel_roi(hObject)
 handles = guidata(hObject);
 
 
-panelroi_pos = [0.01, 0.01, 0.98, 0.35];
+panelroi_pos = [0.01, 0.01, 0.98, 0.35];    
 
 handles.tabgp = uitabgroup(handles.panel_control,'Position',panelroi_pos);
 

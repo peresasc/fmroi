@@ -42,24 +42,21 @@ if fig==0,  h=[]; return;  end
  
 % Compute figure offset of mouse pointer in pixels
 figPos = getpixelposition(fig);
-x = (p(1)-figPos(1));
-y = (p(2)-figPos(2));
  
 % Loop over all figure descendants
 c = findobj(get(fig,'Children'),varargin{:});
 
-try
-    hp = get(c(1),'Parent');
-    
+for h = c'
+    hp = get(h,'Parent');
+    x = (p(1)-figPos(1));
+    y = (p(2)-figPos(2));
     while hp~=fig
         parent_pos = getpixelposition(hp);
         x = (x-parent_pos(1));
         y = (y-parent_pos(2));
         hp = get(hp,'Parent');
     end
-end
 
-for h = c'
    % If descendant contains the mouse pointer position, exit
    r = getpixelposition(h);  % Note: cache this for improved performance
    if (x>r(1)) && (x<r(1)+r(3)) && (y>r(2)) && (y<r(2)+r(4))

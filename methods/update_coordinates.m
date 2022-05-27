@@ -17,9 +17,13 @@ handles = guidata(hObject);
 n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 n = handles.table_selectedcell(1);
 
-if nargin == 1
+if nargin == 1 || handles.mousehold
     
-    centre = getworldpos;
+    if nargin == 1
+        centre = getworldpos;
+    else
+        centre = getworldpos(varargin{1});
+    end
     st.centre = centre(1:3);
     
     cpima = st.vols{n}.mat\[centre';1];
@@ -31,6 +35,8 @@ if nargin == 1
             set(handles.edit_pos(i,j),'String',num2str(cpall(i,j)))
         end
     end
+    set(handles.text_pos(1),'String',num2str(round(centre)))
+    set(handles.text_pos(2),'String',num2str(cpima))
     
     voxelvalue = cell(n_image,1);
     for k = 1:n_image
@@ -51,10 +57,10 @@ if nargin == 1
     
 else
     
-    cpwld = getworldpos(varargin{1});
-    cpima = st.vols{n}.mat\[cpwld';1];
+    centre = getworldpos(varargin{1});
+    cpima = st.vols{n}.mat\[centre';1];
     cpima = round(cpima(1:3))';
     
-    set(handles.text_pos(1),'String',num2str(round(cpwld)))
+    set(handles.text_pos(1),'String',num2str(round(centre)))
     set(handles.text_pos(2),'String',num2str(cpima))
 end

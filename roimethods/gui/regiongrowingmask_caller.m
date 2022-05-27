@@ -22,17 +22,13 @@ method = lower(handles.buttongroup_spheremasktype.SelectedObject.String);
 
 if strcmpi(method,'sphere')
     radius = str2double(get(handles.edit_roiradius,'String'));
-    nvox = str2double(get(handles.edit_roinvox,'String'));
-    
-    [~, ~, mask] = regiongrowingmask(srcvol, curpos, inf, radius, [], [], [], 'max', nvox, []);
+    premask = spheremask(srcvol, curpos, radius, 'radius'); 
 elseif strcmpi(method,'mask image')
-    
     premask = img2mask_caller(hObject,'premask');
     handles = guidata(hObject);
-    
-    nvox = str2double(get(handles.edit_roinvox,'String'));
-    
-    [~, ~, mask] = regiongrowingmask(srcvol, curpos, inf, [], [], [], [], 'max', nvox, premask);
 else
     error('Undefined method type: the method should be sphere or image')
 end
+
+nvox = str2double(get(handles.edit_roinvox,'String'));           
+mask = regiongrowingmask(srcvol, curpos, inf, 'max', nvox, premask);

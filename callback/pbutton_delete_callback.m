@@ -38,6 +38,14 @@ if ~isempty(n_image)
     st.vols(n)=[];
     st.vols{end+1}=[];
     
+    if isempty(find(~cellfun(@isempty,st.vols), 1, 'last'))
+        set(handles.panel_control,'Visible','off')
+        set(handles.menuview_showctrlpanel,'Enable','off')
+        delete(handles.axannot)
+        handles = rmfield(handles,'axannot');
+        guidata(hObject,handles);
+    end
+    
     tdata = get(handles.table_listimg,'Data');
     delfilename = tdata{n,3};
     tdata(n,:) = [];
