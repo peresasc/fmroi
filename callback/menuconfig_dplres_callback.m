@@ -80,8 +80,8 @@ if ~isempty(st.bb)
     
     for i = 1:n_image        
         if isfield(handles.ax{i,4},'roipatch')
-            if ishandle(handles.ax{2,4}.roipatch)
-                delete(handles.ax{2,4}.roipatch)
+            if ishandle(handles.ax{i,4}.roipatch)
+                delete(handles.ax{i,4}.roipatch)
             end
             handles.ax{i,4} = rmfield(handles.ax{i,4},'roipatch');
             if handles.imgprop(i).viewrender
