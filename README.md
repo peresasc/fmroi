@@ -9,12 +9,6 @@ _Software dedicated to create ROIs in fMRI data_
 FMROI is a technical software specialized for working with fMRI data. It would be beneficial for neuroimaging communities and laboratories. We assume that the clients of this software have sufficient knowledge of fMRI data analysis and they are familiar with the related concepts. Before using and running the project, ensure that you have installed the pre-requirement packages. 
 
 ## Getting Started
-- Dependencies
-- Installing
-- Tutorials
-- Development
-- License
-
 
 ### Dependencies
 
