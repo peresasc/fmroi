@@ -18,7 +18,8 @@ fMROI is a free software designed to create regions of interest (ROI) in functio
 
 ### Installing
 
-<p>[Download](https://github.com/proactionlab/fmroi) the fMROI source code and add the root folder (./fMROI) to the Matlab path.</p>
+[Download](https://github.com/proactionlab/fmroi) the fMROI source code and add the root folder (./fMROI) to the Matlab path.<br>
+<br>
 Project web page:<br>
 [https://github.com/proactionlab/fmroi](https://github.com/proactionlab/fmroi) 
 
