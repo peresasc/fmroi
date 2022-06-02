@@ -54,7 +54,8 @@ hmenufile_open = uimenu(hmenufile, 'Label', 'Open',...
     'Callback', @menufile_open_callback);
 
 % Load Template submenu
-handles.hmenufile_templates(1) = uimenu(hmenufile,'Label','Load Template');
+handles.hmenufile_templates(1) = uimenu(hmenufile,...
+    'Label','Load Template','Tag',templatedir);
 
 % Create the Load Templates submenus automatically
 guidata(hObject,handles);

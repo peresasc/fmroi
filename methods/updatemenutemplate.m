@@ -38,37 +38,19 @@ end
 %--------------------------------------------------------------------------
 % Generate the new Load Template menu
 
-[~, dn, ~] = dirwalk(handles.tpldir);
-pn{1} = handles.tpldir;
-auxfn = dir(fullfile(pn{1},'*.nii*'));
-if isempty(auxfn)
-    fn{1} = [];
-else
-    for jj = 1:length(auxfn)
-        fn{1}{jj} = auxfn(jj).name;
-    end
-end
+[pn, dn, fn] = dirwalk(handles.tpldir);
 
 
-for i = 1:length(dn)
-    for j = 1:length(dn{i})
-        handles.hmenufile_templates(end+1) = uimenu(...
-            handles.hmenufile_templates(i), 'Label', dn{i}{j});
-        pn{end+1} = fullfile(pn{i},dn{i}{j});
-        auxfn = dir(fullfile(pn{end},'*.nii*'));
-        if isempty(auxfn)
-            fn{end+1} = [];
-        else
-            for jj = 1:length(auxfn)
-                fn{length(pn)}{jj} = auxfn(jj).name;
-            end
-        end
+for i = 1:length(pn)
+    h = findobj(handles.hmenufile_templates,'Tag',pn{i});
+    for j = 1:length(dn{i})        
+        handles.hmenufile_templates(end+1) = uimenu(h(1),'Label', dn{i}{j},...
+            'Tag',[h(1).Tag,filesep,dn{i}{j}]);
     end
-    
+    fn{i} = fn{i}(contains(fn{i},'.nii'));
     for k = 1:length(fn{i})
-        handles.hmenufile_templatecallback(end+1) = uimenu(...
-                handles.hmenufile_templates(i), 'Label', fn{i}{k},...
-                'Callback', @menufile_tplopen_callback);        
+        handles.hmenufile_templatecallback(end+1) = uimenu(h(1),...
+                'Label',fn{i}{k},'Callback', @menufile_tplopen_callback);        
     end    
 end
 
