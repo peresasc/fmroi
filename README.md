@@ -41,25 +41,23 @@ After this procedure the generated ROI will appear in the *ROI Table* tab, as we
 
 To save the ROls, the user must select the *Bin Mask* checkbox to save each ROI as an independent mask, or *Atlas+LUT* to save all the ROls in the same image and click on the Save button at the bottom of the *ROI Table* tab. 
 
-## Development
-
-Want to contribute? Great! Send an email to *proactiondev@uc.pt*.
-
 ## License
 
 GNU GENERAL PUBLIC LICENSE
 **Free Software**
-<br>
-<br>
 
-[https://proactionlab.fpce.uc.pt](https://proactionlab.fpce.uc.pt)
+## Development
 
+Want to contribute? Great! Send an email to ***proactiondev@uc.pt***.
 
--------
-default argument names used by roi algoritms:
+**Default argument names used by roi algoritms:**
 
-- hObject - main figure handle.
 - srcvol - source volume, a 3D matrix in RAS with the image information.
 - curpos - cursor current position, it is a 3D vector with the cursor position in RAS.
 - minthrs - handles.slider_minthrs: minimum threshold, srcvol values below the minthrs receive zero; 
 - maxthrs - handles.slider_maxthrs: maximum threshold, srcvol values higher than maxthrs receive zero;
+
+-------
+
+[https://proactionlab.fpce.uc.pt](https://proactionlab.fpce.uc.pt)
+
