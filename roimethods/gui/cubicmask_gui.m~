@@ -1,9 +1,9 @@
-function contiguousclustering_gui(hObject)
-% contiguousclustering_gui is a internal function of fMROI. It creates the
-% panel and uicontrols for calling contiguousclustering function.
+function cubicmask_gui(hObject)
+% cubicmask_gui is a internal function of fMROI. It creates the panel
+% and uicontrols for calling cubicmask function.
 %
 % Syntax:
-%   contiguousclustering_gui(hObject)
+%   cubicmask_gui(hObject)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
@@ -20,7 +20,6 @@ handles.panel_roimethod = uipanel(handles.tab_genroi, 'BackgroundColor', 'w', ..
     'Units', 'normalized', 'Position', panelroi_pos, 'Visible', 'on');
 
 %--------------------------------------------------------------------------
-% creates the text for source image
 guidata(hObject,handles)
 imgname = getselectedimgname(hObject);
 
@@ -33,19 +32,39 @@ handles.text_roisrcimage = uicontrol(handles.panel_roimethod, 'Style', 'text',..
             'Units', 'normalized', 'String', imgname,...
             'BackgroundColor', 'w', 'FontSize', 9,...
             'HorizontalAlignment', 'left','Position', [0.01, 0.84, 0.98, 0.07]);
-        
+
+%--------------------------------------------------------------------------
+% creates the Radio Button Group in panel_roi  
+
+handles.buttongroup_cubicmasktype = uibuttongroup(handles.panel_roimethod,...
+    'BackgroundColor', 'w', 'Units', 'normalized',...
+    'Position', [0.01, 0.73, 0.98, 0.1]);
+%--------------------------------------------------------------------------
+% creates the cubicmasktype radio button radius
+handles.radio_cubicradius = uicontrol(...
+    handles.buttongroup_cubicmasktype, 'Style', 'radiobutton',...
+    'Units', 'normalized','Position', [0.01, 0.1, 0.4, 0.7],...
+    'String','radius', 'BackgroundColor', 'w');
+
+%--------------------------------------------------------------------------
+% creates the cubicmasktype radio button volume
+handles.radio_cubicvolume = uicontrol(...
+    handles.buttongroup_cubicmasktype, 'Style', 'radiobutton',...
+    'Units', 'normalized','Position', [0.45, 0.1, 0.4, 0.7],...
+    'String','nvoxels', 'BackgroundColor', 'w');
+
 %--------------------------------------------------------------------------
 % creates the text for radius/volume in voxels
-handles.text_mincltsz = uicontrol(handles.panel_roimethod, 'Style', 'text',...
-            'Units', 'normalized', 'String', 'Min cluster size (voxels): ',...
+handles.text_roiradius = uicontrol(handles.panel_roimethod, 'Style', 'text',...
+            'Units', 'normalized', 'String', 'radius or N voxels: ',...
             'BackgroundColor', 'w', 'FontSize', 9,...
-            'HorizontalAlignment', 'left','Position', [0.01, .75, 0.4, 0.07]);
+            'HorizontalAlignment', 'right','Position', [0.45, 0.01, 0.20, 0.35]);
         
 %--------------------------------------------------------------------------
 % creates the edit text for radius/volume in voxels
-handles.edit_mincltsz = uicontrol(handles.panel_roimethod, 'Style', 'edit',...
+handles.edit_roiradius = uicontrol(handles.panel_roimethod, 'Style', 'edit',...
             'Units', 'normalized', 'String', '3',...
             'BackgroundColor', 'w', 'FontSize', 11,...
-            'HorizontalAlignment', 'left','Position', [0.42, .75, 0.15, 0.08]);
+            'HorizontalAlignment', 'left','Position', [0.67, 0.01, 0.32, 0.35]);
 
 guidata(hObject,handles)

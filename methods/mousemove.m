@@ -27,8 +27,8 @@ if isfield(st,'vols')% && handles.mousehold
             % Check if the mouse hover over axes rendering and enable
             % rotation otherwise disable rotation.
             tag = get(h,'Tag');
-            tag = tag(1:9);
-            if strcmpi(tag,'rendering')
+            
+            if contains(tag,'rendering')
                 handles.hrotate.Enable = 'on';
                 guidata(hObject,handles);
             else
