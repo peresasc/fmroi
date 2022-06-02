@@ -56,20 +56,19 @@ for i = 1:4
         if n_image == 1
             ax = axes('Parent', handles.panel_graph,...
                 'Position',axes_pos(i,:), 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
-            ax.Toolbar.Visible = 'on';
-            axtoolbar(ax,{'zoomin','zoomout','rotate','pan','restoreview'});
             set(ax,'Visible','off', 'Ydir','normal',...
                 'CameraTargetMode','manual','view',[-35 35]);
             st.dims = round(diff(st.bb)'+1);
             set(ax,'Xlim',[0 st.dims(1)],'Ylim',[0 st.dims(2)],'Zlim',[0 st.dims(3)])
-            h = rotate3d(ax);
-            h.ActionPostCallback = @update_axes4_calback;
+            handles.hrotate = rotate3d(ax);
+            handles.hrotate.Enable = 'off';
+
             hold(ax,'on')
             handles.ax{n_image,i} = struct('ax',ax);
         end
         ax = handles.ax{1,4}.ax;
-        set(ax, 'Tag', axtags{i});
-        
+        set(ax,'Tag',axtags{i});
+                
         slices = getslices(st,n_image);
         
         % Current position to display (cpdpl): converts the position 
@@ -80,8 +79,7 @@ for i = 1:4
         [x,y,z] = meshgrid(1:size(slices{1},2),1:size(slices{1},1),cpdpl(3));
         c = gettruecolor(slices{1},st.vols{1}.private.dat(:,:,:),ax.Colormap);
         d  = surface('Parent',ax,'XData',x,'YData',y,'ZData',z,'CData',c,...
-            'FaceColor','flat','EdgeColor','none',...
-            'ButtonDownFcn', @axes4_buttondownfcn_callback);
+            'FaceColor','flat','EdgeColor','none');
        
         handles.ax{n_image,i} = struct('ax',ax,'d',d);
 
@@ -110,7 +108,6 @@ for i = 1:4
     handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,'txy',txy);
     end
 end
-
 
 tleftpos = {[0,.2,.05,.05],'L';...
             [0,.7,.05,.05],'L';...

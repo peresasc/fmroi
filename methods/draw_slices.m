@@ -31,13 +31,13 @@ for i = 1:n_image
             st.vols{i}.clim(1);
         
         if thrs <= maxthrs
-            z = slices{j} >= thrs & slices{j} <= maxthrs;
+            slicemask = slices{j} >= thrs & slices{j} <= maxthrs;
         else
-            z = slices{j} >= thrs | slices{j} <= maxthrs;
+            slicemask = slices{j} >= thrs | slices{j} <= maxthrs;
         end
         
         alpha = zeros(size(slices{j}));
-        alpha(z)=1*alphavalue;
+        alpha(slicemask)=1*alphavalue;
         set(handles.ax{i,j}.d,'AlphaData',alpha)
         set(handles.ax{i,j}.d,'Visible',handles.imgprop(i).viewslices)
         
@@ -106,5 +106,6 @@ else
     set(handles.ax{n_image,3}.txy,'HitTest','off',...
     'Position', [bb(2,2)+1-cent(2), cent(3)-bb(1,3)+1]);
 end
+guidata(hObject, handles);
 drawnow;
 

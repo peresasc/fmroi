@@ -22,6 +22,23 @@ if isfield(st,'vols')% && handles.mousehold
         if ~isempty(h)
             update_coordinates(hObject,h)
             handles = guidata(hObject);
+            
+            %--------------------------------------------------------------
+            % Check if the mouse hover over axes rendering and enable
+            % rotation otherwise disable rotation.
+            tag = get(h,'Tag');
+            
+            if contains(tag,'rendering')
+                handles.hrotate.Enable = 'on';
+                guidata(hObject,handles);
+            else
+                handles.hrotate.Enable = 'off';
+                guidata(hObject,handles);
+            end
+            
+            %--------------------------------------------------------------
+            % If the right mouse button is pressed and hold, mousemove
+            % updates the image position
             if handles.mousehold
                 draw_slices(hObject)
             end
