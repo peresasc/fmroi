@@ -74,9 +74,6 @@ hmenufile_exit = uimenu(hmenufile, 'Label', 'Exit',...
 % Create Config Menu
 hmenuconfig = uimenu('Label', 'Config', 'Parent', hObject);
 
-hmenuconfig_dplres = uimenu(hmenuconfig, 'Label', 'Display resolution',...
-    'Callback', @menuconfig_dplres_callback);
-
 hmenuconfig_imptpl = uimenu(hmenuconfig, 'Label', 'Import template',...
      'Callback', @menuconfig_imptpl_callback);
 
@@ -94,7 +91,11 @@ hmenuconfig_restoreroifun = uimenu(hmenuconfig, 'Label', 'Restore default ROI fu
 
 %--------------------------------------------------------------------------
 % Create View menu
+
 hmenuview = uimenu('Label', 'View', 'Parent', hObject);
+
+hmenuconfig_dplres = uimenu(hmenuview, 'Label', 'Display resolution',...
+    'Callback', @menuconfig_dplres_callback);
 
 hmenuview_showquickguide = uimenu(hmenuview,'Label','Show quick guide',...
     'Callback', @menuhelp_showquickguide_callback);
