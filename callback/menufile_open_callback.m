@@ -15,6 +15,8 @@ handles = guidata(hObject);
 [fn, pn, idx] = uigetfile({'*.nii';'*.nii.gz'},...
     'Select One or More Nifti Files', ...
     'MultiSelect', 'on');
+handles.fileopenidx = idx;
+guidata(hObject,handles);
 
 if idx
     if iscell(fn)
