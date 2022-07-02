@@ -1,4 +1,4 @@
-function st = stgen(img_path, st)
+function st = stgen(hObject, img_path, st)
 % stgen is a internal function of fMROI that generate or update the st 
 % structure.
 %
@@ -22,7 +22,6 @@ if ~exist('img_path','var')
     error('Provide a nifti image path')
 end
 
-
 if ~exist('st','var')
     st = stgen0;
 end
@@ -31,6 +30,7 @@ if isempty(st)
     st = stgen0;
 end
 
+handles = guidata(hObject);
 nextcell = find(cellfun(@isempty,st.vols), 1);
 i = nextcell;
 
@@ -40,8 +40,25 @@ V = spm_vol(img_path);
 if length(V) > 1
     hw = warndlg('fMROI does not suport 4D images!Only the first volume will be loaded.');
     uiwait(hw)
-    V = V(1);
+
+    outdir = handles.tmpdir;
+    [~,fn,ext] = spm_fileparts(img_path);
+    i = 1; % volume to be loaded
+    outpath = fullfile(outdir ,sprintf('%s_%05d%s',fn,i,ext));
+    ni = nifti;
+    ni.dat = file_array(outpath,V(i).dim(1:3),V(i).dt,0,V(i).pinfo(1),V(i).pinfo(2));
+    ni.mat = V(i).mat;
+    ni.mat0 = V(i).mat;
+    ni.mat_intent = V(i).private.mat_intent;
+    ni.mat0_intent = V(i).private.mat0_intent;
+    ni.descrip = [V(i).descrip sprintf(' - %d',i)];
+    create(ni);
+    ni.dat(:,:,:) = V(i).private.dat(:,:,:,i);
+
+    clear V
+    V = spm_vol(outpath);
 end
+
 V.ax = cell(3,1); %???
 V.premul    = eye(4);
 V.window    = 'auto';

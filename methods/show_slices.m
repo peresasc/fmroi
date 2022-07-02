@@ -17,7 +17,8 @@ handles = guidata(hObject);
 set(handles.panel_control,'Visible','on');
 set(handles.menuview_showctrlpanel,'Enable','on')
 
-st = stgen(fn,st);
+guidata(hObject, handles);
+st = stgen(hObject,fn,st);
 
 n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 
@@ -254,6 +255,6 @@ end
 popup_roitype_callback(hObject);
 handles = guidata(hObject);
 
-guidata(hObject, handles);
+guidata(hObject,handles);
 
 draw_slices(hObject)
