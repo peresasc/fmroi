@@ -133,12 +133,12 @@ else
         end
         minthrs0 = handles.imgprop(ucidx).minthrs;
         minthrs0_value = minthrs0*(clim0(2)-clim0(1))+clim0(1);
-        minthrs = (minthrs0_value-st.vols{ucidx}.clim(1))/(st.vols{ucidx}.clim(2)-st.vols{ucidx}.clim(1));
+        minthrs_value = (minthrs0_value-st.vols{ucidx}.clim(1))/(st.vols{ucidx}.clim(2)-st.vols{ucidx}.clim(1));
 
         handles.imgprop(ucidx).imgmin_str = imgmin_str;
         handles.imgprop(ucidx).imgmax_alg = imgmax_alg;
         handles.imgprop(ucidx).imgmax_exp = imgmax_exp;
-        handles.imgprop(ucidx).minthrs = minthrs;
+        handles.imgprop(ucidx).minthrs = handles.slider_minthrs.Min;
 
         guidata(hObject, handles);
         updateuicontrols(hObject,ucidx);
