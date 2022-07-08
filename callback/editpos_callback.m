@@ -1,4 +1,4 @@
-function editpos_callback(hObject, ~)
+function editpos_callback(hObject,~,tag)
 % editpos_callback is an internal function of fMROI.
 %
 % Syntax:
@@ -13,7 +13,11 @@ function editpos_callback(hObject, ~)
 global st
 handles = guidata(hObject);
 n = handles.table_selectedcell(1);
-tag = get(hObject,'Tag');
+
+if ~exist('tag', 'var') || isempty(tag)
+    tag = get(hObject,'Tag');
+end
+
 
 if tag(end-1)=='1'
     cpwld = [str2double(get(handles.edit_pos(1,1),'String')),...
