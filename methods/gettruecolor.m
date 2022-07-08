@@ -31,6 +31,7 @@ end
 s = size(cmap,1);
 
 cind = round(((img2d-cmin)/(cmax-cmin))*(s-1))+1;
+cind(isnan(cind)) = 1;
 cind(cind<1) = 1;
 cind(cind>s) = s;
 

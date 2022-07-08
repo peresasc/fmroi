@@ -1,4 +1,4 @@
-function pbutton_pbutton_roirem_callback(hObject,~)
+function pbutton_roirem_callback(hObject,~)
 
 global st
 handles = guidata(hObject);
@@ -27,7 +27,11 @@ if wroi
     i = sub2ind(size(roi),p(:,1),p(:,2),p(:,3));
 
     roi(i) = 0;
-    st.roimasks{wroi} = roi;
+    if sum(roi) == 0
+        st.roimasks(wroi) = [];        
+    else
+        st.roimasks{wroi} = roi;
+    end
 else
     he = errordlg('There is no ROI to be removed! Please, select a ROI first.');
     uiwait(he)
@@ -42,7 +46,9 @@ handles = guidata(hObject);
 datalut = get(handles.table_roilut,'Data');
 set(handles.popup_workingroi,'String',[{'new'};datalut(:,2)])
 
-if wroi
+if sum(roi) == 0
+    set(handles.popup_workingroi,'Value',1);
+elseif wroi
     set(handles.popup_workingroi,'Value',wroi+1);   
 else
     set(handles.popup_workingroi,'Value',size(datalut,1)+1);

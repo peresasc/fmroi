@@ -135,6 +135,6 @@ handles.pbutton_roiadd = uicontrol(handles.panel_roimethod, 'Style', 'PushButton
 % creates the rem push button
 handles.pbutton_roirem = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
     'Units', 'normalized','Position', [.88, .40, .11, .1],...
-    'String','Rem','Callback',@pbutton_pbutton_roirem_callback);
+    'String','Rem','Callback',@pbutton_roirem_callback);
 
 guidata(hObject,handles)

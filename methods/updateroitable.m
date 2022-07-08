@@ -110,8 +110,13 @@ else
     else
         clim0 = st.vols{ucidx}.clim;
         st.vols{ucidx}.private.dat(:,:,:) = ucmask;
-        st.vols{ucidx}.clim = [min(st.vols{ucidx}.private.dat(:)),...
-                        max(st.vols{ucidx}.private.dat(:))];
+
+        if min(st.vols{ucidx}.private.dat(:)) ~=...
+           max(st.vols{ucidx}.private.dat(:))
+            st.vols{ucidx}.clim = [min(st.vols{ucidx}.private.dat(:)),...
+                max(st.vols{ucidx}.private.dat(:))];
+        end
+        
         for k = 1:3
             caxis(handles.ax{ucidx,k}.ax,st.vols{ucidx}.clim);
         end
