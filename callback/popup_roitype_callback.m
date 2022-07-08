@@ -11,6 +11,8 @@ function popup_roitype_callback(hObject, ~)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
+set(handles.pbutton_findmax,'Enable','on')
+set(handles.pbutton_roi,'Enable','on')
 
 if isfield(handles,'panel_roimethod')
     if isobject(handles.panel_roimethod)
@@ -27,6 +29,7 @@ roimth = s{v};
 mthguipath = fullfile(handles.fmroirootdir,...
     'roimethods','gui',[roimth,'_gui.m']);
 
+guidata(hObject, handles)
 if isfile(mthguipath)
     feval([roimth,'_gui'],hObject);
     handles = guidata(hObject);
@@ -35,4 +38,4 @@ else
     handles = guidata(hObject);
 end
 
-guidata(hObject, handles);
+guidata(hObject, handles)

@@ -252,7 +252,10 @@ if ~get(handles.tbutton_lcsrcsel,'Value')
     guidata(hObject, handles);
 end
 
+if n_image == 1
 popup_roitype_callback(hObject);
+end
+
 handles = guidata(hObject);
 
 guidata(hObject,handles);

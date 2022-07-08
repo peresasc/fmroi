@@ -12,6 +12,15 @@ function freehandmask_gui(hObject)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
+set(handles.pbutton_findmax,'Enable','off')
+set(handles.pbutton_roi,'Enable','off')
+
+if isfield(handles, 'drawingroi') &&...
+        isfield(handles.drawingroi,'hroi') &&...
+        ishandle(handles.drawingroi.hroi)
+    delete(handles.drawingroi.hroi)
+end
+
 %--------------------------------------------------------------------------
 % creates the ROIs Panel
 panelroi_pos = [0.01, 0.01, 0.98, 0.87];
@@ -49,8 +58,8 @@ handles.popup_workingroi = uicontrol(handles.panel_roimethod, 'Style', 'popup',.
     'Units', 'normalized','Position', [0.01, 0.62, 0.47, 0.1],...
     'background','w');
 
-roinamelist = get(handles.table_roilut,'Data');
-set(handles.popup_workingroi,'String',[{'new'};roinamelist(:,2)])
+datalut = get(handles.table_roilut,'Data');
+set(handles.popup_workingroi,'String',[{'new'};datalut(:,2)])
 
 %--------------------------------------------------------------------------
 % creates the text for working axis dropdown menu
@@ -97,24 +106,35 @@ handles.radio_drawpolygon = uicontrol(...
     'Callback',@radiobutton_drawfreehand_callback);
 
 %--------------------------------------------------------------------------
+% creates the text for the control pushbuttons
+handles.text_pbutton_roidraw = uicontrol(handles.panel_roimethod,...
+            'Style','text','Units','normalized',...
+            'String','Drawing tools:','BackgroundColor','w',...
+            'FontSize', 9,'HorizontalAlignment', 'left',...
+            'Position', [0.52, 0.48, 0.47, 0.1]);   
+
+%--------------------------------------------------------------------------
 % creates the draw push button
 handles.pbutton_roidraw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.52, .40, .15, .1],...
+    'Units', 'normalized','Position', [.52, .40, .11, .1],...
     'String','Draw','Callback',@pbutton_roidraw_callback);
 
 %--------------------------------------------------------------------------
-% creates the draw push button
+% creates the clear push button
+handles.pbutton_roicleardaw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.64, .40, .11, .1],...
+    'String','Clear','Callback',@pbutton_roicleardaw_callback);
+
+%--------------------------------------------------------------------------
+% creates the add push button
 handles.pbutton_roiadd = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.68, .40, .15, .1],...
+    'Units', 'normalized','Position', [.76, .40, .11, .1],...
     'String','Add','Callback',@pbutton_roiadd_callback);
 
 %--------------------------------------------------------------------------
-% creates the draw push button
-handles.pbutton_roicleardaw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.84, .40, .15, .1],...
-    'String','Clear','Callback',@pbutton_roicleardaw_callback);
-
-
-
+% creates the rem push button
+handles.pbutton_roirem = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.88, .40, .11, .1],...
+    'String','Rem','Callback',@pbutton_pbutton_roirem_callback);
 
 guidata(hObject,handles)

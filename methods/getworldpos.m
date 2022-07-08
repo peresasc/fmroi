@@ -1,8 +1,8 @@
 function centre = getworldpos(h)
-% draw_isosurface is an internal function of fMROI.
+% getworldpos is an internal function of fMROI.
 %
 % Syntax:
-%   draw_isosurface(hObject, mask)
+%   centre = getworldpos(h)
 %
 % Inputs:
 %        h: handle of the current axes.

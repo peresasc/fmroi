@@ -49,8 +49,8 @@ handles.popup_workingroi = uicontrol(handles.panel_roimethod, 'Style', 'popup',.
     'Units', 'normalized','Position', [0.01, 0.62, 0.47, 0.1],...
     'background','w');
 
-roinamelist = get(handles.table_roilut,'Data');
-set(handles.popup_workingroi,'String',[{'new'};roinamelist(:,2)])
+datalut = get(handles.table_roilut,'Data');
+set(handles.popup_workingroi,'String',[{'new'};datalut(:,2)])
 
 %--------------------------------------------------------------------------
 % creates the text for working axis dropdown menu
@@ -98,9 +98,29 @@ handles.radio_drawpolygon = uicontrol(...
 
 %--------------------------------------------------------------------------
 % creates the draw push button
-handles.pbutton_drawroi = uicontrol(handles.tab_roitable, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.52, .01, .12, .1],...
-    'String','Draw','Callback',@pbutton_drawroi_callback);[0.01, 0.40, 0.47, 0.1]
+handles.pbutton_roidraw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.52, .40, .11, .1],...
+    'String','Draw','Callback',@pbutton_roidraw_callback);
+
+%--------------------------------------------------------------------------
+% creates the clear push button
+handles.pbutton_roicleardaw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.64, .40, .11, .1],...
+    'String','Clear','Callback',@pbutton_roicleardaw_callback);
+
+%--------------------------------------------------------------------------
+% creates the add push button
+handles.pbutton_roiadd = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.68, .40, .11, .1],...
+    'String','Add','Callback',@pbutton_roiadd_callback);
+
+%--------------------------------------------------------------------------
+% creates the rem push button
+handles.pbutton_roirem = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.84, .40, .11, .1],...
+    'String','Clear','Callback',@pbutton_pbutton_roirem_callback);
+
+
 
 
 guidata(hObject,handles)
