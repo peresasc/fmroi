@@ -78,12 +78,6 @@ handles.checkbox_roisaveatlas = uicontrol(...
     'Units', 'normalized','Position', [.46, .01, .53, 0.98],...
     'String','Atlas + LUT', 'BackgroundColor', 'w');
 
-% [.77, .01, .22, 0.98]
-
-% tab1 = uitab(tabgp,'Title','Settings');
-
-% handles.panel_roi = uipanel(handles.panel_control, 'BackgroundColor', 'w', ...
-%     'Units', 'normalized', 'Position', panelroi_pos, 'Visible', 'on');
 
 %--------------------------------------------------------------------------
 % creates the ROI Methods tab
