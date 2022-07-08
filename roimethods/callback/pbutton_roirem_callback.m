@@ -28,7 +28,7 @@ if wroi
 
     roi(i) = 0;
     if sum(roi) == 0
-        st.roimasks(wroi) = [];        
+        st.roimasks(wroi) = [];
     else
         st.roimasks{wroi} = roi;
     end
@@ -53,4 +53,5 @@ elseif wroi
 else
     set(handles.popup_workingroi,'Value',size(datalut,1)+1);
 end
+
 guidata(hObject, handles);
