@@ -21,7 +21,7 @@ function mask = spheremask(srcvol,curpos,nvoxels,mode)
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
 %  Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
-if ~exist('intype','var')
+if ~exist('mode','var') || isempty(mode)
     mode = 'radius';
 end
 
@@ -43,15 +43,15 @@ elseif strcmpi(mode,'volume')
     
     [x,y,z] = find3d(mask);
     ind = find(mask);
-    
+    % distance of every voxel in the ROI to the center
     d(:) = sqrt((x(:) - curpos(1)).^2 + (y(:) - curpos(2)).^2 + (z(:) - curpos(3)).^2);
     
     ss = length(d);
-    remvox = ss-nvoxels;
+    remvox = ss-nvoxels; % number of voxels to be removed
     
     if remvox
-        [~, maxind] = maxk(d,remvox);
-        mask(ind(maxind)) = 0;
+        [~, maxind] = maxk(d,remvox); % find the remvox voxels most distant to the center
+        mask(ind(maxind)) = 0; % remove the remvox voxels most distant to the center
     end
     
 else

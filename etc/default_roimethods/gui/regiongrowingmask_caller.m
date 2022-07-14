@@ -6,7 +6,7 @@ function mask = regiongrowingmask_caller(hObject,srcvol,curpos)
 %   mask = regiongrowingmask_caller(hObject,srcvol,curpos)
 % 
 % Inputs:
-%   hObject: handle of the figure that contains the fMROI main window.
+%   hObject: handle of the figure that contains the fMROI main window.handles.buttongroup_growingpremask
 %    srcvol: 3D matrix, usually a data volume from a nifti file.
 %    curpos: Position where the sphere mask will be centered.
 %
@@ -18,21 +18,31 @@ function mask = regiongrowingmask_caller(hObject,srcvol,curpos)
 
 handles = guidata(hObject);
 
-method = lower(handles.buttongroup_spheremasktype.SelectedObject.String);
+premaskmth = lower(...
+    handles.buttongroup_growingpremask.SelectedObject.String);
 
-if strcmpi(method,'sphere')
-    radius = str2double(get(handles.edit_roiradius,'String'));
-    nvox = str2double(get(handles.edit_roinvox,'String'));
-    
-    [~, ~, mask] = regiongrowingmask(srcvol, curpos, inf, radius, [], [], [], 'max', nvox, []);
-elseif strcmpi(method,'mask image')
-    
-    premask = img2mask_caller(hObject,'premask');
-    handles = guidata(hObject);
-    
-    nvox = str2double(get(handles.edit_roinvox,'String'));
-    
-    [~, ~, mask] = regiongrowingmask(srcvol, curpos, inf, [], [], [], [], 'max', nvox, premask);
-else
-    error('Undefined method type: the method should be sphere or image')
+switch premaskmth
+    case 'mask'
+        premask = img2mask_caller(hObject,'premask');
+        handles = guidata(hObject);
+
+    case 'sphere'
+        radius = str2double(get(...
+            handles.edit_growingpremasradius,'String'));
+        premask = spheremask(srcvol, curpos, radius, 'radius');
+
+    case 'none'
+        premask = ones(size(srcvol));
+        
+    otherwise
+        error('Undefined method type: the method should be sphere or image')
 end
+
+ngrwmode = get(handles.popup_growingmode,'Value');
+s = get(handles.popup_growingmode,'String');
+grwmode = s{ngrwmode};
+
+diffratio = str2double(get(handles.edit_growingthrsmeth,'String'));
+
+nvox = str2double(get(handles.edit_roinvox,'String'));           
+mask = regiongrowingmask(srcvol, curpos, diffratio, grwmode, nvox, premask);
