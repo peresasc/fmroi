@@ -1,4 +1,4 @@
-function mask = cubicmask(vol,curpos,nvoxels,mode)
+function mask = cubicmask(srcvol,curpos,nvoxels,mode)
 % cubicmask creates a cubic mask centered on curpos with the same
 % dimension as srcvol with edge/volume equal to nvoxels. The mask is a
 % binary array where the elements that belong to the cubic mask are set to
@@ -21,24 +21,24 @@ function mask = cubicmask(vol,curpos,nvoxels,mode)
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
 %  Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
-if ~exist('intype','var')
+if ~exist('mode','var') || isempty(mode)
     mode = 'edge';
 end
 
 if strcmpi(mode,'edge')
     
-    mask = makemask(vol, curpos, nvoxels);
+    mask = makemask(srcvol, curpos, nvoxels);
     
 elseif strcmpi(mode,'volume')
     
-    r = ceil((3/(4*pi())*nvoxels)^(1/3));
+    r = ceil((nvoxels)^(1/3));
     
-    mask = makemask(vol, curpos, r);
+    mask = makemask(srcvol, curpos, r);
     
     s = length(find(mask));
     
     if s<nvoxels
-        mask = makemask(vol, curpos, r+1);
+        mask = makemask(srcvol, curpos, r+1);
     end
     
     [x,y,z] = find3d(mask);
@@ -63,15 +63,16 @@ function mask = makemask(matrix, center, n)
 mask = zeros(size(matrix));
 auxmask = mask;
 for i = 1:size(center,1)
-    if rem(n(i),2)
+    if rem(n(i),2) % edge with odd number of voxels
         
         [mx,my,mz] = ndgrid(center(i,1)-floor(n(i)/2):center(i,1)+floor(n(i)/2),...
                             center(i,2)-floor(n(i)/2):center(i,2)+floor(n(i)/2),...
                             center(i,3)-floor(n(i)/2):center(i,3)+floor(n(i)/2));
                         
-        auxmask([mx(:),my(:),mz(:)]) = 1;
+        ind = sub2ind(size(mask),mx(:),my(:),mz(:));
+        auxmask(ind) = 1;
         mask = mask|auxmask;
-    else
+    else % edge with even number of voxels
         [mx,my,mz] = ndgrid(center(i,1)-floor(n(i)/2)+1:center(i,1)+floor(n(i)/2),...
                             center(i,2)-floor(n(i)/2)+1:center(i,2)+floor(n(i)/2),...
                             center(i,3)-floor(n(i)/2)+1:center(i,3)+floor(n(i)/2));
