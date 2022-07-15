@@ -1,6 +1,11 @@
 function mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premask)
-% regiongrowingmask searches for the kvox highest-intensity voxels of the
-% srcvol contained in the region defined by premask.
+% regiongrowingmask is a region growing algorithm that groups neighboring
+% voxels from a seed iteratively according to a rule. The regiongrowingmask
+% has three rules for growing (grwmode), ascending, descending and 
+% similarity to the seed, and three other rules for stopping growth, 
+% maximum number of voxels (nvox), region set by a mask (premask), and 
+% maximum difference in values between the seed and its neighbors
+% (diffratio).
 %
 % Syntax:
 %   mask = regiongrowingmask(srcvol, seed, diffratio, tfMean, grwmeth,...
@@ -10,22 +15,27 @@ function mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premas
 %      srcvol: 3D matrix, usually a data volume from a nifti file.
 %        seed: 3D integer vector with the initial position for the growing
 %              algorithm.
-%   diffratio: Scalar that contains a constant that defines the maximum
-%              magnitude difference of the neighborhood with respect to the
-%              seed, i.e., neighbor_mag - seed_mag =< diffratio * seed_mag.
-%     grwmode: Growing mode - search for most similar neighbor 'diff' or
-%              search for the maximum neighbor 'max'.
-%        nvox: Integer that defines the maximum number of voxels in mask.
+%   diffratio: Scalar that defines the maximum magnitude difference of the
+%              neighborhood with respect to the seed, i.e.:
+%              |neighbor_mag - seed_mag| =< |diffratio|.
+%     grwmode: String - Defines de growing mode:
+%                 'ascending' - searches for the neighbor with the maximum
+%                               value every each iteration.
+%                'descending' - searches for the neighbor with the minimum
+%                               value every each iteration.
+%                'similarity' - searches for the neighbor with the most 
+%                               similar value to the seed.
+%        nvox: Integer that defines the maximum number of voxels in ROI.
 %     premask: Binary 3D matrix with same size as srcvol that defines the
-%              region where the region growing will de applied. If premask
-%              is not a binary matrix, regiongrowingmask will consider as
-%              ROI all non-zero elements.
+%              region where the region growing will be applied. If premask
+%              is not a binary matrix, regiongrowingmask will binarize it
+%              considering TRUE all non-zero elements.
 %
 % Output:
 %      mask: Binary 3D matrix with the same size as srcvol.
 %
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
-%  Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+%  Last update: Andre Peres, 15/07/2022, peres.asc@gmail.com
 
 %==========================================================================
 % HEADER
@@ -70,26 +80,8 @@ while size(neighbors, 1)
     switch lower(grwmode)
 
         %------------------------------------------------------------------
-        % Differential mode in relation to the seed
-        case 'diff'
-            n = 1;
-            while n
-                qdiff = abs(neighbors(:,4)-seedval);
-                [curval,curvox] = min(qdiff);
-                if abs(curval-seedval) > abs(diffratio) % abs(seedval*diffratio)
-                    neighbors(curvox,:) = [];
-                else
-                    n = 0;
-                end
-            end
-
-            if ~size(neighbors, 1)
-                break
-            end
-
-        %------------------------------------------------------------------
         % Maximum mode   
-        case 'max'
+        case 'ascending'
             n = 1;
             while n
                 [curval,curvox] = max(neighbors(:,4));
@@ -106,10 +98,28 @@ while size(neighbors, 1)
 
         %------------------------------------------------------------------
         % Minimum mode
-        case 'min'
+        case 'descending'
             n = 1;
             while n
                 [curval,curvox] = min(neighbors(:,4));
+                if abs(curval-seedval) > abs(diffratio) % abs(seedval*diffratio)
+                    neighbors(curvox,:) = [];
+                else
+                    n = 0;
+                end
+            end
+
+            if ~size(neighbors, 1)
+                break
+            end
+
+        %------------------------------------------------------------------
+        % Differential mode in relation to the seed
+        case 'similarity'
+            n = 1;
+            while n
+                qdiff = abs(neighbors(:,4)-seedval);
+                [curval,curvox] = min(qdiff);
                 if abs(curval-seedval) > abs(diffratio) % abs(seedval*diffratio)
                     neighbors(curvox,:) = [];
                 else

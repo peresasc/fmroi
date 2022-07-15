@@ -49,7 +49,8 @@ handles.popup_growingmode = uicontrol(handles.panel_roimethod,...
     'Style','popup','Units','normalized',...
     'background','w','Position', [0.01,0.62,0.47,0.1]);
 
-set(handles.popup_growingmode,'String',[{'max'};{'min'};{'diff'}])
+set(handles.popup_growingmode,'String',...
+    [{'ascending'};{'descending'};{'similarity'}])
 
 %--------------------------------------------------------------------------
 % creates the text for number of voxels in the ROI
