@@ -103,27 +103,9 @@ handles.popup_roitype = uicontrol(handles.tab_genroi, 'Style', 'popup',...
     'Units', 'normalized','Position', [0.15, 0.84, 0.46, 0.14],...
     'background','w','Callback',@popup_roitype_callback);
 
-
-% roimth{1} = 'sphere';
-% roimth{2} = 'maxk';
-% roimth{3} = 'growing';
-% roimth{4} = 'image';
-% roimth{5} = 'square';
-% roimth{6} = 'cluster';
-% roimth{7} = 'testautogui';
-
 guidata(hObject,handles);
 updatepopuproitype(hObject)
 handles = guidata(hObject);
-% methodspath = fullfile(handles.fmroirootdir,'roimethods','methods','*.m');
-% methodstruc = dir(methodspath);
-% 
-% roimth = cell(length(methodstruc),1);
-% for i = 1:length(methodstruc)
-% [~,roimth{i},~] = fileparts(methodstruc(i).name);
-% end
-% 
-% set(handles.popup_roitype,'String',roimth)
 
 %--------------------------------------------------------------------------
 % creates the find max roi pushbutton

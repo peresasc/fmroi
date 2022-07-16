@@ -1,4 +1,4 @@
-function freehandmask_gui(hObject)
+function drawingmask_gui(hObject)
 % regiongrowingmask_gui is a internal function of fMROI. It creates the
 % panel and uicontrols for calling regiongrowingmask function.
 %
@@ -12,6 +12,15 @@ function freehandmask_gui(hObject)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
+set(handles.pbutton_findmax,'Enable','off')
+set(handles.pbutton_roi,'Enable','off')
+
+if isfield(handles, 'drawingroi') &&...
+        isfield(handles.drawingroi,'hroi') &&...
+        ishandle(handles.drawingroi.hroi)
+    delete(handles.drawingroi.hroi)
+end
+
 %--------------------------------------------------------------------------
 % creates the ROIs Panel
 panelroi_pos = [0.01, 0.01, 0.98, 0.87];
@@ -97,6 +106,14 @@ handles.radio_drawpolygon = uicontrol(...
     'Callback',@radiobutton_drawfreehand_callback);
 
 %--------------------------------------------------------------------------
+% creates the text for the control pushbuttons
+handles.text_pbutton_roidraw = uicontrol(handles.panel_roimethod,...
+            'Style','text','Units','normalized',...
+            'String','Drawing tools:','BackgroundColor','w',...
+            'FontSize', 9,'HorizontalAlignment', 'left',...
+            'Position', [0.52, 0.48, 0.47, 0.1]);   
+
+%--------------------------------------------------------------------------
 % creates the draw push button
 handles.pbutton_roidraw = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
     'Units', 'normalized','Position', [.52, .40, .11, .1],...
@@ -111,16 +128,13 @@ handles.pbutton_roicleardaw = uicontrol(handles.panel_roimethod, 'Style', 'PushB
 %--------------------------------------------------------------------------
 % creates the add push button
 handles.pbutton_roiadd = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.68, .40, .11, .1],...
+    'Units', 'normalized','Position', [.76, .40, .11, .1],...
     'String','Add','Callback',@pbutton_roiadd_callback);
 
 %--------------------------------------------------------------------------
 % creates the rem push button
 handles.pbutton_roirem = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
-    'Units', 'normalized','Position', [.84, .40, .11, .1],...
-    'String','Clear','Callback',@pbutton_pbutton_roirem_callback);
-
-
-
+    'Units', 'normalized','Position', [.88, .40, .11, .1],...
+    'String','Rem','Callback',@pbutton_roirem_callback);
 
 guidata(hObject,handles)
