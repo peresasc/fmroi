@@ -120,6 +120,9 @@ hmenuhelp_about = uimenu(hmenuhelp,'Label','About');
 hmenuhelp_showquickguide = uimenu(hmenuhelp,'Label','Show quick guide',...
     'Callback', @menuhelp_showquickguide_callback);
 
+hmenuhelp_documentation = uimenu(hmenuhelp,'Label','Documentation',...
+    'Callback', @menuhelp_forward_to_documentation);
+
 %--------------------------------------------------------------------------
 % creates the Axes Panel
 panelgraph_pos = [0.26, 0.01, 0.73, 0.98];
