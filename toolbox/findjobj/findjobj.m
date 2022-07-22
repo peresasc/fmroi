@@ -187,7 +187,8 @@ function [handles,levels,parentIdx,listing] = findjobj(container,varargin) %#ok<
             elseif ishghandle(container) % && ~isa(container,'java.awt.Container')
                 container = container(1);  % another current limitation...
                 hFig = ancestor(container,'figure');
-                oldWarn = warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');  % R2008b compatibility
+%                 oldWarn = warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');  % R2008b compatibility
+                oldWarn = warning('off','MATLAB:ui:javaframe:PropertyToBeRemoved'); % R2018b compatibility - added by peresasc 2022.07.22
                 try hJavaFrame = get(hFig,'JavaFrame'); catch, hJavaFrame = []; end
                 warning(oldWarn);
                 if isempty(hJavaFrame)  % alert if trying to use with web-based (not Java-based) uifigure
@@ -3386,7 +3387,9 @@ end  % FINDJOBJ
 function jControl = findjobj_fast(hControl, jContainer)
     try jControl = hControl.getTable; return, catch, end  % fast bail-out for old uitables
     try jControl = hControl.JavaFrame.getGUIDEView; return, catch, end  % bail-out for HG2 matlab.ui.container.Panel
-    oldWarn = warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+%     oldWarn =
+%     warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame'); % R2008b compatibility
+    oldWarn = warning('off','MATLAB:ui:javaframe:PropertyToBeRemoved'); % R2018b compatibility - added by peresasc 2022.07.22
     if nargin < 2 || isempty(jContainer)
         % Use a HG2 matlab.ui.container.Panel jContainer if the control's parent is a uipanel
         try
