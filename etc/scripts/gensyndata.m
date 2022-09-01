@@ -1,4 +1,28 @@
-%%
+% %
+% Left Hypocampus: 1
+%   All voxels are equal to 1.
+%
+% Right Hypocampus: 3 - 4
+%   3-3.9 - random distributed: whole ROI.
+%   3.91-4 - linear distributed: 50 random selected voxels.
+% 
+% tetrahedron: 5 - 6
+%   central region = 5
+%   superior-anterior corner = 5.2
+%   superior-posterior corner = 5.4
+%   inferior-left corner = 5.6
+%   inferior-right corner = 5.8
+% 
+% internal spiral: 7 - 8
+%   7-7.8 linear distributed: spiral from base to top
+%   7.8-8 linear distributed: linking bar from internal to external spiral
+%
+% cone: 9 - 10
+%   9-10 - random distributed: whole ROI.
+% 
+% external spiral: 11 - 12
+%   11-12 linear distributed: from top to base.
+
 
 fmroirootdir = '/home/andre/github/fmroi';
 outdir = '/home/andre/github/tmp/syndata';
@@ -13,17 +37,21 @@ v = spm_vol(srcvol);
 data = spm_data_read(v);
 mask = zeros(size(data));
 
+%----------------------------------------------------------------------
+% generate the Left Hypocampus
 mask(data == fsidx(1)) = 1;
 
+%----------------------------------------------------------------------
+% generate the Right Hypocampus
 rhidx = find(data == fsidx(2));
 mask(rhidx) = 3 + 0.9*rand(1,length(rhidx));
 rpidx = rhidx(randperm(length(rhidx),50));
 mask(rpidx) = linspace(3.91,4,50);
 [rmax50,cmax50,smax50] = ind2sub(size(mask),rpidx);
 writematrix([rmax50,cmax50,smax50],fullfile(outdir,'rh-hyp_max50.csv'));
+
 %----------------------------------------------------------------------
 % generate the tetrahedron
-
 vt = [1,0,-(2)^(-.5);-1,0,-(2)^(-.5);0,1,(2)^(-.5);0,-1,(2)^(-.5)];
 lk = 1:4;
 
@@ -51,9 +79,9 @@ end
 
 %----------------------------------------------------------------------
 % generate the cone
-[X,Y,Z]=cylinder([1 0],1000);
+[X,Y,Z] = cylinder([1 0],1000);
 
-h=surf(X,Y,Z,'LineStyle','none','FaceAlpha',0.3);
+h = surf(X,Y,Z,'LineStyle','none','FaceAlpha',0.3);
 fvc = surf2patch(h);
 cvol = VOXELISE(40,40,30,fvc);
 
@@ -72,9 +100,9 @@ nturns = 3;    % number of turns (integer value)
 
 res = 100000;
 
-dp = diff(pos,1,1) ;
-R = hypot(dp(1),dp(2)) ;
-phi0 = atan2(dp(2),dp(1)) ;
+dp = diff(pos,1,1);
+R = hypot(dp(1),dp(2));
+phi0 = atan2(dp(2),dp(1));
 phi = linspace(0,nturns*2*pi,res);
 r = linspace(0,R,numel(phi));
 vt = pos(1,1) + r .* cos(phi+phi0);
@@ -107,7 +135,7 @@ z = linspace(pos(1,3),pos(2,3),res);
 
 s2 = unique(round([vt',y',z']),'stable','rows');
 
-s3 = zeros(20,3);
+s3 = zeros(20,3); % external to internal linking bar
 for i = 1:20
     s3(i,:) = [46, 84, 50-i];
 end
