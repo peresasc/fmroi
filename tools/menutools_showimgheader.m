@@ -23,13 +23,13 @@ fig = figure('Name','testuitable','Color','w', ...
     'MenuBar','none','ToolBar','none','NumberTitle','off',...
     'DockControls','off','Render','opengl',...
     'Units','Pixels','Position',fig_pos);
-handles = guidata(fig);
+hdHeader = guidata(fig);
 
 info = niftiinfo(file);
 
 % Get individual name
 fdrDiv = strfind(info.Filename,'/');
-handles.ImgTitle = info.Filename(fdrDiv(end)+1:end-4);
+hdHeader.ImgTitle = info.Filename(fdrDiv(end)+1:end-4);
 
 % Prepare data structure to display the header
 info_table = struct2table(info, 'AsArray', true);
@@ -55,8 +55,8 @@ for i = 1:length(auxtb)
     end
 end
 
-handles.InfoStruct = info;
-handles.InfoTable = info_table;
+hdHeader.InfoStruct = info;
+hdHeader.InfoTable = info_table;
 
 % Display header
 tbpos = [0.04 0.1 .93 .88];
@@ -68,18 +68,18 @@ uit = uitable(fig,'Data',auxtb,'Units','normalized',...
     % a figure, as specified. So I distributed those pixels almost evenly.
 
 % Creates push button for saving as json file
-handles.pbuttonjsonfile.obj = uicontrol(fig, 'Style', 'PushButton',...
+hdHeader.pbuttonjsonfile.obj = uicontrol(fig, 'Style', 'PushButton',...
     'Units', 'normalized','Position', [0.24, 0.019, 0.19, 0.06],...
     'String','Save as json','Callback',@pbutton_jsonfile_callback);
-handles.pbuttoncross.action = 1;
+hdHeader.pbuttoncross.action = 1;
 % 'ForeGroundexzxColor',[1 0 0],
 
 % % Creates push button for saving as txt file
-handles.pbuttontxtfile.obj = uicontrol(fig, 'Style', 'PushButton',...
+hdHeader.pbuttontxtfile.obj = uicontrol(fig, 'Style', 'PushButton',...
     'Units', 'normalized','Position', [0.59, 0.019, 0.19, 0.06],...
     'String','Save as txt','Callback',@pbutton_txtfile_callback);
-handles.pbuttoncross.action = 1;
+hdHeader.pbuttoncross.action = 1;
 
-guidata(fig,handles);
+guidata(fig,hdHeader);
 
 

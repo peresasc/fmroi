@@ -10,16 +10,18 @@ function pbutton_txtfile_callback(fig,~)
 % Author: Fer Ponce, 2022.
 % Last update: Fer Ponce, 28/07/2022, peres.asc@gmail.com
 
-handles = guidata(fig);
+hdHeader = guidata(fig);
 
-namename = handles.ImgTitle;
+namename = hdHeader.ImgTitle;
 txtFILE_name = sprintf('%s_header.txt',namename); %fill with the desired image
 
 [file,path,~] = uiputfile(txtFILE_name);
-info_table= handles.InfoTable;
+info_table= hdHeader.InfoTable;
 
 writetable(info_table,txtFILE_name);
 
-if exist(fullfile(path,file))
+if exist(fullfile(path,file),'file')
     f = msgbox("Done!");
+    pause(3)
+    close(f); clear(f);
 end

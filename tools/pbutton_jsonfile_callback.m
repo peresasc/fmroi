@@ -10,16 +10,16 @@ function pbutton_jsonfile_callback(fig,~)
 % Author: Fer Ponce, 2022.
 % Last update: Fer Ponce, 28/07/2022, peres.asc@gmail.com
 
-handles = guidata(fig);
+hdHeader = guidata(fig);
 
 id = 'MATLAB:printf:BadEscapeSequenceInFormat';
 warning('off',id);
 
-namename = handles.ImgTitle;
+namename = hdHeader.ImgTitle;
 JSONFILE_name = sprintf('%s_header.json',namename);
-handles = guidata(fig);
+hdHeader = guidata(fig);
 
-info_stct = handles.InfoStruct;
+info_stct = hdHeader.InfoStruct;
 
 [file,path,~] = uiputfile(JSONFILE_name);
 
@@ -34,9 +34,8 @@ nencoded = strrep(nencoded, '}', '}\n');
 fprintf(fid, nencoded);
 fclose(fid);
 
-if exist(fullfile(path,file))
+if exist(fullfile(path,file),'file')
     f = msgbox("Done!");
+    pause(3)
+    close(f); clear(f);
 end
-
-
-%guidata(fig, handles);
