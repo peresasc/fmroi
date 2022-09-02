@@ -110,10 +110,12 @@ y = pos(1,2) + r .* sin(phi+phi0);
 z = linspace(pos(1,3),pos(2,3),res);
 
 s1 = unique(round([vt',y',z']),'stable','rows');
-s1val = linspace(11,12,length(s1));
+s1val = linspace(12,11,length(s1));
 
 idxs1 = sub2ind(size(mask),s1(:,1),s1(:,2),s1(:,3));
 mask(idxs1) = s1val;
+writematrix([idxs1,s1val'],fullfile(outdir,'external_spiral.csv'));
+
 %----------------------------------------------------------------------
 % generate the spiral2
 origpos = [0,0,0;-8,7,10] ;  % startpos;endpos
@@ -143,10 +145,11 @@ end
 s2 = [s3;s2];
 s2 = unique(s2,'stable','rows');
 
-s2val = linspace(8,7,length(s2));
+s2val = linspace(7,8,length(s2));
 
 idxs2 = sub2ind(size(mask),s2(:,1),s2(:,2),s2(:,3));
 mask(idxs2) = s2val;
+writematrix([idxs2,s2val'],fullfile(outdir,'internal_spiral.csv'));
 
 figure
 plot3(s1(:,1),s1(:,2),s1(:,3))

@@ -259,6 +259,8 @@ for m = 1:length(models)
     end
     writetable(tb,[tboutdir,filesep,roitype{1},'_',models{m},'.csv'])
 end
+
+%--------------------------------------------------------------------------
 %% image2mask
 
 datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';...
@@ -339,6 +341,7 @@ end
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
 
+%--------------------------------------------------------------------------
 %% clustermask
 
 datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'};
@@ -424,6 +427,94 @@ end
 
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
+
+%--------------------------------------------------------------------------
+%% maxkmask
+
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
+
+srcpath = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii'};
+
+vpre = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/aparc+aseg_2mm.nii.gz');
+prevol = spm_data_read(vpre);
+
+rootoutdir = '/home/andre/github/tmp/fmroi_qc';
+tboutdir = fullfile(rootoutdir,'statstable');
+if ~isfolder(tboutdir)
+    mkdir(tboutdir)
+end
+
+datafolder = cell(length(datadir),1);
+algorithm = cell(length(datadir),1);
+roitype = cell(length(datadir),1);
+precision = zeros(length(datadir),1);
+recall = zeros(length(datadir),1);
+f1 = zeros(length(datadir),1);
+for d = 1:length(datadir)
+    vsrc = spm_vol(srcpath{d});
+    srcvol = spm_data_read(vsrc);
+    [~,datafolder{d},~] = fileparts(datadir{d});
+    algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
+    roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
+    roistruc = dir(datadir{d});
+    roinames = cell(length(roistruc),1);
+    for s = 1:length(roistruc)
+        if ~roistruc(s).isdir
+            roinames{s} = roistruc(s).name;
+        end
+    end
+    roinames(cellfun(@isempty,roinames)) = [];
+    
+    tp = zeros(length(roinames),1);
+    prec = zeros(length(roinames),1);
+    rec = zeros(length(roinames),1);
+    for i = 1:length(roinames)
+        disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
+
+        pmidx = str2double(roinames{i}(...
+            (strfind(roinames{i},'premaskidx_')+length('premaskidx_')):...
+            (strfind(roinames{i},'_kvox')-1)));
+
+        kvox = str2double(roinames{i}(...
+            (strfind(roinames{i},'kvox_')+length('kvox_')):...
+            (strfind(roinames{i},'.nii')-1)));
+
+        premask = prevol == pmidx;
+        pmpos = find(premask);
+        srctpl = srcvol(pmpos);
+        [~, srctplpos] = maxk(srctpl(:),kvox);
+        tplpos = pmpos(srctplpos);
+
+        vroi = spm_vol(fullfile(datadir{d},roinames{i}));
+        roi = spm_data_read(vroi);
+        roipos = find(roi);
+        
+        if isempty(roipos) || isempty(tplpos)
+            if isempty(roipos) && isempty(tplpos)
+                prec(i) = 1;
+                rec(i) = 1;
+            else
+                prec(i) = 0;
+                rec(i) = 0;
+            end
+        else
+            tp(i) = sum(ismember(roipos,tplpos));
+            prec(i) = tp(i)/length(roipos);
+            rec(i) = tp(i)/length(tplpos);
+        end
+    end
+    precision(d) = mean(prec);
+    recall(d) = mean(rec);
+    f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
+end
+
+tb = table(algorithm,precision,recall,f1);
+writetable(tb,[tboutdir,filesep,roitype{1},'_dmngnoise.csv']);
+
+%--------------------------------------------------------------------------
+%% regiongrowing
 
 % lhpc = find(syndata==1);
 % rhpc = find(syndata>=3 & syndata<=4);
