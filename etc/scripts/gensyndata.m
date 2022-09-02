@@ -149,12 +149,17 @@ s2val = linspace(7,8,length(s2));
 
 idxs2 = sub2ind(size(mask),s2(:,1),s2(:,2),s2(:,3));
 mask(idxs2) = s2val;
+
+s1del = ismember(idxs1,idxs2);
+idxs1(s1del) = [];
+s1val(s1del) = [];
+writematrix([idxs1,s1val'],fullfile(outdir,'external_spiral.csv'));
 writematrix([idxs2,s2val'],fullfile(outdir,'internal_spiral.csv'));
 
-figure
-plot3(s1(:,1),s1(:,2),s1(:,3))
-hold on
-plot3(s2(:,1),s2(:,2),s2(:,3))
+% figure
+% plot3(s1(:,1),s1(:,2),s1(:,3))
+% hold on
+% plot3(s2(:,1),s2(:,2),s2(:,3))
 
 
 filename = fullfile(outdir,'syntheticdata.nii');
