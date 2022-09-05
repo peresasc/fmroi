@@ -1,4 +1,4 @@
-function menutools_showimgheader
+function menutools_showimgheader(hObject, ~)
 % menutools_getimgheader is an internal function for fMROI.
 % It displays the NIFTI Header of an image and gives the option
 % to save the information to a file.
@@ -13,13 +13,14 @@ function menutools_showimgheader
 % Last update: Fer Ponce, 28/07/2022, peres.asc@gmail.com
 
 % Get image header from the console
-prompt= 'File: ';
-file = input(prompt,'s');
-clc
+global st
+handles = guidata(hObject);
+n = handles.table_selectedcell(1);
+file = st.vols{n,1}.fname;
 
 % Open parent figure
 fig_pos = [680  200   560   700];
-fig = figure('Name','testuitable','Color','w', ...
+fig = figure('Name','Image Header','Color','w', ...
     'MenuBar','none','ToolBar','none','NumberTitle','off',...
     'DockControls','off','Render','opengl',...
     'Units','Pixels','Position',fig_pos);

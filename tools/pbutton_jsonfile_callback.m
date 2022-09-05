@@ -36,6 +36,9 @@ fclose(fid);
 
 if exist(fullfile(path,file),'file')
     f = msgbox("Done!");
-    pause(3)
-    close(f); clear(f);
+    pause(2)
+    if ishandle(f)
+        close(f);
+    end
+    clear('f');
 end
