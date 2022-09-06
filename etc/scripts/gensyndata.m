@@ -153,8 +153,11 @@ mask(idxs2) = s2val;
 s1del = ismember(idxs1,idxs2);
 idxs1(s1del) = [];
 s1val(s1del) = [];
-writematrix([idxs1,s1val'],fullfile(outdir,'external_spiral.csv'));
-writematrix([idxs2,s2val'],fullfile(outdir,'internal_spiral.csv'));
+s1tb = table(idxs1,s1val,'VariableNames',{'index','values'});
+writetable(s1tb,fullfile(outdir,'external_spiral.csv'));
+
+s2tb = table(idxs2,s2val,'VariableNames',{'index','values'});
+writetable(s2tb,fullfile(outdir,'internal_spiral.csv'));
 
 % figure
 % plot3(s1(:,1),s1(:,2),s1(:,3))
@@ -167,3 +170,14 @@ v.fname = filename;
 v = spm_create_vol(v);
 v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 v = spm_write_vol(v,mask);
+
+%%
+idxs1 = s1(:,1);
+s1val = s1(:,2);
+s1tb = table(idxs1,s1val,'VariableNames',{'index','values'});
+writetable(s1tb,fullfile(outdir,'external_spiral.csv'));
+
+idxs2 = s2(:,1);
+s2val = s2(:,2);
+s2tb = table(idxs2,s2val,'VariableNames',{'index','values'});
+writetable(s2tb,fullfile(outdir,'internal_spiral.csv'));

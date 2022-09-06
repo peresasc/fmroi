@@ -186,3 +186,103 @@ for i = 1:length(pmidx)
     V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
     V = spm_write_vol(V,roi);
 end
+
+%% regiongrowing
+
+outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing';
+if ~isfolder(outdir)
+    mkdir(outdir)
+end
+
+vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
+srcvol = spm_data_read(vsrc);
+
+% s1 = readtable(fullfile(srcdir,'external_spiral.csv'));
+% s2 = readtable(fullfile(srcdir,'internal_spiral.csv'));
+
+% tpl = {lhpc;rhpc;th1;th2;th3;th4;th5;intspr;cone;extspr};
+% 
+% thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
+% mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premask)
+
+%--------------------------------------------------------------------------
+% spirals test
+seed = [46,84,50;46,84,50;46,84,50;46,84,49];
+diffratio = inf;
+grwmode = {'ascending';'descending';'similarity';'similarity'};
+nvox = {round(linspace(31,221,20));...
+        round(linspace(21,116,20));...
+        round(linspace(23,221,10));...
+        round(linspace(16,115,10))};
+
+premask = srcvol;
+
+for i = 1:length(grwmode)
+    count = 0;
+    for j = 1:length(nvox{i})
+        if i==4 && j==1
+            count = 11;
+        else
+            count = count+1;
+        end
+
+        disp(['Creating ROI ',grwmode{i},' ',num2str(count)]);
+     
+        roi = regiongrowingmask(srcvol,seed(i,:),diffratio,...
+                                grwmode{i},nvox{i}(j),premask);
+        
+        seedstr = num2str(sub2ind(size(srcvol),seed(i,1),seed(i,2),seed(i,3)));
+        vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+            '_seed_',seedstr,...
+            '_diffratio_',num2str(diffratio),...
+            '_grwmode_',grwmode{i},...
+            '_nvox_',num2str(nvox{i}(j)),...
+            '_premask_srcvol.nii']);            
+
+        V = spm_create_vol(vsrc);
+        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+        V = spm_write_vol(V,roi);
+    end
+end
+
+%--------------------------------------------------------------------------
+% shapes test
+clear seed diffratio grwmode nvox premask
+
+thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
+grwmode = {'ascending';'descending';'similarity'};
+nvox = inf;
+premask = srcvol;
+
+count = 0;
+for i = 1:length(grwmode)
+    for j = 1:size(thr,1)
+        count = count + 1;
+        disp(['Creating ROI ',grwmode{i},' ',num2str(count)]);
+
+        roipos = find(srcvol>=thr(j,1) & srcvol<=thr(j,2));
+
+        diffratio = abs(diff(thr(j,:)));
+        if diffratio == 0
+            diffratio = 0.001;
+        end
+        sidx = randperm(length(roipos),1);
+        [x,y,z] = ind2sub(size(srcvol),roipos(sidx));
+        seed = [x,y,z];
+
+        roi = regiongrowingmask(srcvol,seed,diffratio,...
+                                grwmode{i},nvox,premask);
+
+        seedstr = num2str(sub2ind(size(srcvol),seed(1),seed(2),seed(3)));
+        vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+            '_seed_',seedstr,...
+            '_diffratio_',num2str(diffratio),...
+            '_grwmode_',grwmode{i},...
+            '_nvox_',num2str(nvox),...
+            '_premask_srcvol.nii']);            
+
+        V = spm_create_vol(vsrc);
+        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+        V = spm_write_vol(V,roi);
+    end
+end

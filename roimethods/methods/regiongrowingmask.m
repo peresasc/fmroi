@@ -119,7 +119,8 @@ while size(neighbors, 1)
             n = 1;
             while n
                 qdiff = abs(neighbors(:,4)-seedval);
-                [curval,curvox] = min(qdiff);
+                [~,curvox] = min(qdiff);
+                curval = neighbors(curvox,4);
                 if abs(curval-seedval) > abs(diffratio) % abs(seedval*diffratio)
                     neighbors(curvox,:) = [];
                 else

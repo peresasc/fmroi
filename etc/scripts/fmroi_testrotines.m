@@ -516,6 +516,60 @@ writetable(tb,[tboutdir,filesep,roitype{1},'_dmngnoise.csv']);
 %--------------------------------------------------------------------------
 %% regiongrowing
 
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask_odd';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask_even'};
+
+srcdir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
+vsrc = spm_vol(fullfile(srcdir,'syntheticdata.nii'));
+srcvol = spm_data_read(vsrc);
+
+s1 = readtable(fullfile(srcdir,'external_spiral.csv'));
+s2 = readtable(fullfile(srcdir,'internal_spiral.csv'));
+
+rootoutdir = '/home/andre/github/tmp/fmroi_qc';
+tboutdir = fullfile(rootoutdir,'statstable');
+if ~isfolder(tboutdir)
+    mkdir(tboutdir)
+end
+
+datafolder = cell(length(datadir),1);
+algorithm = cell(length(datadir),1);
+roitype = cell(length(datadir),1);
+precision = zeros(length(datadir),1);
+recall = zeros(length(datadir),1);
+f1 = zeros(length(datadir),1);
+for d = 1:length(datadir)
+    [~,datafolder{d},~] = fileparts(datadir{d});
+    algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
+    roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
+    roistruc = dir(datadir{d});
+    roinames = cell(length(roistruc),1);
+    for s = 1:length(roistruc)
+        if ~roistruc(s).isdir
+            roinames{s} = roistruc(s).name;
+        end
+    end
+    roinames(cellfun(@isempty,roinames)) = [];
+    
+    tp = zeros(length(roinames),1);
+    prec = zeros(length(roinames),1);
+    rec = zeros(length(roinames),1);
+    for i = 1:length(roinames)
+        disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
+
+        pmidx = str2double(roinames{i}(...
+            (strfind(roinames{i},'premaskidx_')+length('premaskidx_')):...
+            (strfind(roinames{i},'_kvox')-1)));
+
+        kvox = str2double(roinames{i}(...
+            (strfind(roinames{i},'kvox_')+length('kvox_')):...
+            (strfind(roinames{i},'.nii')-1)));
+
+    end
+end
+
+
 % lhpc = find(syndata==1);
 % rhpc = find(syndata>=3 & syndata<=4);
 % th1 = find(syndata==5);
