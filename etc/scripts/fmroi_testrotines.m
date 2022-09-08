@@ -6,7 +6,7 @@ datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
 
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 figoutdir = fullfile(rootoutdir,'figures');
-if ~isfolder(figoutdir)
+if ~isfolder(figoutdir)cell
     mkdir(figoutdir)
 end
 
@@ -516,13 +516,22 @@ writetable(tb,[tboutdir,filesep,roitype{1},'_dmngnoise.csv']);
 %--------------------------------------------------------------------------
 %% regiongrowing
 
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask_odd';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask_even'};
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing'};
 
 srcdir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
 vsrc = spm_vol(fullfile(srcdir,'syntheticdata.nii'));
 srcvol = spm_data_read(vsrc);
+
+premaskfn = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_lhpc_radius_08_center_x58y57z27.nii';...
+                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_rhpc_radius_08_center_x33y57z27.nii';...
+                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_tetra_radius_09_center_x47y61z56.nii';...
+                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_cone_radius_15_center_x46y84z58.nii'};
+
+premaskcell = cell(4,1);
+for n = 1:length(premaskfn)
+    vpre = spm_vol(premaskfn{n});
+    premaskcell{n} = spm_data_read(vpre);
+end
 
 s1 = readtable(fullfile(srcdir,'external_spiral.csv'));
 s2 = readtable(fullfile(srcdir,'internal_spiral.csv'));
@@ -558,29 +567,140 @@ for d = 1:length(datadir)
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
 
-        pmidx = str2double(roinames{i}(...
-            (strfind(roinames{i},'premaskidx_')+length('premaskidx_')):...
-            (strfind(roinames{i},'_kvox')-1)));
+        seedidx = str2double(roinames{i}(...
+            (strfind(roinames{i},'_seed_')+length('_seed_')):...
+            (strfind(roinames{i},'_diffratio_')-1)));
+        [x,y,z] = ind2sub(size(srcvol),seedidx);
+        seed = [x,y,z];
 
-        kvox = str2double(roinames{i}(...
-            (strfind(roinames{i},'kvox_')+length('kvox_')):...
-            (strfind(roinames{i},'.nii')-1)));
+        diffratio = str2double(roinames{i}(...
+            (strfind(roinames{i},'_diffratio_')+length('_diffratio_')):...
+            (strfind(roinames{i},'_grwmode_')-1)));
 
+        grwmode = roinames{i}(...
+            (strfind(roinames{i},'_grwmode_')+length('_grwmode_')):...
+            (strfind(roinames{i},'_nvox_')-1));
+
+        nvox = str2double(roinames{i}(...
+            (strfind(roinames{i},'_nvox_')+length('_nvox_')):...
+            (strfind(roinames{i},'_premask_')-1)));
+
+        premaskname = roinames{i}(...
+            (strfind(roinames{i},'_premask_')+length('_premask_')):...
+            (strfind(roinames{i},'.nii')-1));
+
+        vroi = spm_vol(fullfile(datadir{d},roinames{i}));
+        roi = spm_data_read(vroi);
+        roipos = find(roi);
+
+        if diffratio == inf % spiral test
+            switch grwmode
+                case 'ascending'
+                    tplpos = s1.index(1:nvox);
+
+                case 'descending'
+                    tplpos = [s1.index(1);s2.index(1:nvox-1)];
+                
+                case 'similarity'
+                    if seedidx == s1.index(1) % external spiral
+                        tplpos = s1.index(1:nvox);
+                    else % internal spiral
+                        tplpos = s2.index(1:nvox);
+                    end
+            end
+
+        else 
+            if strcmp(premaskname,'srcvol') % shape test
+                seedval = srcvol(seedidx);
+                
+                if seedval == 1
+                    tplpos = find(srcvol==1);                    
+
+                elseif seedval>=3 && seedval<=4
+                    tplpos = find(srcvol>=3 & srcvol<=4);
+
+                elseif seedval==5
+                    tplpos = find(srcvol==5);
+
+                elseif seedval==5.2
+                    tplpos = find(srcvol==5.2);
+
+                elseif seedval==5.4
+                    tplpos = find(srcvol==5.4);
+
+                elseif seedval==5.6
+                    tplpos = find(srcvol==5.6);
+
+                elseif seedval==5.8
+                    tplpos = find(srcvol==5.8);
+
+                elseif seedval>=7 && seedval<=8
+                    tplpos = find(srcvol>=7 & srcvol<=8);
+
+                elseif seedval>=9 && seedval<=10
+                    tplpos = find(srcvol>=9 & srcvol<=10);
+
+                elseif seedval>=11 && seedval<=12
+                    tplpos = find(srcvol>=11 & srcvol<=12);
+                end
+
+            else % shape test premasked
+                seedval = srcvol(seedidx);
+                preidx = find(contains(premaskfn,premaskname));
+                premask = premaskcell{preidx};                
+                srcvolmask = srcvol.*premask;
+                
+                if seedval == 1
+                    tplpos = find(srcvolmask==1);                    
+
+                elseif seedval>=3 && seedval<=4
+                    tplpos = find(srcvolmask>=3 & srcvolmask<=4);
+
+                elseif seedval==5
+                    tplpos = find(srcvolmask==5);
+
+                elseif seedval==5.2
+                    tplpos = find(srcvolmask==5.2);
+
+                elseif seedval==5.4
+                    tplpos = find(srcvolmask==5.4);
+
+                elseif seedval==5.6
+                    tplpos = find(srcvolmask==5.6);
+
+                elseif seedval==5.8
+                    tplpos = find(srcvolmask==5.8);
+
+                elseif seedval>=7 && seedval<=8
+                    tplpos = find(srcvolmask>=7 & srcvolmask<=8);
+
+                elseif seedval>=9 && seedval<=10
+                    tplpos = find(srcvolmask>=9 & srcvolmask<=10);
+
+                elseif seedval>=11 && seedval<=12
+                    tplpos = find(srcvolmask>=11 & srcvolmask<=12);
+                end
+
+            end
+        end
+
+        if isempty(roipos) || isempty(tplpos)
+            if isempty(roipos) && isempty(tplpos)
+                prec(i) = 1;
+                rec(i) = 1;
+            else
+                prec(i) = 0;
+                rec(i) = 0;
+            end
+        else
+            tp(i) = sum(ismember(roipos,tplpos));
+            prec(i) = tp(i)/length(roipos);
+            rec(i) = tp(i)/length(tplpos);
+        end      
     end
+    precision(d) = mean(prec);
+    recall(d) = mean(rec);
+    f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
 end
-
-
-% lhpc = find(syndata==1);
-% rhpc = find(syndata>=3 & syndata<=4);
-% th1 = find(syndata==5);
-% th2 = find(syndata==5.2);
-% th3 = find(syndata==5.4);
-% th4 = find(syndata==5.6);
-% th5 = find(syndata==5.8);
-% intspr = find(syndata>=7 & syndata<=8);
-% cone = find(syndata>=9 & syndata<=10);
-% extspr = find(syndata>=11 & syndata<=12);
-% 
-% tpl = {lhpc;rhpc;th1;th2;th3;th4;th5;intspr;cone;extspr};
-% 
-% thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
+tb = table(algorithm,precision,recall,f1);
+writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
