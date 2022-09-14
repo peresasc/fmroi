@@ -1,5 +1,5 @@
 %% gen_dmn_gaussnoise
-
+clear
 tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
 if ~isfolder(tpldir)
     mkdir(tpldir)
@@ -19,7 +19,7 @@ V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,srcvol);
 
 %% gen_premasks_syndata
-
+clear
 tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
 if ~isfolder(tpldir)
     mkdir(tpldir)
@@ -55,6 +55,7 @@ for i = 1:length(radius)
 end
 
 %% spheremask
+clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';
 if ~isfolder(outdir)
     mkdir(outdir)
@@ -76,9 +77,9 @@ for r = 1:100
 
     roi = spheremask(srcvol,curpos,r,'radius');
 
-    vsrc.fname = fullfile(outdir,['spheremask_radius_',sprintf('%03d',r),...
-        '_center_x',sprintf('%03d',x),'y',sprintf('%03d',y),...
-        'z',sprintf('%03d',z),'.nii']);
+    vsrc.fname = fullfile(outdir,['fmroi-spheremask_srcimg_t1_radius_',...
+        sprintf('%03d',r),'_center_x',sprintf('%03d',x),...
+        'y',sprintf('%03d',y),'z',sprintf('%03d',z),'.nii']);
 
     V = spm_create_vol(vsrc);
     V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
@@ -87,8 +88,8 @@ end
 
 %--------------------------------------------------------------------------
 %% cubicmask
-
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask_even';
+clear
+outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';
 if ~isfolder(outdir)
     mkdir(outdir)
 end
@@ -96,7 +97,7 @@ end
 vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/T1.nii.gz');
 srcvol = spm_data_read(vsrc);
 sig = [-1 1];
-for r = 2:2:200
+for r = 1:100
     disp(['Creating ROI ',num2str(r)]);
 
     x = (sig(randperm(2,1))*randperm(round(size(srcvol,1)/2-r/2-3),1))...
@@ -109,9 +110,9 @@ for r = 2:2:200
 
     roi = cubicmask(srcvol,curpos,r,'edge');
 
-    vsrc.fname = fullfile(outdir,['cubicmask_edge_',sprintf('%03d',r),...
-        '_center_x',sprintf('%03d',x),'y',sprintf('%03d',y),...
-        'z',sprintf('%03d',z),'.nii']);
+    vsrc.fname = fullfile(outdir,['fmroi-cubicmask_srcimg_t1_edge_',...
+        sprintf('%03d',r),'_center_x',sprintf('%03d',x),'y',...
+        sprintf('%03d',y),'z',sprintf('%03d',z),'.nii']);
 
     V = spm_create_vol(vsrc);
     V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
@@ -119,8 +120,8 @@ for r = 2:2:200
 end
 
 %% img2mask_syndata
-
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask_syndata';
+clear
+outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';
 if ~isfolder(outdir)
     mkdir(outdir)
 end
@@ -134,7 +135,8 @@ for i = 1:size(thr,1)
     
     roi = img2mask(srcvol,thr(i,1),thr(i,2));
 
-    vsrc.fname = fullfile(outdir,['fmroi-img2mask_threshold_',...
+    vsrc.fname = fullfile(outdir,[...
+        'fmroi-img2mask_srcimg_syndata_threshold_',...
         sprintf('%02d',thr(i,1)),'_',sprintf('%02d',thr(i,2)),'.nii']);
 
     V = spm_create_vol(vsrc);
@@ -142,12 +144,7 @@ for i = 1:size(thr,1)
     V = spm_write_vol(V,roi);
 end
 
-%% img2mask_dmn
-
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask_dmn';
-if ~isfolder(outdir)
-    mkdir(outdir)
-end
+% img2mask_dmn
 
 vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz');
 srcvol = spm_data_read(vsrc);
@@ -159,7 +156,8 @@ for i = 1:size(thr,1)
     disp(['Creating ROI ',num2str(i)]);
     roi = img2mask(srcvol,thr(i,1),thr(i,2));
 
-    vsrc.fname = fullfile(outdir,['fmroi-img2mask_threshold_',...
+    vsrc.fname = fullfile(outdir,[...
+        'fmroi-img2mask_srcimg_dmn_threshold_',...
         sprintf('%02d',thr(i,1)),'_',sprintf('%02d',thr(i,2)),'.nii']);
 
     V = spm_create_vol(vsrc);
@@ -168,7 +166,7 @@ for i = 1:size(thr,1)
 end
 
 %% clustermask
-
+clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';
 if ~isfolder(outdir)
     mkdir(outdir)
@@ -184,7 +182,8 @@ nrois(nrois==0) = [];
 for i = 1:length(nrois)
     binmask = uint16(roi==nrois(i));
 
-    vsrc.fname = fullfile(outdir,['fmroi-clustermask_',...
+    vsrc.fname = fullfile(outdir,[...
+        'fmroi-clustermask_srcimg_syndata_cluster_',...
         sprintf('%03d',nrois(i)),'.nii']);
 
     V = spm_create_vol(vsrc);
@@ -193,7 +192,7 @@ for i = 1:length(nrois)
 end
 
 %% maxkmask
-
+clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask';
 if ~isfolder(outdir)
     mkdir(outdir)
@@ -215,7 +214,8 @@ for i = 1:length(pmidx)
     kvox = randperm(sum(premask(:)),1);
     roi = maxkmask(srcvol,premask,kvox);
 
-    vsrc.fname = fullfile(outdir,['fmroi-maxkmask_premaskidx_',...
+    vsrc.fname = fullfile(outdir,[...
+        'fmroi-maxkmask_srcimg_dmnnoise_premask_aparcaseg_premaskidx_',...
         sprintf('%04d',pmidx(i)),'_kvox_',sprintf('%01d',kvox),'.nii']);
 
     V = spm_create_vol(vsrc);
@@ -224,7 +224,7 @@ for i = 1:length(pmidx)
 end
 
 %% regiongrowing
-
+clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing';
 if ~isfolder(outdir)
     mkdir(outdir)
@@ -256,6 +256,7 @@ for i = 1:length(grwmode)
  
         seedstr = num2str(sub2ind(size(srcvol),seed(i,1),seed(i,2),seed(i,3)));
         vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+            '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
             '_grwmode_',grwmode{i},...
@@ -297,6 +298,7 @@ for i = 1:length(grwmode)
 
         seedstr = num2str(sub2ind(size(srcvol),seed(1),seed(2),seed(3)));
         vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+            '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
             '_grwmode_',grwmode{i},...
@@ -357,6 +359,7 @@ for i = 1:length(grwmode)
 
         seedstr = num2str(sub2ind(size(srcvol),seed(1),seed(2),seed(3)));
         vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+            '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
             '_grwmode_',grwmode{i},...
