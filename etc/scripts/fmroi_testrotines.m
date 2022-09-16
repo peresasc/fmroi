@@ -371,6 +371,7 @@ end
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'.csv']);
 
+
 %--------------------------------------------------------------------------
 %% clustermask
 clear
@@ -378,7 +379,13 @@ close all
 
 datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'};
 
-srcpath = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii'};
+vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres.nii');
+srcvol = spm_data_read(vsrc);
+
+vsz = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres_size.nii');
+szvol = spm_data_read(vsz);
+sz = unique(szvol);
+sz(sz==0) = [];
 
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
@@ -393,8 +400,6 @@ precision = zeros(length(datadir),1);
 recall = zeros(length(datadir),1);
 f1 = zeros(length(datadir),1);
 for d = 1:length(datadir)
-    vsrc = spm_vol(srcpath{d});
-    srcvol = spm_data_read(vsrc);
     [~,datafolder{d},~] = fileparts(datadir{d});
     algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
     roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
@@ -406,51 +411,63 @@ for d = 1:length(datadir)
         end
     end
     roinames(cellfun(@isempty,roinames)) = [];
-    
+
+    roiprefix = roinames;
+    for n = 1:length(roiprefix)
+        roiprefix{n}(strfind(roiprefix{n},'_cluster'):end) = [];
+    end
+
+    roiprefix = unique(roiprefix);
     tp = zeros(length(roinames),1);
     prec = zeros(length(roinames),1);
     rec = zeros(length(roinames),1);
-    for i = 1:length(roinames)
-        disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
+    c = 0;
+    for t = 1:length(roiprefix)
+        fnidx = find(~cellfun(@isempty,strfind(roinames,roiprefix{t})));
+        thrstr = roiprefix{t}(...
+            (strfind(roiprefix{t},'threshold_')+length('threshold_')):...
+            (strfind(roiprefix{t},'_mincsz')-1));
+
+        minthr = str2double(thrstr(1:strfind(thrstr,'_')-1));
+        maxthr = str2double(thrstr(strfind(thrstr,'_')+1:end));
+
+        mincsz = str2double(roiprefix{t}(...
+            (strfind(roiprefix{t},'_mincsz_')+length('_mincsz_')):end));
+
+        filtvol = srcvol;
+        filtvol(szvol<mincsz) = 0;
+        filtvol(~(srcvol>=minthr & srcvol<=maxthr)) = 0;
         
-        vroi = spm_vol(fullfile(datadir{d},roinames{i}));
-        roi = spm_data_read(vroi);
-        roipos = find(roi);
-        mroi = mean(srcvol(roipos));
+        for i = 1:length(fnidx)
+            c = c + 1;
+            disp(['Working on ',datafolder{d},' ROI ',num2str(c)]);
 
-        if mroi <= 2
-            minthr = 1;
-            maxthr = 1;
-        elseif mroi>=3 && mroi<=4
-            minthr = 3;
-            maxthr = 4;
-        elseif mroi>=5 && mroi<=6
-            minthr = 5;
-            maxthr = 6;
-        elseif mroi >= 7
-            minthr = 7;
-            maxthr = 12;
-        end
+            vroi = spm_vol(fullfile(datadir{d},roinames{fnidx(i)}));
+            roi = spm_data_read(vroi);
+            roipos = find(roi);
+            
+            tplpos = find(filtvol==median(srcvol(roipos)));
+            filtvol(tplpos) = 0;
 
-        if minthr <= maxthr
-            tplpos = find(srcvol>=minthr & srcvol<=maxthr);
-        else
-            tplpos = find(srcvol>=minthr | srcvol<=maxthr);
-        end
-
-        if isempty(roipos) || isempty(tplpos)
-            if isempty(roipos) && isempty(tplpos)
-                prec(i) = 1;
-                rec(i) = 1;
+            if isempty(roipos) || isempty(tplpos)
+                if isempty(roipos) && isempty(tplpos)
+                    prec(c) = 1;
+                    rec(c) = 1;
+                else
+                    prec(c) = 0;
+                    rec(c) = 0;
+                end
             else
-                prec(i) = 0;
-                rec(i) = 0;
+                tp(c) = sum(ismember(roipos,tplpos));
+                prec(c) = tp(c)/length(roipos);
+                rec(c) = tp(c)/length(tplpos);
             end
-        else
-            tp(i) = sum(ismember(roipos,tplpos));
-            prec(i) = tp(i)/length(roipos);
-            rec(i) = tp(i)/length(tplpos);
         end
+        % test if there is some ROI missing
+        missingroi = unique(filtvol);
+        nmiss = numel(find(missingroi));
+        prec = [prec; zeros(nmiss,1)];
+        rec = [rec; zeros(nmiss,1)];
     end
     precision(d) = mean(prec);
     recall(d) = mean(rec);
@@ -458,7 +475,7 @@ for d = 1:length(datadir)
 end
 
 tb = table(algorithm,precision,recall,f1);
-writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
+writetable(tb,[tboutdir,filesep,roitype{1},'_spheres.csv']);
 
 %--------------------------------------------------------------------------
 %% maxkmask

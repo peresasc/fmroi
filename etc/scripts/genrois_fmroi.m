@@ -54,6 +54,44 @@ for i = 1:length(radius)
     V = spm_write_vol(V,roi);
 end
 
+%% gen_spheres
+clear
+tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
+if ~isfolder(tpldir)
+    mkdir(tpldir)
+end
+
+vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
+srcvol = spm_data_read(vsrc);
+
+
+roi = zeros(size(srcvol));
+roisz = zeros(size(srcvol));
+count = 0;
+for i = 13:22:79
+    for j = 13:22:79
+        for k = 13:22:79
+            count = count + 1;
+            auxroi = spheremask(srcvol,[i,j,k],randperm(10,1),'radius');
+            n = numel(find(auxroi(:)));
+
+            roi = roi + count*auxroi;
+            roisz = roisz + n*auxroi;
+        end
+    end
+end
+
+vsrc.fname = fullfile(tpldir,'spheres.nii');
+V = spm_create_vol(vsrc);
+V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+V = spm_write_vol(V,roi);
+
+vsrc.fname = fullfile(tpldir,'spheres_size.nii');
+V = spm_create_vol(vsrc);
+V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+V = spm_write_vol(V,roisz);
+
+
 %% spheremask
 clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';
@@ -165,7 +203,7 @@ for i = 1:size(thr,1)
     V = spm_write_vol(V,roi);
 end
 
-%% clustermask
+%% clustermask_syndata
 clear
 outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';
 if ~isfolder(outdir)
@@ -189,6 +227,44 @@ for i = 1:length(nrois)
     V = spm_create_vol(vsrc);
     V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
     V = spm_write_vol(V, binmask);
+end
+
+%% clustermask
+clear
+outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';
+if ~isfolder(outdir)
+    mkdir(outdir)
+end
+
+vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres.nii');
+srcvol = spm_data_read(vsrc);
+
+vsz = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres_size.nii');
+szvol = spm_data_read(vsz);
+sz = unique(szvol);
+sz(sz==0) = [];
+
+thrs = [.1,inf;17,32;33,inf];
+mincsz = [1,sz(2),sz(3)];
+
+for i = 1:size(thrs,1)
+    roi = contiguousclustering(srcvol,thrs(i,1),thrs(i,2),mincsz(i));
+    nrois = unique(roi(:));
+    nrois(nrois==0) = [];
+
+    for n = 1:length(nrois)
+        binmask = uint16(roi==nrois(n));
+
+        vsrc.fname = fullfile(outdir,[...
+            'fmroi-clustermask_srcimg_spheres',...
+            '_threshold_',num2str(thrs(i,1)),'_',num2str(thrs(i,2))...
+            '_mincsz_',num2str(mincsz(i)),...
+            '_cluster_',sprintf('%03d',nrois(n)),'.nii']);
+
+        V = spm_create_vol(vsrc);
+        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+        V = spm_write_vol(V, binmask);
+    end
 end
 
 %% maxkmask
