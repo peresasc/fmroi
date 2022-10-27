@@ -26,7 +26,7 @@ if ischar(srcvol)
     v = spm_vol(srcvol);
     auxdata = spm_data_read(v);
     
-    clear data
+    clear srcvol
     srcvol = auxdata;
 end
 

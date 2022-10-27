@@ -51,7 +51,7 @@ if ~exist('diffratio', 'var') || isempty(diffratio)
 end
 
 if ~exist('grwmode', 'var') || isempty(grwmode)
-    grwmode = 'max';
+    grwmode = 'ascending';
 end
 
 if ~exist('nvox', 'var') || isempty(nvox)
@@ -68,12 +68,13 @@ end
 
 mask = false(size(srcvol));
 neighmask = false(size(srcvol));
+neighmask(seed(1),seed(2),seed(3)) = true;
 
 srcmaskidx = find(premask);
 
 seedval = double(srcvol(seed(1),seed(2),seed(3)));
 
-neighbors = [seed(1), seed(2), seed(3), seedval];
+neighbors = [seed(1),seed(2),seed(3),seedval];
 
 curnvox = 0;
 while size(neighbors, 1)
@@ -119,7 +120,8 @@ while size(neighbors, 1)
             n = 1;
             while n
                 qdiff = abs(neighbors(:,4)-seedval);
-                [curval,curvox] = min(qdiff);
+                [~,curvox] = min(qdiff);
+                curval = neighbors(curvox,4);
                 if abs(curval-seedval) > abs(diffratio) % abs(seedval*diffratio)
                     neighbors(curvox,:) = [];
                 else
@@ -144,7 +146,7 @@ while size(neighbors, 1)
     mask(x,y,z) = true;
 
     neighbors(curvox,:) = [];
-    if curnvox>nvox % test if the maximum number of elements was already reached
+    if curnvox>=nvox % test if the maximum number of elements was already reached
         break
     end
 

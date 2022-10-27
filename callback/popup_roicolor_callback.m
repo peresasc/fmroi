@@ -13,6 +13,10 @@ function popup_roicolor_callback(hObject, ~)
 handles = guidata(hObject);
 n = handles.table_selectedcell(1);
 
+if ~handles.imgprop(n).viewrender
+    return
+end
+
 v = get(handles.popup_roicolor,'Value');
 s = get(handles.popup_roicolor,'String');
 c = s{v};
