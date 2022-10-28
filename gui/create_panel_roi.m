@@ -84,7 +84,7 @@ handles.checkbox_roisaveatlas = uicontrol(...
 %--------------------------------------------------------------------------
 
 handles.tab_genroi = uitab(handles.tabgp, 'BackgroundColor', 'w', ...
-    'Units', 'normalized','Title','Gen ROI');
+    'Units', 'normalized','Title','ROI Gen');
 
 %--------------------------------------------------------------------------
 % creates the ROI type dropdown menu
