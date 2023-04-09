@@ -1,15 +1,27 @@
+%==========================================================================
 %% spheremask_cubicmask
+%==========================================================================
 clear
 close all
-for w = 1:2
-    if w == 1
-        datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask'};
+
+%--------------------------------------------------------------------------
+% input dataset paths
+for w = 1:2 % strategy for running spheremask and cubicmask separately
+    if w == 1 
+        datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/afni-spheremask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/fsl-spheremask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/spm-spheremask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-spheremask'};
     else
         datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
-            '/home/andre/github/tmp/fmroi_qc/dataset/extra/fmroi-cubicmask_odd';...
-            '/home/andre/github/tmp/fmroi_qc/dataset/extra/fmroi-cubicmask_even'};
+                   '/home/andre/github/tmp/fmroi_qc/dataset/afni-cubicmask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/fsl-cubicmask';...
+                   '/home/andre/github/tmp/fmroi_qc/dataset/spm-cubicmask'};
     end
 
+%--------------------------------------------------------------------------
+% create the output folders
     rootoutdir = '/home/andre/github/tmp/fmroi_qc';
     figoutdir = fullfile(rootoutdir,'figures');
     if ~isfolder(figoutdir)
@@ -21,18 +33,25 @@ for w = 1:2
         mkdir(tboutdir)
     end
 
+    tbextradir = fullfile(tboutdir,'extra');
+    if ~isfolder(tbextradir)
+        mkdir(tbextradir)
+    end
+
     mdloutdir = fullfile(rootoutdir,'models');
     if ~isfolder(mdloutdir)
         mkdir(mdloutdir)
     end
 
+%--------------------------------------------------------------------------
+% Defining the input variables: software, roi type, area, volume, etc...
     datafolder = cell(length(datadir),1);
-    Algorithm = cell(length(datadir),1);
-    roitype = cell(length(datadir),1);
-    mdlav = cell(length(datadir),1);
-    mdla = cell(length(datadir),1);
-    mdlv = cell(length(datadir),1);
-    mdlc = cell(length(datadir),3);
+    Algorithm = cell(length(datadir),1); % Software used for creating ROIs
+    roitype = cell(length(datadir),1); % type of the ROI (spherical or cubic)
+    mdlav = cell(length(datadir),1); % model of the ROI area/volume
+    mdla = cell(length(datadir),1); % model of the ROI area
+    mdlv = cell(length(datadir),1); % model of the ROI volume
+    mdlc = cell(length(datadir),3); % model of the ROI center
     for d = 1:length(datadir)
         [~,datafolder{d},~] = fileparts(datadir{d});
         Algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
@@ -77,39 +96,46 @@ for w = 1:2
             z = str2double(centerstr((strfind(centerstr,'z')+1):end));
             center(i,:) = [x,y,z];
 
+%--------------------------------------------------------------------------
+% Loads ROI and defines the ROI voxels coordinates, area, and volume
             vroi = spm_vol(fullfile(datadir{d},roinames{i}));
             roi = spm_data_read(vroi);
             [x1,y1,z1] = find3d(roi);
             masscenter(i,:) = mean([x1,y1,z1],1);
 
-            [a,v,~,~] = roi_areavol(roi);
+            [a,v,~,~] = roi_areavol(roi); % function roi_areavol is at fmroirootfolder/etc/scripts
             area(i) = a;
             vol(i) = v;
         end
 
-        %--------------------------------------------------------------------------
-        % plot mdl
+%--------------------------------------------------------------------------
+% calculate theoretical values of area and volume
         switch roitype{d}
             case 'spheremask'
-                ta = 4*pi()*(radius).^2;
-                tv = 4/3*pi()*(radius).^3;
-                tav = 3./radius;
+                ta = 4*pi()*(radius).^2; % theoretical sphere area
+                tv = 4/3*pi()*(radius).^3; % theoretical sphere volume
+                tav = 3./radius; % theoretical sphere area/volume
 
             otherwise %case 'cubicmask'
-                ta = 6*(radius).^2;
-                tv = (radius).^3;
-                tav = 6./radius;
+                ta = 6*(radius).^2; % theoretical cube area
+                tv = (radius).^3; % theoretical cube volume
+                tav = 6./radius; % theoretical cube area/volume
         end
-        mav = area./vol;
+        mav = area./vol; % measured area/volume
 
         close all
 
+%--------------------------------------------------------------------------
+% performs linear regression of measured and theoretical values
+       
+        % Linear regression of Area/Volume
         mdlav{d} = fitlm(tav,mav);
         hfigav = figure;
         hptav = plot(tav,mav,'k.');
         hold on
         hmdlav = plot(mdlav{d});
-        h45av = line([0 max(tav)],[0 max(tav)],'Color',[.6,.6,.6],'LineStyle','--');
+        h45av = line([0 max(tav)],[0 max(tav)],'Color',[.6,.6,.6],...
+            'LineStyle','--');
         hmdlav(2).LineStyle = ':';
         delete(hmdlav(1))
         delete(hmdlav(3))
@@ -122,21 +148,28 @@ for w = 1:2
             'String', ['Y = ', num2str(mdlav{d}.Coefficients{1,1}),...
             ' + X*',num2str(mdlav{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
+
+        mdl = mdlav{d};
+        currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
+                    /mean(mdl.Variables.y); % vector for the current model
         ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
-            'String', ['RMSE = ', num2str(mdlav{d}.RMSE)],...
+            'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
-        mdl = mdlav{d};
-        save([mdloutdir,filesep,datafolder{d},'_fitlm-areavol.mat'],'mdl');
-        saveas(hfigav,[figoutdir,filesep,datafolder{d},'_fitlm-areavol.png'])
-        clear mdl
 
+        save([mdloutdir,filesep,datafolder{d},'_fitlm-areavol.mat'],'mdl');
+        saveas(hfigav,[figoutdir,filesep,datafolder{d},...
+            '_fitlm-areavol.png'])
+        clear mdl currnrmse
+
+        % Linear regression of Area
         mdla{d} = fitlm(ta,area);
         hfiga = figure;
         hpta = plot(ta,area,'k.');
         hold on
         hmdla = plot(mdla{d});
-        h45a = line([0 max(ta)],[0 max(ta)],'Color',[.6,.6,.6],'LineStyle','--');
+        h45a = line([0 max(ta)],[0 max(ta)],'Color',[.6,.6,.6],...
+            'LineStyle','--');
         hmdla(2).LineStyle = ':';
         delete(hmdla(1))
         delete(hmdla(3))
@@ -149,22 +182,27 @@ for w = 1:2
             'String', ['Y = ', num2str(mdla{d}.Coefficients{2,1}),...
             ' + X*',num2str(mdla{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
+        
+        mdl = mdla{d};
+        currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
+                    /mean(mdl.Variables.y); % vector for the current model
         ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
-            'String', ['RMSE = ', num2str(mdla{d}.RMSE)],...
+            'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
-        mdl = mdla{d};
+        
         save([mdloutdir,filesep,datafolder{d},'_fitlm-area.mat'],'mdl');
         saveas(hfiga,[figoutdir,filesep,datafolder{d},'_fitlm-area.png'])
-        clear mdl
+        clear mdl currnrmse
 
-        
+        % Linear regression of Volume
         mdlv{d} = fitlm(tv,vol);
         hfigv = figure;
         hptv = plot(tv,vol,'k.');
         hold on
         hmdlv = plot(mdlv{d});
-        h45v = line([0 max(tv)],[0 max(tv)],'Color',[.6,.6,.6],'LineStyle','--');
+        h45v = line([0 max(tv)],[0 max(tv)],'Color',[.6,.6,.6],...
+            'LineStyle','--');
         hmdlv(2).LineStyle = ':';
         delete(hmdlv(1))
         delete(hmdlv(3))
@@ -177,22 +215,28 @@ for w = 1:2
             'String', ['Y = ', num2str(mdlv{d}.Coefficients{1,1}),...
             ' + X*',num2str(mdlv{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
+        
+        mdl = mdlv{d};
+        currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
+                    /mean(mdl.Variables.y); % vector for the current model
         ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
-            'String', ['RMSE = ', num2str(mdlv{d}.RMSE)],...
+            'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
-        mdl = mdlv{d}; 
+         
         save([mdloutdir,filesep,datafolder{d},'_fitlm-vol.mat'],'mdl');
         saveas(hfigv,[figoutdir,filesep,datafolder{d},'_fitlm-vol.png'])
         clear mdl
 
-        for i = 1:3
+        % Linear regression of Center (x,y,z)
+        for i = 1:3 % calculates the displacement for x, y, and z separately
             mdlc{d,i} = fitlm(center(:,i),masscenter(:,i));
             hfigc = figure;
             hptc = plot(center(:,i),masscenter(:,i),'k.');
             hold on
             hmdlc = plot(mdlc{d,i});
-            h45c = line([0 max(center(:,i))],[0 max(center(:,i))],'Color',[.6,.6,.6],'LineStyle','--');
+            h45c = line([0 max(center(:,i))],[0 max(center(:,i))],...
+                'Color',[.6,.6,.6],'LineStyle','--');
             hmdlc(2).LineStyle = ':';
             delete(hmdlc(1))
             delete(hmdlc(3))
@@ -201,30 +245,38 @@ for w = 1:2
             title(datafolder{d},'FontSize',16)
             xlabel(['Set ',ax(i),' center'],'FontSize',12)
             ylabel([ax(i),' mass center'],'FontSize',12)
-            legend('Data','Linear Fit','Expected fit','Location','southeast')
+            legend('Data','Linear Fit','Expected fit',...
+                'Location','southeast')
             ha1 = annotation('textbox', [0.15, 0.85, 0.5, 0.05],...
                 'String', ['Y = ', num2str(mdlc{d,i}.Coefficients{1,1}),...
                 ' + X*',num2str(mdlc{d,i}.Coefficients{2,1})],...
                 'EdgeColor','none','Interpreter', 'none');
+            
+            mdl = mdlc{d,i};
+            currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
+                    /mean(mdl.Variables.y); % vector for the current model
             ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
-            'String', ['RMSE = ', num2str(mdlc{d,i}.RMSE)],...
+            'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
             hold off
-            mdl = mdlc{d,i};
-            save([mdloutdir,filesep,datafolder{d},'_fitlm-center_',ax(i),'.mat'],'mdl');
-            saveas(hfigc,[figoutdir,filesep,datafolder{d},'_fitlm-center_',ax(i),'.png'])
-            clear mdl
+            
+            save([mdloutdir,filesep,datafolder{d},...
+                '_fitlm-center_',ax(i),'.mat'],'mdl');
+            saveas(hfigc,[figoutdir,filesep,datafolder{d},...
+                '_fitlm-center_',ax(i),'.png'])
+            clear mdl currnrmse
         end
     end
-    %--------------------------------------------------------------------------
-    % save stats table
+    
+%--------------------------------------------------------------------------
+% Calculates the stats
     models = {'mdlav';'mdla';'mdlv';'mdlc'};
-
+    nrmse_mat = zeros(length(datadir),length(models));
     for m = 1:length(models)
         clear mdl
         mdl = eval(models{m});
-
-        NRMSE = zeros(size(mdl,1),1);
+        
+        NRMSE = zeros(size(mdl,1),1);        
         Pearson_R = zeros(size(mdl,1),1);
         Alpha = zeros(size(mdl,1),1);
         Intercept = zeros(size(mdl,1),1);
@@ -233,16 +285,17 @@ for w = 1:2
         pValue = zeros(size(mdl,1),1);
         StdError = zeros(size(mdl,1),1);
         RMSE_fit = zeros(size(mdl,1),1);
-        for dd = 1:size(mdl,2) % data dimension
-            for d = 1:size(mdl,1) % data type
-                if dd == 1
+        for dd = 1:size(mdl,2) % model dimension (e.g. area = 1; center = 3 [x, y, z])
+            for d = 1:size(mdl,1) % number of datasets (e.g. fmroi,fsl,etc...)
+                if dd == 1 % As "center" has 3 dimensions this block prevines creating a NRMSE for each dimension
                     x = [];
                     y = [];
-                    for ddd = 1:size(mdl,2)
-                        x = [x; mdl{d,dd}.Variables.x1];
-                        y = [y; mdl{d,dd}.Variables.y];
+                    for ddd = 1:size(mdl,2) % concatenates all dimensions and returns only one NRMSE
+                        x = [x; mdl{d,ddd}.Variables.x1];
+                        y = [y; mdl{d,ddd}.Variables.y];
                     end
-                    NRMSE(d) = (sqrt(mean((x-y).^2)))/mean(y);
+                    NRMSE(d) = (sqrt(mean((x-y).^2)))/mean(y); % vector for the current model
+                    nrmse_mat(d,m) = NRMSE(d); % table for all models ('mdlav';'mdla';'mdlv';'mdlc')
                 end
                 pc = corrcoef(mdl{d,dd}.Variables.x1,mdl{d,dd}.Variables.y);
                 Pearson_R(d) = pc(2);
@@ -254,6 +307,9 @@ for w = 1:2
                 StdError(d) = mdl{d,dd}.Coefficients{2,2};
                 RMSE_fit(d) = mdl{d,dd}.RMSE;
             end
+            
+%--------------------------------------------------------------------------
+% Creates the stats table
             if size(mdl,2) == 1
                 tb = table(Algorithm,NRMSE,Pearson_R,Alpha,...
                     Intercept,DoF,R2,pValue,StdError,RMSE_fit);
@@ -279,29 +335,46 @@ for w = 1:2
                 end
             end
         end
-        writetable(tb,[tboutdir,filesep,roitype{1},'_',models{m},'.csv'])
+%--------------------------------------------------------------------------
+% Saves the stats table in a csv file        
+        writetable(tb,[tbextradir,filesep,roitype{1},'_',models{m},'.csv']);
     end
+    varnames = [{'Algorithm'}; models];
+    nrmse_tb = table(Algorithm,nrmse_mat(:,1),nrmse_mat(:,2),...
+        nrmse_mat(:,3),nrmse_mat(:,4),'VariableNames',varnames);
+    writetable(nrmse_tb,[tboutdir,filesep,roitype{1},'_nrmse.csv']);
 end
 
-%--------------------------------------------------------------------------
+%==========================================================================
 %% image2mask
+%==========================================================================
 clear
 close all
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask'};
 
+%--------------------------------------------------------------------------
+% input dataset paths
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask'};
+%     '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';...
+%            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
+%            '/home/andre/github/tmp/fmroi_qc/dataset/spm-img2mask'};
+
+%--------------------------------------------------------------------------
+% create the output folders
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
+%--------------------------------------------------------------------------
+% Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
 datafolder = cell(length(datadir),1);
-algorithm = cell(length(datadir),1);
-roitype = cell(length(datadir),1);
-precision = zeros(length(datadir),1);
-recall = zeros(length(datadir),1);
-f1 = zeros(length(datadir),1);
-for d = 1:length(datadir)
+algorithm = cell(length(datadir),1); % Software used for creating ROIs
+roitype = cell(length(datadir),1); % Type of ROI 
+precision = zeros(length(datadir),1); % Precision
+recall = zeros(length(datadir),1); % Recall
+f1 = zeros(length(datadir),1); % f1-score
+for d = 1:length(datadir) % loop for all evaluated ROI algorithms
     [~,datafolder{d},~] = fileparts(datadir{d});
     algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
     roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
@@ -320,10 +393,12 @@ for d = 1:length(datadir)
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
 
+%--------------------------------------------------------------------------
+% Loads the template image (DMN or syndata) and thresholds
         srcvolstr = roinames{i}(...
             (strfind(roinames{i},'srcimg_')+length('srcimg_')):...
             (strfind(roinames{i},'_threshold_')-1));
-        switch srcvolstr
+        switch srcvolstr 
             case 'dmn'
                 srcpath = '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz';
             case 'syndata'
@@ -339,46 +414,58 @@ for d = 1:length(datadir)
         minthr = str2double(thrstr(1:strfind(thrstr,'_')-1));
         maxthr = str2double(thrstr(strfind(thrstr,'_')+1:end));
         
+%--------------------------------------------------------------------------
+% Defines the template ROI voxels coordinates
         if minthr <= maxthr
             tplpos = find(srcvol>=minthr & srcvol<=maxthr);
         else
             tplpos = find(srcvol>=minthr | srcvol<=maxthr);
         end
-
+%--------------------------------------------------------------------------
+% Loads ROI and defines the ROI voxels coordinates
         vroi = spm_vol(fullfile(datadir{d},roinames{i}));
         roi = spm_data_read(vroi);
         roipos = find(roi);
-        
-        if isempty(roipos) || isempty(tplpos)
-            if isempty(roipos) && isempty(tplpos)
-                prec(i) = 1;
-                rec(i) = 1;
-            else
-                prec(i) = 0;
-                rec(i) = 0;
+
+%--------------------------------------------------------------------------
+% Compares the voxels coordinates from template and ROI to-be-tested
+        if isempty(roipos) || isempty(tplpos) % strategy to avoid division by zero
+            if isempty(roipos) && isempty(tplpos) % if both, template and measured data a empty so precision = 1
+                prec(i) = 1; % precision
+                rec(i) = 1; % recall
+            else % if template and measured data have different number of elements precision = 0
+                prec(i) = 0; % precision
+                rec(i) = 0; % recall
             end
         else
-            tp(i) = sum(ismember(roipos,tplpos));
-            prec(i) = tp(i)/length(roipos);
-            rec(i) = tp(i)/length(tplpos);
+            tp(i) = sum(ismember(roipos,tplpos)); % check how many elemets of measured roi are in the same position as the template roi
+            prec(i) = tp(i)/length(roipos); % precision
+            rec(i) = tp(i)/length(tplpos); % recall
         end
     end
-    precision(d) = mean(prec);
-    recall(d) = mean(rec);
-    f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
+    precision(d) = mean(prec); % averge precision
+    recall(d) = mean(rec); % averge recall
+    f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d)); % average f1-score
 end
 
+%--------------------------------------------------------------------------
+% Saves the results in a csv file
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'.csv']);
 
 
-%--------------------------------------------------------------------------
+%==========================================================================
 %% clustermask
+%==========================================================================
 clear
 close all
+%--------------------------------------------------------------------------
+% input dataset paths
+datadir = {...'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
 
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'};
-
+%--------------------------------------------------------------------------
+% Loads template images
 vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres.nii');
 srcvol = spm_data_read(vsrc);
 
@@ -387,19 +474,23 @@ szvol = spm_data_read(vsz);
 sz = unique(szvol);
 sz(sz==0) = [];
 
+%--------------------------------------------------------------------------
+% create the output folders
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
+%--------------------------------------------------------------------------
+% Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
 datafolder = cell(length(datadir),1);
 algorithm = cell(length(datadir),1);
 roitype = cell(length(datadir),1);
 precision = zeros(length(datadir),1);
 recall = zeros(length(datadir),1);
 f1 = zeros(length(datadir),1);
-for d = 1:length(datadir)
+for d = 1:length(datadir) % loop for each dataset
     [~,datafolder{d},~] = fileparts(datadir{d});
     algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
     roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
@@ -422,7 +513,7 @@ for d = 1:length(datadir)
     prec = zeros(length(roinames),1);
     rec = zeros(length(roinames),1);
     c = 0;
-    for t = 1:length(roiprefix)
+    for t = 1:length(roiprefix) % loop for each set of parameters (srcimg, threshold, mincsz)
         fnidx = find(~cellfun(@isempty,strfind(roinames,roiprefix{t})));
         thrstr = roiprefix{t}(...
             (strfind(roiprefix{t},'threshold_')+length('threshold_')):...
@@ -434,69 +525,90 @@ for d = 1:length(datadir)
         mincsz = str2double(roiprefix{t}(...
             (strfind(roiprefix{t},'_mincsz_')+length('_mincsz_')):end));
 
+%--------------------------------------------------------------------------
+% Creates the template ROI
         filtvol = srcvol;
-        filtvol(szvol<mincsz) = 0;
-        filtvol(~(srcvol>=minthr & srcvol<=maxthr)) = 0;
+        filtvol(szvol<mincsz) = 0; % delete all ROIs smaller than mincsz
+        filtvol(~(srcvol>=minthr & srcvol<=maxthr)) = 0; % delete ROIs with values lower than minthr and higher than maxthr
         
-        for i = 1:length(fnidx)
+%--------------------------------------------------------------------------
+% Load ROIs to-be-tested 
+        tplpos_all = [];
+        for i = 1:length(fnidx) % loop for all ROIs generated by each parameters set
             c = c + 1;
             disp(['Working on ',datafolder{d},' ROI ',num2str(c)]);
 
             vroi = spm_vol(fullfile(datadir{d},roinames{fnidx(i)}));
             roi = spm_data_read(vroi);
-            roipos = find(roi);
-            
-            tplpos = find(filtvol==median(srcvol(roipos)));
-            filtvol(tplpos) = 0;
+            roipos = find(roi); % Defines the ROI to-be-tested voxels coordinates
 
-            if isempty(roipos) || isempty(tplpos)
-                if isempty(roipos) && isempty(tplpos)
-                    prec(c) = 1;
-                    rec(c) = 1;
-                else
-                    prec(c) = 0;
-                    rec(c) = 0;
+%--------------------------------------------------------------------------
+% Compares the voxels coordinates from template and ROI to-be-tested       
+            tplpos = find(filtvol==median(srcvol(roipos))); % Defines the template ROI voxels coordinates      
+            tplpos_all = [tplpos_all;tplpos]; % vector with all non-zero voxels
+            if isempty(roipos) || isempty(tplpos) % strategy to avoid division by zero
+                if isempty(roipos) && isempty(tplpos) % if both, template and measured data a empty so precision = 1
+                    prec(c) = 1; % precision
+                    rec(c) = 1; % recall
+                else % if template and measured data have different number of elements precision = 0
+                    prec(c) = 0; % precisions
+                    rec(c) = 0; % recall
                 end
             else
-                tp(c) = sum(ismember(roipos,tplpos));
-                prec(c) = tp(c)/length(roipos);
-                rec(c) = tp(c)/length(tplpos);
+                tp(c) = sum(ismember(roipos,tplpos)); % check how many elemets of measured roi are in the same position as the template roi
+                prec(c) = tp(c)/length(roipos); % precision
+                rec(c) = tp(c)/length(tplpos); % recall
             end
         end
-        % test if there is some ROI missing
+
+%--------------------------------------------------------------------------
+% Test if there is some ROI missing
+        filtvol(tplpos_all) = 0;
         missingroi = unique(filtvol);
         nmiss = numel(find(missingroi));
-        prec = [prec; zeros(nmiss,1)];
-        rec = [rec; zeros(nmiss,1)];
+        prec = [prec; zeros(nmiss,1)]; % adds a precision equal zero for every missing roi
+        rec = [rec; zeros(nmiss,1)]; % adds a recall equal zero for every missing roi
     end
+
+%--------------------------------------------------------------------------
+% Calculates the average precision, recall, and f1-score    
     precision(d) = mean(prec);
     recall(d) = mean(rec);
     f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
 end
 
+%--------------------------------------------------------------------------
+% Saves the results in a csv file
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_spheres.csv']);
 
-%--------------------------------------------------------------------------
+%==========================================================================
 %% maxkmask
+%==========================================================================
 clear
 close all
 
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
+%--------------------------------------------------------------------------
+% input dataset paths
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
 
-srcpath = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii'};
+%--------------------------------------------------------------------------
+% Template dataset paths
+srcpath = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii'};
 
 vpre = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/aparc+aseg_2mm.nii.gz');
 prevol = spm_data_read(vpre);
 
+%--------------------------------------------------------------------------
+% create the output folders
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
+%--------------------------------------------------------------------------
+% Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
 datafolder = cell(length(datadir),1);
 algorithm = cell(length(datadir),1);
 roitype = cell(length(datadir),1);
@@ -518,30 +630,38 @@ for d = 1:length(datadir)
     end
     roinames(cellfun(@isempty,roinames)) = [];
     
-    tp = zeros(length(roinames),1);
-    prec = zeros(length(roinames),1);
-    rec = zeros(length(roinames),1);
+    tp = zeros(length(roinames),1); % true positives
+    prec = zeros(length(roinames),1); % precision
+    rec = zeros(length(roinames),1); % recall
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
-
+        
+        % premask index
         pmidx = str2double(roinames{i}(...
             (strfind(roinames{i},'premaskidx_')+length('premaskidx_')):...
             (strfind(roinames{i},'_kvox')-1)));
-
+        
+        % ROI size (k voxels)
         kvox = str2double(roinames{i}(...
             (strfind(roinames{i},'kvox_')+length('kvox_')):...
             (strfind(roinames{i},'.nii')-1)));
+        
+%--------------------------------------------------------------------------
+% Defines the template ROI voxels coordinates        
+        premask = prevol == pmidx; % defines the premask
+        pmpos = find(premask); % finds all voxels coordinates into premask
+        srctpl = srcvol(pmpos); % extracts srcvol voxels in the same coordinates as premask
+        [~, srctplpos] = maxk(srctpl(:),kvox); % finds the highest k voxels into srctpl
+        tplpos = pmpos(srctplpos); % finds the coordinates of the k highest voxels
 
-        premask = prevol == pmidx;
-        pmpos = find(premask);
-        srctpl = srcvol(pmpos);
-        [~, srctplpos] = maxk(srctpl(:),kvox);
-        tplpos = pmpos(srctplpos);
-
+%--------------------------------------------------------------------------
+% Loads ROI and defines the ROI voxels coordinates     
         vroi = spm_vol(fullfile(datadir{d},roinames{i}));
         roi = spm_data_read(vroi);
         roipos = find(roi);
-        
+
+%--------------------------------------------------------------------------
+% Compares the voxels coordinates from template and ROI to-be-tested
         if isempty(roipos) || isempty(tplpos)
             if isempty(roipos) && isempty(tplpos)
                 prec(i) = 1;
@@ -561,16 +681,23 @@ for d = 1:length(datadir)
     f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
 end
 
+%--------------------------------------------------------------------------
+% Saves the results in a csv file
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_dmngnoise.csv']);
 
-%--------------------------------------------------------------------------
+%==========================================================================
 %% regiongrowing
+%==========================================================================
 clear
 close all
 
+%--------------------------------------------------------------------------
+% input dataset paths
 datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing'};
 
+%--------------------------------------------------------------------------
+% Loads the template images
 srcdir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
 vsrc = spm_vol(fullfile(srcdir,'syntheticdata.nii'));
 srcvol = spm_data_read(vsrc);
@@ -589,12 +716,16 @@ end
 s1 = readtable(fullfile(srcdir,'external_spiral.csv'));
 s2 = readtable(fullfile(srcdir,'internal_spiral.csv'));
 
+%--------------------------------------------------------------------------
+% create the output folders
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
+%--------------------------------------------------------------------------
+% Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
 datafolder = cell(length(datadir),1);
 algorithm = cell(length(datadir),1);
 roitype = cell(length(datadir),1);
@@ -614,38 +745,47 @@ for d = 1:length(datadir)
     end
     roinames(cellfun(@isempty,roinames)) = [];
     
-    tp = zeros(length(roinames),1);
-    prec = zeros(length(roinames),1);
-    rec = zeros(length(roinames),1);
+    tp = zeros(length(roinames),1); % true positive
+    prec = zeros(length(roinames),1); % precision
+    rec = zeros(length(roinames),1); % recall
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
-
+        
+        % extracts the seed coordinates
         seedidx = str2double(roinames{i}(...
             (strfind(roinames{i},'_seed_')+length('_seed_')):...
             (strfind(roinames{i},'_diffratio_')-1)));
         [x,y,z] = ind2sub(size(srcvol),seedidx);
         seed = [x,y,z];
-
+    
+        % extracts the maximum magnitude difference to the seed
         diffratio = str2double(roinames{i}(...
             (strfind(roinames{i},'_diffratio_')+length('_diffratio_')):...
             (strfind(roinames{i},'_grwmode_')-1)));
 
+        % growing mode: ascending, descending, similarity
         grwmode = roinames{i}(...
             (strfind(roinames{i},'_grwmode_')+length('_grwmode_')):...
             (strfind(roinames{i},'_nvox_')-1));
 
+        % ROI size
         nvox = str2double(roinames{i}(...
             (strfind(roinames{i},'_nvox_')+length('_nvox_')):...
             (strfind(roinames{i},'_premask_')-1)));
 
+        % premask name
         premaskname = roinames{i}(...
             (strfind(roinames{i},'_premask_')+length('_premask_')):...
             (strfind(roinames{i},'.nii')-1));
 
+%--------------------------------------------------------------------------
+% Defines the template ROI voxels coordinates
         vroi = spm_vol(fullfile(datadir{d},roinames{i}));
         roi = spm_data_read(vroi);
         roipos = find(roi);
 
+%--------------------------------------------------------------------------
+% Defines the template ROI voxels coordinates
         if diffratio == inf % spiral test
             switch grwmode
                 case 'ascending'
@@ -733,10 +873,11 @@ for d = 1:length(datadir)
                 elseif seedval>=11 && seedval<=12
                     tplpos = find(srcvolmask>=11 & srcvolmask<=12);
                 end
-
             end
         end
 
+%--------------------------------------------------------------------------
+% Compares the voxels coordinates from template and ROI to-be-tested
         if isempty(roipos) || isempty(tplpos)
             if isempty(roipos) && isempty(tplpos)
                 prec(i) = 1;
@@ -755,28 +896,40 @@ for d = 1:length(datadir)
     recall(d) = mean(rec);
     f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
 end
+
+%--------------------------------------------------------------------------
+% Saves the results in a csv file
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
 
-%--------------------------------------------------------------------------
+%==========================================================================
 %% drawmask
+%==========================================================================
 clear
 close all
 
+%--------------------------------------------------------------------------
+% input dataset paths
 datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask'};
+           '/home/andre/github/tmp/fmroi_qc/dataset/afni-drawmask';...
+           '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-drawmask'};
 
-
+%--------------------------------------------------------------------------
+% Loads the template images
 vsrc = spm_vol('/home/andre/github/fmroi/templates/syndata/syntheticdata.nii');
 srcvol = spm_data_read(vsrc);
 srcvol(srcvol~=1) = 0;
 
+%--------------------------------------------------------------------------
+% create the output folders
 rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
+%--------------------------------------------------------------------------
+% Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
 datafolder = cell(length(datadir),1);
 algorithm = cell(length(datadir),1);
 roitype = cell(length(datadir),1);
@@ -796,18 +949,24 @@ for d = 1:length(datadir)
     end
     roinames(cellfun(@isempty,roinames)) = [];
     
-    tp = zeros(length(roinames),1);
-    prec = zeros(length(roinames),1);
-    rec = zeros(length(roinames),1);
+    tp = zeros(length(roinames),1); % true positives
+    prec = zeros(length(roinames),1); % precision
+    rec = zeros(length(roinames),1); % recall
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
 
+%--------------------------------------------------------------------------
+% Defines the template ROI voxels coordinates
         tplpos = find(srcvol);
 
+%--------------------------------------------------------------------------
+% Loads ROI and defines the ROI voxels coordinates
         vroi = spm_vol(fullfile(datadir{d},roinames{i}));
         roi = spm_data_read(vroi);
         roipos = find(roi);
         
+%--------------------------------------------------------------------------
+% Compares the voxels coordinates from template and ROI to-be-tested        
         if isempty(roipos) || isempty(tplpos)
             if isempty(roipos) && isempty(tplpos)
                 prec(i) = 1;
@@ -827,5 +986,7 @@ for d = 1:length(datadir)
     f1(d) = 2*precision(d)*recall(d)/(precision(d)+recall(d));
 end
 
+%--------------------------------------------------------------------------
+% Saves the results in a csv file
 tb = table(algorithm,precision,recall,f1);
 writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
