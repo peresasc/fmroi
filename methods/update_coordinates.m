@@ -17,7 +17,7 @@ handles = guidata(hObject);
 n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 n = handles.table_selectedcell(1);
 
-if nargin == 1 || handles.mousehold
+if nargin == 1 || handles.mousehold && not(handles.toolbar)
     
     if nargin == 1
         centre = getworldpos;
