@@ -55,14 +55,14 @@ maxdim = max(round(diff(st.bb)+1));
 for i = 1:4
     if i == 4
         if n_image == 1
-            ax = axes('Parent', handles.panel_graph,...
-                'Position',axes_pos(i,:), 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
+            ax = axes('Parent', handles.panel_graph(i),...
+                'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
             set(ax,'Visible','off', 'Ydir','normal',...
                 'CameraTargetMode','manual','view',[-35 35]);
             st.dims = round(diff(st.bb)'+1);
             set(ax,'Xlim',[0 st.dims(1)],'Ylim',[0 st.dims(2)],'Zlim',[0 st.dims(3)])
-            handles.hrotate = rotate3d(ax);
-            handles.hrotate.Enable = 'off';
+%             handles.hrotate = rotate3d(ax);
+%             handles.hrotate.Enable = 'off';
 
             hold(ax,'on')
             handles.ax{n_image,i} = struct('ax',ax);
@@ -84,10 +84,14 @@ for i = 1:4
             'FaceColor','flat','EdgeColor','none');
 
         handles.ax{n_image,i} = struct('ax',ax,'d',d);
-        [tb4,btns4] = axtoolbar(handles.ax{n_image,i}.ax,{'zoomin','zoomout','restoreview','pan','datacursor'},'Visible','off');
+        tb = axtoolbar(handles.ax{n_image,i}.ax,{'zoomin','zoomout','restoreview','pan','rotate'});
+        btn = axtoolbarbtn(tb,'push');
+        btn.Icon = 'gridon.png';
+        btn.Tooltip = 'Grid view';
+        btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
     else
-        ax = axes('Parent', handles.panel_graph,...
-            'Position',axes_pos(i,:), 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
+        ax = axes('Parent', handles.panel_graph(i),...
+            'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
         d  = imagesc(0, 'Tag',['img_',axtags{i}], 'Parent',ax);
 
         set(ax, 'Ydir','normal','XLimMode', 'auto', 'YLimMode', 'auto',...
@@ -108,34 +112,38 @@ for i = 1:4
         set(txy,'Visible','off')
 
         handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,'txy',txy);
-        [tb1,btns1] = axtoolbar(handles.ax{n_image,i}.ax,...
-            {'zoomin','zoomout','restoreview','pan','datacursor'},...
-            'SelectionChangedFcn',@toolbarselection); 
+        tb = axtoolbar(handles.ax{n_image,i}.ax,...
+            {'zoomin','zoomout','restoreview','pan'},...
+            'SelectionChangedFcn',@toolbarselection);
+        btn = axtoolbarbtn(tb,'push');
+        btn.Icon = 'gridon.png';
+        btn.Tooltip = 'Grid view';
+        btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
         if n_image > 1
             linkaxes([handles.ax{n_image,i}.ax,handles.ax{n_image-1,i}.ax],'xy')
         end
     end
 end
 
-tleftpos = {[0,.2,.05,.05],'L';...
-    [0,.7,.05,.05],'L';...
-    [.5,.7,.05,.05],'A'};
-
-trightpos = {[.45,.2,.05,.05],'R';...
-    [.45,.7,.05,.05],'R';...
-    [.95,.7,.05,.05],'P'};
-
-if ~isfield(handles,'axannot')
-    for i = 1:3
-        handles.axannot(i,1) = annotation(handles.panel_graph,'textbox',...
-            'Position',tleftpos{i,1},'String',tleftpos{i,2},...
-            'Color','w','FitBoxToText','on','LineStyle','none');
-
-        handles.axannot(i,2) = annotation(handles.panel_graph,'textbox',...
-            'Position',trightpos{i,1},'String',trightpos{i,2},...
-            'Color','w','FitBoxToText','on','LineStyle','none');
-    end
-end
+% tleftpos = {[0,.2,.05,.05],'L';...
+%     [0,.7,.05,.05],'L';...
+%     [.5,.7,.05,.05],'A'};
+% 
+% trightpos = {[.45,.2,.05,.05],'R';...
+%     [.45,.7,.05,.05],'R';...
+%     [.95,.7,.05,.05],'P'};
+% 
+% if ~isfield(handles,'axannot')
+%     for i = 1:3
+%         handles.axannot(i,1) = annotation(handles.panel_graph,'textbox',...
+%             'Position',tleftpos{i,1},'String',tleftpos{i,2},...
+%             'Color','w','FitBoxToText','on','LineStyle','none');
+% 
+%         handles.axannot(i,2) = annotation(handles.panel_graph,'textbox',...
+%             'Position',trightpos{i,1},'String',trightpos{i,2},...
+%             'Color','w','FitBoxToText','on','LineStyle','none');
+%     end
+% end
 
 s = get(handles.popup_colormap,'String');
 
