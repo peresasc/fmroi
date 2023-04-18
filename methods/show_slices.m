@@ -102,7 +102,7 @@ for i = 1:4
         caxis(st.vols{n_image}.clim);
 
         axis([0 maxdim 0 maxdim])
-        axis equal
+        axis image %equal
 
         lx = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw horizontal line cursor
         ly = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw vertical line cursor
