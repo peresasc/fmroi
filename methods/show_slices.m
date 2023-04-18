@@ -86,7 +86,7 @@ for i = 1:4
         handles.ax{n_image,i} = struct('ax',ax,'d',d);
         tb = axtoolbar(handles.ax{n_image,i}.ax,{'zoomin','zoomout','restoreview','pan','rotate'});
         btn = axtoolbarbtn(tb,'push');
-        btn.Icon = 'gridon.png';
+        btn.Icon = 'gridoff.png';
         btn.Tooltip = 'Grid view';
         btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
     else
@@ -116,7 +116,7 @@ for i = 1:4
             {'zoomin','zoomout','restoreview','pan'},...
             'SelectionChangedFcn',@toolbarselection);
         btn = axtoolbarbtn(tb,'push');
-        btn.Icon = 'gridon.png';
+        btn.Icon = 'gridoff.png';
         btn.Tooltip = 'Grid view';
         btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
         if n_image > 1
