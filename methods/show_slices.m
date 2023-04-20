@@ -25,6 +25,10 @@ n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 st.vols{n_image}.clim = [min(st.vols{n_image}.private.dat(:)),...
     max(st.vols{n_image}.private.dat(:))];
 
+if ~nnz(st.vols{n_image}.clim) % if all elements of the image are zeros
+    st.vols{n_image}.clim = [0 2];
+end
+
 
 axes_pos = zeros(4);
 axes_pos(1,:) = [0, 0, 0.5, 0.5];
@@ -98,9 +102,9 @@ for i = 1:4
             'XTick', [],'YTick', [], 'Tag', axtags{i},...
             'ButtonDownFcn', @axes_buttondownfcn_callback, 'Color', 'none','XColor','none','YColor','none');
 
-        colormap(ax,'gray');
+        colormap(ax,'gray');        
         caxis(st.vols{n_image}.clim);
-
+        
         axis([0 maxdim 0 maxdim])
         axis image %equal
 

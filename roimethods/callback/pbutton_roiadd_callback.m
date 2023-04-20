@@ -40,7 +40,7 @@ else
     datalut = get(handles.table_roilut,'Data');
     roi_idx = cell2mat(datalut(:,1));
 
-    n = handles.table_selectedcell(1);
+    n = handles.table_selectedcell(1); % idex of the selected template image
     srcvol = st.vols{n}.private.dat(:,:,:);
     roi = zeros(size(srcvol));
 

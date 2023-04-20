@@ -1,5 +1,9 @@
-function mousehold(hObject, ~)
+function mousehold(hObject, event)
 
 handles = guidata(hObject);
-handles.mousehold = 1;
+if strcmp(event.Source.SelectionType,'normal')
+    handles.mousehold = 1;
+else
+    handles.mousehold = 2;
+end
 guidata(hObject,handles);

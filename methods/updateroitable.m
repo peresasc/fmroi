@@ -54,8 +54,22 @@ else
             st.roimasks{m}(logical(st.roimasks{m}));
     end
     
-    
-    roimidx = cell2mat(roimasksidx); % roimask indexes
+    emptycells = cellfun(@isempty,roimasksidx);
+    if nnz(emptycells)
+        roimasksidx(emptycells) = {0};
+        if nnz(emptycells)
+            midx = max(cellfun(@uint16,roimasksidx));
+            if isempty(midx)
+                midx = 0;
+            end
+            ept = find(emptycells);
+            for i = 1:length(ept)
+                roimasksidx{ept(i),1} = midx+i;
+            end
+        end
+    end
+
+    roimidx = cellfun(@uint16,roimasksidx); % roimask indexes
     dlutidx = cell2mat(datalut(:,1)); % datalut indexes
     
     if length(roimidx) > length(dlutidx)
