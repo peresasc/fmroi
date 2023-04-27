@@ -139,9 +139,16 @@ handles.pbutton_roirem = uicontrol(handles.panel_roimethod, 'Style', 'PushButton
 
 %--------------------------------------------------------------------------
 % creates the pen push button
-handles.tbutton_roipen = uicontrol(handles.panel_roimethod, 'Style', 'togglebutton',...
-    'Units', 'normalized','Position', [.52, .20, .44, .1],...
-    'String','Pen','Callback',@tbutton_roipen_callback);
+handles.tbutton_brushroidraw = uicontrol(handles.panel_roimethod, 'Style', 'togglebutton',...
+    'Units', 'normalized','Position', [.52, .20, .2, .1],...
+    'String','Brush','Callback',@tbutton_roipen_callback);
+
+%--------------------------------------------------------------------------
+% creates the pen push button
+handles.pbutton_brushroiadd = uicontrol(handles.panel_roimethod, 'Style', 'PushButton',...
+    'Units', 'normalized','Position', [.79, .20, .2, .1],...
+    'String','Add','Callback',@pbutton_brushroiadd_callback);
+
 
 %--------------------------------------------------------------------------
 % creates the edit text for radius/volume in voxels

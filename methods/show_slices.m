@@ -26,7 +26,7 @@ st.vols{n_image}.clim = [min(st.vols{n_image}.private.dat(:)),...
     max(st.vols{n_image}.private.dat(:))];
 
 if ~nnz(st.vols{n_image}.clim) % if all elements of the image are zeros
-    st.vols{n_image}.clim = [0 2];
+    st.vols{n_image}.clim = [0 1];
 end
 
 
@@ -221,12 +221,12 @@ end
 tdata = [cbox,vval,fn];
 set(handles.table_listimg,'Data',tdata);
 
-if isfield(handles,'table_selectedcell')
-    evData.Indices = handles.table_selectedcell;
-else
-    evData.Indices = [1,3];
-end
-
+% if isfield(handles,'table_selectedcell')
+%     evData.Indices = handles.table_selectedcell;
+% else
+%     evData.Indices = [1,3];
+% end
+evData.Indices = [n_image,3];
 guidata(hObject, handles);
 table_listimg_selcallback(hObject, evData)
 handles = guidata(hObject);

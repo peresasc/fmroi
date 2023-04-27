@@ -15,6 +15,7 @@ handles = guidata(hObject);
 n = handles.table_selectedcell(1);
 
 handles.imgprop(n).mincolor = get(handles.slider_mincolor,'Value');
+handles.imgprop(n).maxcolor = get(handles.slider_maxcolor,'Value');
 
 guidata(hObject, handles);
 

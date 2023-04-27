@@ -54,6 +54,9 @@ else
             st.roimasks{m}(logical(st.roimasks{m}));
     end
     
+    %----------------------------------------------------------------------
+    % ROIs only with zero elements
+    % fill with zero empty cell elements and assigns a new index value 
     emptycells = cellfun(@isempty,roimasksidx);
     if nnz(emptycells)
         roimasksidx(emptycells) = {0};
@@ -68,7 +71,7 @@ else
             end
         end
     end
-
+    
     roimidx = cellfun(@uint16,roimasksidx); % roimask indexes
     dlutidx = cell2mat(datalut(:,1)); % datalut indexes
     
@@ -117,12 +120,14 @@ else
     if isempty(ucidx)
         show_slices(hObject, filename)
         handles = guidata(hObject);
-        handles.imgprop(end).minthrs = .1; % remove zeros from uc image
-        guidata(hObject, handles)
-        draw_slices(hObject)
-
-    else
-        clim0 = st.vols{ucidx}.clim;
+        listimgdata = get(handles.table_listimg,'Data');
+        ucidx = find(contains(listimgdata(:,3),'roi_under-construction'), 1);
+%         handles.imgprop(end).minthrs = .01; % remove zeros from uc image
+%         guidata(hObject, handles)
+%         draw_slices(hObject)
+    end
+%     else
+%         clim0 = st.vols{ucidx}.clim;
         st.vols{ucidx}.private.dat(:,:,:) = ucmask;
 
         if min(st.vols{ucidx}.private.dat(:)) ~=...
@@ -150,14 +155,21 @@ else
             imgmax_exp = imgmax_str(pexp:end);
             imgmax_exp(imgmax_exp=='+')=[];
         end
-        minthrs0 = handles.imgprop(ucidx).minthrs;
-        minthrs0_value = minthrs0*(clim0(2)-clim0(1))+clim0(1);
-        minthrs = (minthrs0_value-st.vols{ucidx}.clim(1))/(st.vols{ucidx}.clim(2)-st.vols{ucidx}.clim(1));
-
         handles.imgprop(ucidx).imgmin_str = imgmin_str;
         handles.imgprop(ucidx).imgmax_alg = imgmax_alg;
         handles.imgprop(ucidx).imgmax_exp = imgmax_exp;
+        
+%         minthrs0 = handles.imgprop(ucidx).minthrs;
+%         minthrs0*(clim0(2)-clim0(1))+clim0(1);
+        minthrs0_value = .01; % remove zeros from uc image
+        minthrs = (minthrs0_value-st.vols{ucidx}.clim(1))/...
+            (st.vols{ucidx}.clim(2)-st.vols{ucidx}.clim(1));
+        
         handles.imgprop(ucidx).minthrs = minthrs;
+        handles.imgprop(ucidx).maxthrs = 1;
+        handles.imgprop(ucidx).mincolor = 0;
+        handles.imgprop(ucidx).maxcolor = 1;       
+       
 
         guidata(hObject, handles);
         updateuicontrols(hObject,ucidx);
@@ -165,8 +177,13 @@ else
                 
         guidata(hObject, handles)
         draw_slices(hObject)
-    end
-    handles = guidata(hObject);
+%     end
+%     handles = guidata(hObject);
+
+evData.Indices = [srcidx,3];
+% guidata(hObject, handles);
+table_listimg_selcallback(hObject, evData)
+handles = guidata(hObject);
     
     %--------------------------------------------------------------------------
     % Display ROI as 3D isosurface
