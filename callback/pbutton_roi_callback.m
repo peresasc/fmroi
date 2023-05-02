@@ -102,7 +102,7 @@ if isempty(newroi_idx)
    return 
 end
 datalut = get(handles.table_roilut,'Data');
-roi_idx = cell2mat(datalut(:,1));
+roi_idx = cellfun(@uint16,datalut(:,1));
 
 for i = newroi_idx'    
     currmask = mask;

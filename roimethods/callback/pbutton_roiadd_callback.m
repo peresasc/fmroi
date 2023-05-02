@@ -35,10 +35,11 @@ if wroi
     end
     
     roi(i) = idx;
+    roi = uint16(roi);
     st.roimasks{wroi} = roi;
 else
     datalut = get(handles.table_roilut,'Data');
-    roi_idx = cell2mat(datalut(:,1));
+    roi_idx = cellfun(@uint16,datalut(:,1));
 
     n = handles.table_selectedcell(1); % idex of the selected template image
     srcvol = st.vols{n}.private.dat(:,:,:);
@@ -47,7 +48,8 @@ else
     p = planar2vol(selimg,planarpos,selaxis,refpos);
     i = sub2ind(size(roi),p(:,1),p(:,2),p(:,3));
     roi(i) = 1;
-    
+    roi = uint16(roi);
+
     if isfield(st,'roimasks') && ~isempty(roi_idx)        
         roi(logical(roi)) =...
             roi(logical(roi)) + max(roi_idx);

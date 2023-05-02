@@ -910,19 +910,21 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/afni-drawmask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-drawmask'};
+datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask'};
+    
+% '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask';...
+%            '/home/andre/github/tmp/fmroi_qc/dataset/afni-drawmask';...
+%            '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-drawmask'};
 
 %--------------------------------------------------------------------------
 % Loads the template images
-vsrc = spm_vol('/home/andre/github/fmroi/templates/syndata/syntheticdata.nii');
+vsrc = spm_vol('/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
 srcvol = spm_data_read(vsrc);
 srcvol(srcvol~=1) = 0;
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
+rootoutdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
