@@ -14,23 +14,23 @@ global st
 handles = guidata(hObject);
 
 if isfield(st,'roimasks') && ~isempty(st.roimasks)
-    
-jobj = findjobj(handles.table_roilut);
-jtable = jobj.getViewport.getView;
 
-if jtable.getSelectedRow == -1
-    he = errordlg('Select one ROI to be deleted!');
-    uiwait(he)
-    return
-end
+    jobj = findjobj(handles.table_roilut);
+    jtable = jobj.getViewport.getView;
 
-st.roimasks(jtable.getSelectedRow+1) = [];
+    if jtable.getSelectedRow == -1
+        he = errordlg('Select one ROI to be deleted!');
+        uiwait(he)
+        return
+    end
 
-guidata(hObject, handles);
-updateroitable(hObject)
-handles = guidata(hObject);
+    st.roimasks(jtable.getSelectedRow+1) = [];
 
-jtable.changeSelection(0,1, false, false);
-guidata(hObject, handles);
+    guidata(hObject, handles);
+    updateroitable(hObject)
+    handles = guidata(hObject);
+
+    jtable.changeSelection(0,1, false, false);
+    guidata(hObject, handles);
 
 end

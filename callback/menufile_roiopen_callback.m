@@ -33,7 +33,7 @@ if handles.fileopenidx
         currmask = mask;
         currmask(currmask~=i) = 0;
         if ~isempty(datalut{1})
-            roiidx = cell2mat(datalut(:,1));
+            roiidx = cellfun(@uint16,datalut(:,1));
             currmask(logical(currmask)) =...
                 currmask(logical(currmask)) + max(roiidx);
             st.roimasks{end+1} = currmask;

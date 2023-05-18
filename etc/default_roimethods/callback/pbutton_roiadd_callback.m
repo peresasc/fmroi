@@ -38,7 +38,7 @@ if wroi
     st.roimasks{wroi} = roi;
 else
     datalut = get(handles.table_roilut,'Data');
-    roi_idx = cell2mat(datalut(:,1));
+    roi_idx = cellfun(@uint16,datalut(:,1));
 
     n = handles.table_selectedcell(1);
     srcvol = st.vols{n}.private.dat(:,:,:);

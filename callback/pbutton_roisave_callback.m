@@ -32,7 +32,7 @@ outfilename = fullfile(pn,fn);
 %--------------------------------------------------------------------------
 % Generate a table with the ROI center and N of voxels, and save in the
 % outfilename_info.txt
-roilutdata = get(handles.table_roilut,'Data');
+datalut = get(handles.table_roilut,'Data');
 nvox = zeros(length(st.roimasks),1);
 center = zeros(length(st.roimasks),3);
 for i = 1:length(st.roimasks)
@@ -45,7 +45,7 @@ for i = 1:length(st.roimasks)
 end
 
 infoname = [pn,filesep,fn,'_info.txt'];
-infotable = table(cell2mat(roilutdata(:,1)),roilutdata(:,2),...
+infotable = table(cellfun(@uint16,datalut(:,1)),datalut(:,2),...
     nvox,center(:,1),center(:,2),center(:,3),...
     'VariableNames',{'Index','ROI_Names','N_voxels','Center_X','Center_Y','Center_Z'});
 
@@ -58,7 +58,7 @@ if get(handles.checkbox_roisavebinmasks,'Value')
     for i = 1:length(st.roimasks)
         binmask = uint16(logical(st.roimasks{i}));
         
-        curroutfn = [pn,filesep,fn,'_',roilutdata{i,2},ext];
+        curroutfn = [pn,filesep,fn,'_',datalut{i,2},ext];
         
         vsrc = spm_vol(srcfilename);
         vsrc.fname = curroutfn;
@@ -79,9 +79,9 @@ if get(handles.checkbox_roisaveatlas,'Value')
         return
     end
     lutbasename = [pn,filesep,fn,'_colorlut'];
-    colorlut = table(cell2mat(roilutdata(:,1)),roilutdata(:,2),...
-        cell2mat(roilutdata(:,3)),cell2mat(roilutdata(:,4)),...
-        cell2mat(roilutdata(:,5)),cell2mat(roilutdata(:,6)),...
+    colorlut = table(cellfun(@uint16,datalut(:,1)),datalut(:,2),...
+        cell2mat(datalut(:,3)),cell2mat(datalut(:,4)),...
+        cell2mat(datalut(:,5)),cell2mat(datalut(:,6)),...
         'VariableNames',{'Index','ROI_Names','R','G','B','A'});
     
     save([lutbasename,'.mat'],'colorlut');

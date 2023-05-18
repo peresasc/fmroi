@@ -2,14 +2,11 @@ function volpos = planar2vol(selimg,planarpos,tag,refpos)
 % getworldpos is an internal function of fMROI.
 %
 % Syntax:
-%   centre = getworldpos(h)
+%   volpos = planar2vol(selimg,planarpos,tag,refpos)
 %
 % Inputs:
-%        h: handle of the current axes.
 %
 % Outputs:
-%   centre: 1x3 current position vector in the scanner coordinate
-%           system in milimiters.
 %
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com

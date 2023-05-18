@@ -26,15 +26,15 @@ if isfield(st,'vols')% && handles.mousehold
             %--------------------------------------------------------------
             % Check if the mouse hover over axes rendering and enable
             % rotation otherwise disable rotation.
-            tag = get(h,'Tag');
-            
-            if contains(tag,'rendering')
-                handles.hrotate.Enable = 'on';
-                guidata(hObject,handles);
-            else
-                handles.hrotate.Enable = 'off';
-                guidata(hObject,handles);
-            end
+%             tag = get(h,'Tag');
+%             
+%             if contains(tag,'rendering')
+%                 handles.hrotate.Enable = 'on';
+%                 guidata(hObject,handles);
+%             else
+%                 handles.hrotate.Enable = 'off';
+%                 guidata(hObject,handles);
+%             end
             
             %--------------------------------------------------------------
             % If the right mouse button is pressed and hold, mousemove
