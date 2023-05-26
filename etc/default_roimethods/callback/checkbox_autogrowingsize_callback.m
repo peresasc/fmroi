@@ -2,7 +2,7 @@ function checkbox_autogrowingsize_callback(hObject, ~)
 % checkbox_autogrowingsize_callback is an internal function of fMROI.
 %
 % Syntax:
-%   radiobutton_maskimage_callback(hObject, ~)
+%   checkbox_autogrowingsize_callback(hObject, ~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.

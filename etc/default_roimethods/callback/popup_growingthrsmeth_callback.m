@@ -2,7 +2,7 @@ function popup_growingthrsmeth_callback(hObject, ~)
 % popup_growingthrsmeth_callback is an internal function of fMROI.
 %
 % Syntax:
-%   radiobutton_maskimage_callback(hObject, ~)
+%   popup_growingthrsmeth_callback(hObject, ~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.

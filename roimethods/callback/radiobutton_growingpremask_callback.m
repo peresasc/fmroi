@@ -1,8 +1,8 @@
 function radiobutton_growingpremask_callback(hObject, ~)
-% radiobutton_masksphere_callback is an internal function of fMROI.
+% radiobutton_growingpremask_callback is an internal function of fMROI.
 %
 % Syntax:
-%   radiobutton_masksphere_callback(hObject, ~)
+%   radiobutton_growingpremask_callback(hObject, ~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
