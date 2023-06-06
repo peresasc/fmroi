@@ -33,13 +33,17 @@ if wroi
     else
         idx = 1;
     end
-    
+
     roi(i) = idx;
     roi = uint16(roi);
     st.roimasks{wroi} = roi;
 else
     datalut = get(handles.table_roilut,'Data');
-    roi_idx = cellfun(@uint16,datalut(:,1));
+    if  isempty(datalut{1,1})
+        roi_idx = [];
+    else
+        roi_idx = cellfun(@uint16,datalut(:,1));
+    end
 
     n = handles.table_selectedcell(1); % idex of the selected template image
     srcvol = st.vols{n}.private.dat(:,:,:);
