@@ -4,6 +4,8 @@ _Software dedicated to create ROIs in fMRI data_
 
 [![fMROI logo](./etc/figs/fmroi_logo.png)](https://github.com/proactionlab/fmroi)
 
+**User guide:**[https://fmroi-docs.readthedocs.io](https://fmroi-docs.readthedocs.io/)
+
 ## Description
 
 fMROI is a free software designed to create regions of interest (ROI) in functional magnetic resonance imaging (fMRI). However, it is not limited to fMRI, and can be used with structural images, diffusion maps (DTI), or even with atlases such as FreeSurfer aparc-aseg and Julich atlas. Before running fMROI, ensure that you have installed the dependency packages. 
