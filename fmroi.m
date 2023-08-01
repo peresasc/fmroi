@@ -32,7 +32,9 @@ templatedir = fullfile(fmroirootdir,'templates');
 if ~exist(templatedir,'dir')
    mkdir(templatedir);
 end
+handles.fmroirootdir = fmroirootdir;
 handles.tpldir = templatedir;
+
 
 %--------------------------------------------------------------------------
 % Create main Figure
@@ -242,7 +244,6 @@ set(handles.panel_control,'Visible','off');
 % Set the objects to handles
 
 handles.fig = hObject;
-handles.fmroirootdir = fmroirootdir;
 handles.tmpdir = tmpdir;
 handles.hmenufile = hmenufile;
 handles.hmenuhelp = hmenuview;
