@@ -7,10 +7,11 @@ function fmroi()
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 clear global
-set(0,'units','pixels');
-scnsize = get(0,'screensize');
-figw = ceil(scnsize(3)*0.9);
-figh = floor(scnsize(4)*0.8);
+% set(0,'units','pixels');
+% scnsize = get(0,'screensize');
+% figw = ceil(scnsize(3)*0.9);
+% figh = floor(scnsize(4)*0.8);
+
 [fmroirootdir,~,~] = fileparts(mfilename('fullpath'));
 
 addpath(fullfile(fmroirootdir,'callback'),...
@@ -37,8 +38,8 @@ handles.tpldir = templatedir;
 % Create main Figure
 hObject = figure('Name','fMROI 1.0.0','Color','w', ...
     'MenuBar','none','ToolBar','none','NumberTitle','off',...
-    'DockControls','off','Render','opengl','Units','Pixels',...
-    'Position', [0 0 figw figh],'windowbuttonmotionfcn',@mousemove,...
+    'DockControls','off','Render','opengl','units','normalized',...
+    'outerposition',[0 0 1 1],'windowbuttonmotionfcn',@mousemove,...
     'WindowButtonDownFcn',@mousehold,'WindowButtonUpFcn',@mouserelease,...
     'KeyPressFcn', @keypress_callback);
 
