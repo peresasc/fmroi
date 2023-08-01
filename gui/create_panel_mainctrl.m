@@ -35,10 +35,10 @@ handles.table_listimg = uitable(handles.panel_control,'Units','normalized',...
 
 set(handles.table_listimg,'units','pixel')
 tw = handles.table_listimg.Position(3);
-cw = {.1*tw,.15*tw,.75*tw};
+cw = {.11*tw,.14*tw,.75*tw};
 
-txt = sprintf('Line 1\nLine 2');
-set(handles.table_listimg,'units','normalized','ColumnWidth',cw,'Tooltip',txt)
+% txt = sprintf('Line 1\nLine 2');
+set(handles.table_listimg,'units','normalized','ColumnWidth',cw) %,'Tooltip',txt
 
 
 %--------------------------------------------------------------------------
