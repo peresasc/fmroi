@@ -36,7 +36,7 @@ switch lower(roimth)
         % creates the brush tooglebutton
         handles.tbutton_brushroidraw = uicontrol(handles.panel_drawtools, 'Style', 'togglebutton',...
             'Units', 'normalized','Position', [0.03, 0.75, 0.45, 0.2],...
-            'String','Brush','Callback',@tbutton_roibrush_callback);
+            'String','Draw','Callback',@tbutton_roibrush_callback);
 
         %--------------------------------------------------------------------------
         % creates the brush ROI add pushbutton
