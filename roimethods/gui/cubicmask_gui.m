@@ -9,7 +9,7 @@ function cubicmask_gui(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 03/08/2023, peres.asc@gmail.com
 
 handles = guidata(hObject);
 %--------------------------------------------------------------------------
