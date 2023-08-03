@@ -4,7 +4,7 @@ function fmroi()
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 03/08/2023, peres.asc@gmail.com
 
 clear global
 % set(0,'units','pixels');
