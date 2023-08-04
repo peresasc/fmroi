@@ -12,8 +12,8 @@ function radiobutton_maskimage_callback(hObject, ~)
 
 handles = guidata(hObject);
 
-set(handles.edit_growingpremasradius,'Visible', 'off')
-set(handles.text_growingpremasradius,'Visible', 'off')
+set(handles.edit_roiradius,'Visible', 'off')
+set(handles.text_roiradius,'Visible', 'off')
 set(handles.text_maskimg,'Visible', 'on')
 set(handles.popup_maskimg,'Visible', 'on')
 

@@ -14,7 +14,7 @@ handles = guidata(hObject);
 
 set(handles.text_maskimg,'Visible', 'off')
 set(handles.popup_maskimg,'Visible', 'off')
-set(handles.edit_growingpremasradius,'Visible', 'on')
-set(handles.text_growingpremasradius,'Visible', 'on')
+set(handles.edit_roiradius,'Visible', 'on')
+set(handles.text_roiradius,'Visible', 'on')
 
 guidata(hObject, handles);

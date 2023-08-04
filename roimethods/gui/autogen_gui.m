@@ -10,10 +10,11 @@ function autogen_gui(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 04/08/2023, peres.asc@gmail.com
 
 handles = guidata(hObject);
 specialvars = {'hObject';'srcvol';'curpos';'minthrs';'maxthrs'};
+fs = 1; % font scale
 
 v = get(handles.popup_roitype,'Value');
 s = get(handles.popup_roitype,'String');
@@ -29,29 +30,46 @@ args(ismember(args,specialvars)) = [];
 % creates the ROIs Panel
 panelroi_pos = [0.01, 0.01, 0.98, 0.87];
 
-handles.panel_roimethod = uipanel(handles.tab_genroi, 'BackgroundColor', 'w', ...
-    'Units', 'normalized', 'Position', panelroi_pos, 'Visible', 'on');
+handles.panel_roimethod = uipanel(handles.tab_genroi,...
+    'Units','normalized','BackgroundColor','w',...
+    'Position',panelroi_pos,'Visible', 'on');
 
 %--------------------------------------------------------------------------
 % creates the text for source image
-w = .15; % text width (.21)
-h = .08; % text height
+guidata(hObject,handles)
+imgname = getselectedimgname(hObject);
+
+handles.text_roisrcimagetxt = uicontrol(handles.panel_roimethod,...
+    'Style','text','Units','normalized','FontWeight','bold',...
+    'String','Source image:','BackgroundColor','w',...
+    'FontUnits','normalized','FontSize',fs*.65,...
+    'HorizontalAlignment','left','Position',[.01,.9,.98,.1]);
+
+handles.text_roisrcimage = uicontrol(handles.panel_roimethod,...
+    'Style','text','Units','normalized','String',imgname,...
+    'FontUnits','normalized','FontSize',fs*.65,'BackgroundColor','w',...
+    'HorizontalAlignment','left','Position',[.01,.8,.98,.1]);
+
+%--------------------------------------------------------------------------
+% creates the text for source image
+w = .3; % text width (.21)
+h = .1; % text height
 lpos = .01; % text left position (.01)
-bpos = .9; % text botton position
+bpos = .68; % text botton position
 
 for i = 1:length(args)
-        textlabelpos = [lpos, (1-i)*(h+.01)+bpos, w, h];
-        editpos = [lpos+w, (1-i)*(h+.01)+bpos,.98-w, h];
+        textlabelpos = [lpos, (1-i)*(h+.02)+bpos, w, h];
+        editpos = [lpos+w, (1-i)*(h+.02)+bpos,.98-w, h];
     
     handles.text_autoguilabel(i) = uicontrol(handles.panel_roimethod,...
         'Style','text','Units','normalized','String',args{i},...
-        'BackgroundColor', 'w', 'FontSize', 10,...
-        'HorizontalAlignment', 'left','Position', textlabelpos);
+        'FontUnits','normalized','FontSize',fs*.7,'BackgroundColor','w',...
+        'HorizontalAlignment','left','Position',textlabelpos);
     
     
     handles.edit_autogui(i) = uicontrol(handles.panel_roimethod,...
         'Style','edit','Units','normalized','String','',...
-        'BackgroundColor','w','FontSize',10,...
+        'FontUnits','normalized','FontSize',fs*.7,'BackgroundColor','w',...
         'HorizontalAlignment','left','Position',editpos,...
         'Tag',['edit',num2str(i)]);
 end

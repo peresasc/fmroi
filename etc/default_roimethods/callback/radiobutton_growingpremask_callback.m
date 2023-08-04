@@ -11,7 +11,11 @@ function radiobutton_growingpremask_callback(hObject, ~)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
-premaskmth = lower(handles.buttongroup_growingpremask.SelectedObject.String);
+v = get(handles.popup_growingpremasktype,'Value');
+s = get(handles.popup_growingpremasktype,'String');
+premaskmth = lower(s{v});
+
+% premaskmth = lower(handles.buttongroup_growingpremask.SelectedObject.String);
 
 switch premaskmth
     case 'mask'
