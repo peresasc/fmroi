@@ -33,4 +33,14 @@ switch eventData.Key
         cpima(3) = cpima(3) - 1;
         set(handles.edit_pos(2,3),'String',num2str(cpima(3)))
         editpos_callback(hObject,[],'edit23')
+    case 'add'
+        if ~isempty(eventData.Modifier) &&...
+                strcmp(eventData.Modifier{:},'control')
+            a = 1;
+        end
+    case 'subtract'
+        if ~isempty(eventData.Modifier) &&...
+                strcmp(eventData.Modifier{:},'control')
+            a = 1;
+        end
 end
