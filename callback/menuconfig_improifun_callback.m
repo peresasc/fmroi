@@ -28,7 +28,7 @@ if ~isempty(pn)
             [~,mainfn,~] = fileparts(pn{j});
             if isfile([pn{j},filesep,mainfn,'.m']) % tests if the method script exists (same name as its folder), otherwise skip.
                 for i = 1:length(d)
-                    if isfile(d(i).name) % tests if it is a file, otherwise skip.
+                    if isfile(fullfile(pn{j},d(i).name)) % tests if it is a file, otherwise skip.
                         filename = fullfile(pn{j},d(i).name);
                         [~,curfn,curxt] = fileparts(filename);
                         curfnxt = [curfn,curxt];
