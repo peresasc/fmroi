@@ -36,11 +36,11 @@ switch eventData.Key
     case 'add'
         if ~isempty(eventData.Modifier) &&...
                 strcmp(eventData.Modifier{:},'control')
-            a = 1;
+            fontsize_increase(hObject);
         end
     case 'subtract'
         if ~isempty(eventData.Modifier) &&...
                 strcmp(eventData.Modifier{:},'control')
-            a = 1;
+            fontsize_decrease(hObject);
         end
 end
