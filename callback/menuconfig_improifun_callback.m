@@ -11,7 +11,7 @@ function menuconfig_improifun_callback(hObject, ~)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
-pn = uigetfile_n_dir(pwd,'Select One or More Nifti Files or Folders');
+pn = uigetfile_n_dir(pwd,'Select one or more folders to be imported');
 
 
 if ~isempty(pn)
