@@ -248,10 +248,9 @@ handles.tmpdir = tmpdir;
 handles.hmenufile = hmenufile;
 handles.hmenuhelp = hmenuview;
 handles.hsubopen = hmenufile_open;
-% handles.hsub2open = hmenufile_templates2;
-% handles.hsub3open = hmenufile_templates3;
 handles.hsubexit = hmenufile_exit;
 handles.config_dir = [];
+handles.fss = 1; % font size scale
 
 
 set(hObject,'Visible','on');
