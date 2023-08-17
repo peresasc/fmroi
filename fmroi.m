@@ -20,6 +20,7 @@ addpath(fullfile(fmroirootdir,'callback'),...
     fullfile(fmroirootdir,'etc','figs'));
 
 addpath(genpath(fullfile(fmroirootdir,'toolbox')));
+addpath(genpath(fullfile(fmroirootdir,'tools')));
 addpath(genpath(fullfile(fmroirootdir,'roimethods')));
 
 tmpdir = fullfile(fmroirootdir,'tmp');
@@ -114,6 +115,9 @@ handles.menuview_showctrlpanel = uimenu(hmenuview,...
 %--------------------------------------------------------------------------
 % Create Tools menu
 hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
+
+hmenutools_print = uimenu(hmenutools, 'Label', 'Print',...
+    'Callback', @axes_screenshot);
 
 %--------------------------------------------------------------------------
 % Create Help menu
