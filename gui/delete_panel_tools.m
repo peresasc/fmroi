@@ -11,4 +11,14 @@ if isfield(handles,'panel_tools')
     handles = updatehandles(handles);
 end
 
+if isfield(handles,'panel_graphmulti')
+    if isobject(handles.panel_graphmulti)
+        if isvalid(handles.panel_graphmulti)
+            delete(handles.panel_graphmulti)
+        end
+    end
+    handles = updatehandles(handles);
+end
+
+
 guidata(handles.fig,handles);
