@@ -1,4 +1,4 @@
-function mosaic(hObject,~)
+function mosaic(hObject)
 
 handles = guidata(hObject);
 
@@ -105,5 +105,3 @@ if isfield(handles,'axannot')
 end
 
 guidata(hObject,handles)
-
-% delete(panel_graphmulti)
