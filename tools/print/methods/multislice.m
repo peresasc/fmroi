@@ -1,4 +1,14 @@
 function multislice(hObject)
+% multislice is an internal function of fMROI.
+%
+% Syntax:
+%   multislice(hObject)
+%
+% Inputs:
+%   hObject: handle of the figure that contains the fMROI main window.
+%
+% Author: Andre Peres, 2023, peres.asc@gmail.com
+% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -14,12 +24,12 @@ if isfield(handles,'panel_graphmulti')
 end
 
 %--------------------------------------------------------------------------
-% generate a new panel_graphmulti
+% generate a new blank panel_graphmulti
 panelgraph_pos = [0.26, 0.01,.73,.98];
 
 handles.panel_graphmulti = uipanel(gcf, 'BackgroundColor','k',...
-        'Units','normalized','Visible','on',...
-        'Position',panelgraph_pos,'Visible','off');
+    'Units','normalized','Visible','on',...
+    'Position',panelgraph_pos,'Visible','off');
 
 %--------------------------------------------------------------------------
 % Turns annotations and cursor visible off
@@ -58,7 +68,7 @@ end
 
 %--------------------------------------------------------------------------
 % Get parameters for generating multi slices
-
+v = handles.popup_scrshtax.Value;
 nx = round(str2double(handles.edit_scrshtnslices.String));
 s1 = round(str2double(handles.edit_scrshtinitslice.String));
 sn = round(str2double(handles.edit_scrshtlastslice.String));
@@ -86,14 +96,14 @@ for i = 1:nx
         'Position',[x,y,w,h],'Units','normalized',...
         'Box','off','XTick',[],'YTick',[],'Color','none');
 
-    set(handles.edit_pos(2,3),'String',num2str(s(i)))
+    set(handles.edit_pos(2,4-v),'String',num2str(s(i)))
     editpos_callback(handles.edit_pos(2,3),[])
 
-    pos = GetLayoutInformation(handles.ax{1,1}.ax);
+    pos = GetLayoutInformation(handles.ax{1,v}.ax);
     rect = pos.PlotBox - [0,0,2,2];
     rect(1:2) = 1;
 
-    f = getframe(handles.ax{1,1}.ax,rect);
+    f = getframe(handles.ax{1,v}.ax,rect);
     im = frame2im(f);
     d = image(im,'Parent',handles.multiax(i));
 
