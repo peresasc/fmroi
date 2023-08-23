@@ -97,7 +97,7 @@ for i = 1:nx
         'Box','off','XTick',[],'YTick',[],'Color','none');
 
     set(handles.edit_pos(2,4-v),'String',num2str(s(i)))
-    editpos_callback(handles.edit_pos(2,3),[])
+    editpos_callback(handles.edit_pos(2,4-v),[])
 
     pos = GetLayoutInformation(handles.ax{1,v}.ax);
     rect = pos.PlotBox - [0,0,2,2];
