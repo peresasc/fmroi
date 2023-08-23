@@ -68,6 +68,7 @@ end
 %--------------------------------------------------------------------------
 % Get parameters for generating multi slices
 
+v = handles.popup_scrshtax.Value;
 nx = round(str2double(handles.edit_mosaiccol.String));
 ny = round(str2double(handles.edit_mosaiclin.String));
 
@@ -104,15 +105,15 @@ for j = 1:ny % lines
             'Position',[x,y,w,h],'Units','normalized',...
             'Box','off','XTick',[],'YTick',[],'Color','none');
 
-        set(handles.edit_pos(2,3),'String',num2str(s(c)))
+        set(handles.edit_pos(2,4-v),'String',num2str(s(c)))
         editpos_callback(handles.edit_pos(2,3),[])
         
-        pos = GetLayoutInformation(handles.ax{1,1}.ax);
+        pos = GetLayoutInformation(handles.ax{1,v}.ax);
         rect = pos.PlotBox - [0,0,2,2];
         rect(1:2) = 1;
         
 
-        f = getframe(handles.ax{1,1}.ax, rect);
+        f = getframe(handles.ax{1,v}.ax,rect);
         im = frame2im(f);
         d = image(im,'Parent',handles.mosaicax(j,i));
 

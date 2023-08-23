@@ -1,15 +1,14 @@
 function axes_screenshot(hObject,~)
-% spheremask_gui is a internal function of fMROI. It creates the panel
-% and uicontrols for calling spheremask function.
+% axes_screenshot is an internal function of fMROI.
 %
 % Syntax:
-%   spheremask_gui(hObject)
+%   axes_screenshot(hObject,~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
 %
-% Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 03/08/2023, peres.asc@gmail.com
+% Author: Andre Peres, 2023, peres.asc@gmail.com
+% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
 
 
 delete_panel_tools(hObject)
@@ -21,7 +20,7 @@ fss = handles.fss; % font size scale
 
 %--------------------------------------------------------------------------
 % Set the string in the title bar
-set(handles.text_toolstitlebar,'string','Save axes screenshots')
+set(handles.text_toolstitlebar,'string','Axes screenshots')
 
 %--------------------------------------------------------------------------
 % creates the text for out path
@@ -41,9 +40,10 @@ handles.edit_outscrshtpath = uicontrol(handles.panel_tools,...
 %--------------------------------------------------------------------------
 % creates the uiputfile pushbutton
 handles.pbutton_pathscrsht = uicontrol(handles.panel_tools,...
-    'Style','PushButton','Units','normalized',...
-    'FontUnits','normalized','FontSize',fss*.7,'String','...',...
-    'Position',[.935,.73,.055,.07]); %,'Callback',@delete_panel_tools);
+    'Style','PushButton','Units','normalized','String','...',...
+    'FontUnits','normalized','FontSize',fss*.7,...
+    'Position',[.935,.73,.055,.07],...
+    'Callback',@pbutton_pathscrsht_callback);
 
 %--------------------------------------------------------------------------
 % creates the text for popup_scrshtmode
@@ -72,7 +72,7 @@ handles.pbutton_genscrsht = uicontrol(handles.panel_tools,...
 handles.pbutton_savescrsht = uicontrol(handles.panel_tools,...
     'Style','PushButton','Units','normalized','String','Save',...
     'FontUnits','normalized','FontSize',fss*.7,...
-    'Position',[.68,.6,.15,.08],'Callback',@multislice); %@mosaic); %@pbutton_savescrsht_callback);
+    'Position',[.68,.6,.15,.08],'Callback',@pbutton_savescrsht_callback);
 
 %--------------------------------------------------------------------------
 % creates the panel screenshot controls
@@ -81,3 +81,4 @@ handles.panel_scrshtctrl = uipanel(handles.panel_tools,...
     'Position',[.01,.01,.98,.56]);
 
 guidata(hObject,handles)
+popup_scrshtmode_callback(hObject,[])

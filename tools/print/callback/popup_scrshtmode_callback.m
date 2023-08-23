@@ -10,8 +10,10 @@ switch lower(scrshtmode)
 
     case 'axes'
         del_panel_graphmulti(hObject)
+        handles = guidata(hObject);
         set(handles.pbutton_genscrsht,'Enable','off')
         guidata(hObject,handles)
+        axes_gui(hObject)
 
     case 'multi-slice'
         del_panel_graphmulti(hObject)
