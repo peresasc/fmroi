@@ -49,17 +49,3 @@ if isfield(handles,'panel_graphmulti')
 end
 
 guidata(hObject,handles)
-
-
-%--------------------------------------------------------------------------
-% generate a new panel_graphmulti
-% function create_panel_graphmulti(hObject)
-% 
-% handles = guidata(hObject);
-% 
-% panelgraph_pos = [0.26, 0.01,.73,.98];
-% 
-% handles.panel_graphmulti = uipanel(gcf, 'BackgroundColor','k',...
-%         'Units','normalized','Visible','on',...
-%         'Position',panelgraph_pos,'Visible','off');
-% guidata(hObject,handles)
