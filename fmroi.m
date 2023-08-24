@@ -4,7 +4,7 @@ function fmroi()
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 16/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 24/08/2023, peres.asc@gmail.com
 
 clear global
 % set(0,'units','pixels');
@@ -33,8 +33,15 @@ templatedir = fullfile(fmroirootdir,'templates');
 if ~exist(templatedir,'dir')
    mkdir(templatedir);
 end
+
+toolsdir = fullfile(fmroirootdir,'tools');
+if ~exist(toolsdir,'dir')
+   mkdir(toolsdir);
+end
+
 handles.fmroirootdir = fmroirootdir;
 handles.tpldir = templatedir;
+handles.toolsdir = toolsdir;
 
 
 %--------------------------------------------------------------------------
@@ -114,10 +121,14 @@ handles.menuview_showctrlpanel = uimenu(hmenuview,...
 
 %--------------------------------------------------------------------------
 % Create Tools menu
-hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
+handles.hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
 
-hmenutools_print = uimenu(hmenutools, 'Label', 'Print',...
-    'Callback', @axes_screenshot);
+guidata(hObject,handles);
+updatemenutools(hObject);
+handles = guidata(hObject);
+
+% hmenutools_print = uimenu(hmenutools, 'Label', 'Print',...
+%     'Callback', @axes_screenshot);
 
 %--------------------------------------------------------------------------
 % Create Help menu
