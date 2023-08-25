@@ -21,9 +21,9 @@ if isfield(handles,'hmenutools_apps')
         if ishandle(handles.hmenutools_apps(j))
             delete(handles.hmenutools_apps(j))
         end
-        handles.hmenutools_apps = [];
     end
 end
+handles.hmenutools_apps = [];
 
 %--------------------------------------------------------------------------
 % Generate the new Load Template menu

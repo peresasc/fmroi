@@ -14,15 +14,6 @@ clear global
 
 [fmroirootdir,~,~] = fileparts(mfilename('fullpath'));
 
-addpath(fullfile(fmroirootdir,'callback'),...
-    fullfile(fmroirootdir,'gui'),...
-    fullfile(fmroirootdir,'methods'),...
-    fullfile(fmroirootdir,'etc','figs'));
-
-addpath(genpath(fullfile(fmroirootdir,'toolbox')));
-addpath(genpath(fullfile(fmroirootdir,'tools')));
-addpath(genpath(fullfile(fmroirootdir,'roimethods')));
-
 tmpdir = fullfile(fmroirootdir,'tmp');
 if exist(tmpdir,'dir')
     rmdir(tmpdir, 's');
@@ -39,9 +30,24 @@ if ~exist(toolsdir,'dir')
    mkdir(toolsdir);
 end
 
+roimethdir = fullfile(fmroirootdir,'roimethods');
+if ~exist(roimethdir,'dir')
+   mkdir(roimethdir);
+end
+
 handles.fmroirootdir = fmroirootdir;
 handles.tpldir = templatedir;
 handles.toolsdir = toolsdir;
+handles.roimethdir = roimethdir;
+
+addpath(fullfile(fmroirootdir,'callback'),...
+    fullfile(fmroirootdir,'gui'),...
+    fullfile(fmroirootdir,'methods'),...
+    fullfile(fmroirootdir,'etc','figs'));
+
+addpath(genpath(fullfile(fmroirootdir,'toolbox')));
+addpath(genpath(handles.toolsdir));
+addpath(genpath(handles.roimethdir));
 
 
 %--------------------------------------------------------------------------

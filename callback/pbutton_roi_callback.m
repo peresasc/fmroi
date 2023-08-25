@@ -61,8 +61,13 @@ v = get(handles.popup_roitype,'Value');
 s = get(handles.popup_roitype,'String');
 roimth = s{v};
 
-mthcallerpath = fullfile(handles.fmroirootdir,...
-    'roimethods','gui',[roimth,'_caller.m']);
+fs = dir([handles.roimethdir,filesep,'**',filesep,roimth,'_caller.m']);
+
+if isempty(fs)
+    mthcallerpath = '';
+else
+    mthcallerpath = fullfile(fs.folder,fs.name);
+end
 
 if isfile(mthcallerpath)
     [args, ~] = get_arg_names(mthcallerpath);
@@ -74,8 +79,14 @@ if isfile(mthcallerpath)
     mask = feval([roimth,'_caller'],args{:});
     handles = guidata(hObject);
 else
-    methodpath = fullfile(handles.fmroirootdir,...
-        'roimethods','methods',[roimth,'.m']);    
+    fs = dir([handles.roimethdir,filesep,'**',filesep,roimth,'.m']);
+
+    if isempty(fs)
+        methodpath = '';
+    else
+        methodpath = fullfile(fs.folder,fs.name);
+    end
+    
     [args, ~] = get_arg_names(methodpath);    
     args = args{1};
     argsidx = 1:length(args);
