@@ -86,22 +86,28 @@ hmenufile_exit = uimenu(hmenufile, 'Label', 'Exit',...
 
 %--------------------------------------------------------------------------
 % Create Config Menu
-hmenuconfig = uimenu('Label', 'Config', 'Parent', hObject);
+hmenuconfig = uimenu('Label','Config','Parent',hObject);
 
-hmenuconfig_imptpl = uimenu(hmenuconfig, 'Label', 'Import template',...
-     'Callback', @menuconfig_imptpl_callback);
+hmenuconfig_imptpl = uimenu(hmenuconfig,'Label','Import template',...
+     'Callback',@menuconfig_imptpl_callback);
 
 hmenuconfig_cleartpl = uimenu(hmenuconfig,'Label','Clear template folder',...
-    'Callback', @menuconfig_cleartpl_callback);
+    'Callback',@menuconfig_cleartpl_callback);
 
 hmenuconfig_restoretpl = uimenu(hmenuconfig,'Label','Restore default templates',...
-    'Callback', @menuconfig_restoretpl_callback);
+    'Callback',@menuconfig_restoretpl_callback);
 
-hmenuconfig_improifun = uimenu(hmenuconfig, 'Label', 'Import ROI function',...
-    'Callback', @menuconfig_improifun_callback);
+hmenuconfig_improifun = uimenu(hmenuconfig,'Label','Import ROI function',...
+    'Callback',@menuconfig_improifun_callback);
 
-hmenuconfig_restoreroifun = uimenu(hmenuconfig, 'Label', 'Restore default ROI functions',...
-    'Callback', @menuconfig_restoreroifun_callback);
+hmenuconfig_restoreroifun = uimenu(hmenuconfig,'Label','Restore default ROI functions',...
+    'Callback',@menuconfig_restoreroifun_callback);
+
+hmenuconfig_imptools = uimenu(hmenuconfig,'Label','Import tools',...
+    'Callback',@menuconfig_imptools_callback);
+
+hmenuconfig_restoretools = uimenu(hmenuconfig,'Label','Restore default tools',...
+    'Callback',@menuconfig_restoretools);
 
 %--------------------------------------------------------------------------
 % Create View menu
