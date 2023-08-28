@@ -18,10 +18,11 @@ function mask = regiongrowingmask_caller(hObject,srcvol,curpos)
 
 handles = guidata(hObject);
 
-premaskmth = lower(...
-    handles.buttongroup_growingpremask.SelectedObject.String);
+npmktype = get(handles.popup_growingpremasktype,'Value');
+spmk = get(handles.popup_growingpremasktype,'String');
+premaskmth = spmk{npmktype};
 
-switch premaskmth
+switch lower(premaskmth)
     case 'mask'
         premask = img2mask_caller(hObject,'premask');
         handles = guidata(hObject);
