@@ -19,8 +19,16 @@ fss = handles.fss; % font size scale
 v = get(handles.popup_roitype,'Value');
 s = get(handles.popup_roitype,'String');
 roimth = s{v};
-methodpath = fullfile(handles.fmroirootdir,...
-    'roimethods','methods',[roimth,'.m']);
+% methodpath = fullfile(handles.fmroirootdir,...
+%     'roimethods','methods',[roimth,'.m']);
+
+fs = dir([handles.roimethdir,filesep,'**',filesep,roimth,'.m']);
+
+if isempty(fs)
+    methodpath = '';
+else
+    methodpath = fullfile(fs.folder,fs.name);
+end
 
 [args, ~] = get_arg_names(methodpath);
 args = args{1};
