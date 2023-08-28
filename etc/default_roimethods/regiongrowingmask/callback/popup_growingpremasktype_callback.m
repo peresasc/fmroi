@@ -1,21 +1,19 @@
-function radiobutton_growingpremask_callback(hObject, ~)
-% radiobutton_growingpremask_callback is an internal function of fMROI.
+function popup_growingpremasktype_callback(hObject, ~)
+% popup_growingpremasktype_callback is an internal function of fMROI.
 %
 % Syntax:
-%   radiobutton_growingpremask_callback(hObject, ~)
+%   popup_growingpremasktype_callback(hObject, ~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/08/2023, peres.asc@gmail.com
 
 handles = guidata(hObject);
 v = get(handles.popup_growingpremasktype,'Value');
 s = get(handles.popup_growingpremasktype,'String');
 premaskmth = lower(s{v});
-
-% premaskmth = lower(handles.buttongroup_growingpremask.SelectedObject.String);
 
 switch premaskmth
     case 'mask'
