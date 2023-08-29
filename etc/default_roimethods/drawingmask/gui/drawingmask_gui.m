@@ -1,9 +1,9 @@
 function drawingmask_gui(hObject)
-% regiongrowingmask_gui is a internal function of fMROI. It creates the
+% drawingmask_gui is a internal function of fMROI. It creates the
 % panel and uicontrols for calling regiongrowingmask function.
 %
 % Syntax:
-%   regiongrowingmask_gui(hObject)
+%   drawingmask_gui(hObject)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.

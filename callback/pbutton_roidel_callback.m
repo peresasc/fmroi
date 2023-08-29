@@ -30,6 +30,10 @@ if isfield(st,'roimasks') && ~isempty(st.roimasks)
     updateroitable(hObject)
     handles = guidata(hObject);
 
+    guidata(hObject, handles);
+    popup_roitype_callback(hObject);
+    handles = guidata(hObject);
+
     jtable.changeSelection(0,1, false, false);
     guidata(hObject, handles);
 

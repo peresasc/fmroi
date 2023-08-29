@@ -104,9 +104,15 @@ else
     end
 
     set(handles.table_roilut,'Data',datalut);
+    % if get(handles.tbutton_lcsrcsel,'Value')
+    %     set(handles.popup_lcmask,'String',datalut)
+    % end
+    
     if get(handles.tbutton_lcsrcsel,'Value')
-        set(handles.popup_lcmask,'String',datalut)
+        roinamelist = get(handles.table_roilut,'Data');
+        set(handles.popup_lcmask,'String',roinamelist(:,2))
     end
+
     guidata(hObject, handles);
 
     %--------------------------------------------------------------------------
@@ -161,8 +167,6 @@ else
     handles.imgprop(ucidx).imgmax_alg = imgmax_alg;
     handles.imgprop(ucidx).imgmax_exp = imgmax_exp;
 
-    %         minthrs0 = handles.imgprop(ucidx).minthrs;
-    %         minthrs0*(clim0(2)-clim0(1))+clim0(1);
     minthrs0_value = .01; % remove zeros from uc image
     minthrs = (minthrs0_value-st.vols{ucidx}.clim(1))/...
         (st.vols{ucidx}.clim(2)-st.vols{ucidx}.clim(1));
@@ -200,18 +204,5 @@ else
         draw_isosurface(hObject, mask)
         handles = guidata(hObject);
     end
-    %     mask = zeros(size(st.roimasks{1}));
-    %     for i = 1:length(st.roimasks)
-    %         mask(logical(st.roimasks{i})) =...
-    %             st.roimasks{i}(logical(st.roimasks{i}));
-    %     end
-    %
-    %     draw_isosurface(hObject, mask)
-    %     handles = guidata(hObject);
-    %
-    %     set(handles.checkbox_rendering,'Value',1);
-    %
-    %     ucidx = find(~cellfun(@isempty,st.vols), 1, 'last');
-    %     handles.imgprop(ucidx).viewrender = 1;
 end
 guidata(hObject, handles);

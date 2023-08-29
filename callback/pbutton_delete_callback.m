@@ -75,11 +75,16 @@ if ~isempty(n_image)
     if contains(delfilename,'roi_under-construction')
         st = rmfield(st,'roimasks');
         set(handles.table_roilut,'Data',cell(1,6));
+
+        guidata(hObject, handles);
+        popup_roitype_callback(hObject);
+        handles = guidata(hObject);
         
         if get(handles.tbutton_lcsrcsel,'Value')
-            imgnamelist = get(handles.table_roilut,'Data');
-            set(handles.popup_lcmask,'String',imgnamelist(:,2))
+            roinamelist = get(handles.table_roilut,'Data');
+            set(handles.popup_lcmask,'String',roinamelist(:,2))
         end
+        
     end
     
     guidata(hObject, handles);
