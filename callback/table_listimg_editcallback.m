@@ -22,11 +22,11 @@ if eventData.Indices(2) == 1
     
     
     if handles.imgprop(n).viewslices
-        for i = 1:3
+        for i = 1:4
             handles.ax{n,i}.d.Visible = 'on';
         end
     else
-        for i = 1:3
+        for i = 1:4
             handles.ax{n,i}.d.Visible = 'off';
         end
     end
