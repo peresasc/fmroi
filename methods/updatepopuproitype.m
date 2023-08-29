@@ -13,13 +13,27 @@ function updatepopuproitype(hObject)
 
 handles = guidata(hObject);
 
-methodspath = fullfile(handles.fmroirootdir,'roimethods','methods','*.m');
-methodstruc = dir(methodspath);
+% methodspath = fullfile(handles.fmroirootdir,'roimethods','methods','*.m');
+% methodstruc = dir(methodspath);
 
-roimth = cell(length(methodstruc),1);
-for i = 1:length(methodstruc)
-[~,roimth{i},~] = fileparts(methodstruc(i).name);
+dn = dir(handles.roimethdir);
+
+auxdel = [];
+for i = 1:length(dn)
+    if strcmp(dn(i).name,'.') || strcmp(dn(i).name,'..') || ~dn(i).isdir
+        auxdel = [auxdel,i];
+    end
 end
+dn(auxdel) = [];
+
+roimth = cell(length(dn),1);
+for i = 1:length(dn)
+roimth{i} = dn(i).name;
+end
+
+% for i = 1:length(methodstruc)
+% [~,roimth{i},~] = fileparts(methodstruc(i).name);
+% end
 
 set(handles.popup_roitype,'String',roimth)
 

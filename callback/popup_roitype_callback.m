@@ -26,8 +26,14 @@ end
 v = get(handles.popup_roitype,'Value');
 s = get(handles.popup_roitype,'String');
 roimth = s{v};
-mthguipath = fullfile(handles.fmroirootdir,...
-    'roimethods','gui',[roimth,'_gui.m']);
+
+fs = dir([handles.roimethdir,filesep,'**',filesep,roimth,'_gui.m']);
+
+if isempty(fs)
+    mthguipath = '';
+else
+    mthguipath = fullfile(fs.folder,fs.name);
+end
 
 guidata(hObject, handles)
 if isfile(mthguipath)

@@ -28,7 +28,7 @@ if ~isempty(pn)
     end
 
     % Update the templates submenus
-    guidata(hObject,handles);
-    updatemenutools(hObject);
+    guidata(hObject,handles)
+    updatemenutools(hObject)
 end
 
