@@ -28,8 +28,7 @@ end
 panelgraph_pos = [0.26, 0.01,.73,.98];
 
 handles.panel_graphmulti = uipanel(gcf, 'BackgroundColor','k',...
-    'Units','normalized','Visible','on',...
-    'Position',panelgraph_pos,'Visible','off');
+    'Units','normalized','Position',panelgraph_pos,'Visible','off');
 
 %--------------------------------------------------------------------------
 % Turns annotations and cursor visible off
