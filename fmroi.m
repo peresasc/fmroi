@@ -1,16 +1,19 @@
 function fmroi()
-% fMROI is a software dedicated to create ROIs in fMRI images...
+% fMROI is a powerful and user-friendly software designed to simplify ROI
+% creation and enhance neuroimage visualization. Developed with a focus on
+% ease of use and compatibility, fMROI offers a range of features that make
+% it an ideal tool for researchers in the field of neuroimaging.
+% 
+% Visit the user guide webpage for usage instructions:
+% https://fmroi-docs.readthedocs.io
 %
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 24/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 30/08/2023, peres.asc@gmail.com
 
 clear global
-% set(0,'units','pixels');
-% scnsize = get(0,'screensize');
-% figw = ceil(scnsize(3)*0.9);
-% figh = floor(scnsize(4)*0.8);
+
 
 [fmroirootdir,~,~] = fileparts(mfilename('fullpath'));
 
@@ -71,10 +74,10 @@ handles.mousehold = 0;
 handles.toolbar = 0;
 %--------------------------------------------------------------------------
 % creates the menu File
-hmenufile = uimenu('Label', 'File', 'Parent', hObject);
+hmenufile = uimenu('Label','File','Parent',hObject);
 
 % Open submenus
-hmenufile_open = uimenu(hmenufile, 'Label', 'Open',...
+hmenufile_open = uimenu(hmenufile,'Label','Open',...
     'Callback', @menufile_open_callback);
 
 % Load Template submenu
@@ -87,11 +90,11 @@ updatemenutemplate(hObject);
 handles = guidata(hObject);
 
 % Load ROIs submenu
-hmenufile_roi = uimenu(hmenufile, 'Label', 'Load ROIs',...
+hmenufile_roi = uimenu(hmenufile,'Label','Load ROIs',...
     'Callback', @menufile_roiopen_callback);
 
 % Exit submenu
-hmenufile_exit = uimenu(hmenufile, 'Label', 'Exit',...
+hmenufile_exit = uimenu(hmenufile,'Label','Exit',...
     'Callback', @menufile_exit_callback);
 
 %--------------------------------------------------------------------------
@@ -101,34 +104,40 @@ hmenuconfig = uimenu('Label','Config','Parent',hObject);
 hmenuconfig_imptpl = uimenu(hmenuconfig,'Label','Import template',...
      'Callback',@menuconfig_imptpl_callback);
 
-hmenuconfig_cleartpl = uimenu(hmenuconfig,'Label','Clear template folder',...
+hmenuconfig_cleartpl = uimenu(hmenuconfig,...
+    'Label','Clear template folder',...
     'Callback',@menuconfig_cleartpl_callback);
 
-hmenuconfig_restoretpl = uimenu(hmenuconfig,'Label','Restore default templates',...
+hmenuconfig_restoretpl = uimenu(hmenuconfig,...
+    'Label','Restore default templates',...
     'Callback',@menuconfig_restoretpl_callback);
 
-hmenuconfig_improifun = uimenu(hmenuconfig,'Label','Import ROI function',...
+hmenuconfig_improifun = uimenu(hmenuconfig,...
+    'Label','Import ROI function',...
     'Callback',@menuconfig_improifun_callback);
 
-hmenuconfig_restoreroifun = uimenu(hmenuconfig,'Label','Restore default ROI functions',...
+hmenuconfig_restoreroifun = uimenu(hmenuconfig,...
+    'Label','Restore default ROI functions',...
     'Callback',@menuconfig_restoreroifun_callback);
 
-hmenuconfig_imptools = uimenu(hmenuconfig,'Label','Import tools',...
+hmenuconfig_imptools = uimenu(hmenuconfig,...
+    'Label','Import tools',...
     'Callback',@menuconfig_imptools_callback);
 
-hmenuconfig_restoretools = uimenu(hmenuconfig,'Label','Restore default tools',...
+hmenuconfig_restoretools = uimenu(hmenuconfig,...
+    'Label','Restore default tools',...
     'Callback',@menuconfig_restoretools);
 
 %--------------------------------------------------------------------------
 % Create View menu
 
-hmenuview = uimenu('Label', 'View', 'Parent', hObject);
+hmenuview = uimenu('Label','View','Parent',hObject);
 
-hmenuconfig_dplres = uimenu(hmenuview, 'Label', 'Display resolution',...
-    'Callback', @menuconfig_dplres_callback);
+hmenuconfig_dplres = uimenu(hmenuview,'Label','Display resolution',...
+    'Callback',@menuconfig_dplres_callback);
 
 hmenuview_showquickguide = uimenu(hmenuview,'Label','Show quick guide',...
-    'Callback', @menuhelp_showquickguide_callback);
+    'Callback',@menuhelp_showquickguide_callback);
 
 handles.menuview_showctrlpanel = uimenu(hmenuview,...
     'Label','Show Control Panel','Enable','off',...
@@ -137,58 +146,55 @@ handles.menuview_showctrlpanel = uimenu(hmenuview,...
 
 %--------------------------------------------------------------------------
 % Create Tools menu
-handles.hmenutools = uimenu('Label', 'Tools', 'Parent', hObject);
+handles.hmenutools = uimenu('Label','Tools','Parent',hObject);
 
 guidata(hObject,handles);
 updatemenutools(hObject);
 handles = guidata(hObject);
 
-% hmenutools_print = uimenu(hmenutools, 'Label', 'Print',...
-%     'Callback', @axes_screenshot);
-
 %--------------------------------------------------------------------------
 % Create Help menu
-hmenuhelp = uimenu('Label', 'Help', 'Parent', hObject);
+hmenuhelp = uimenu('Label','Help','Parent',hObject);
 
 hmenuhelp_about = uimenu(hmenuhelp,'Label','About',...
-    'Callback', @menuhelp_about_callback);
+    'Callback',@menuhelp_about_callback);
 
 hmenuhelp_showquickguide = uimenu(hmenuhelp,'Label','Show quick guide',...
-    'Callback', @menuhelp_showquickguide_callback);
+    'Callback',@menuhelp_showquickguide_callback);
 
 hmenuhelp_documentation = uimenu(hmenuhelp,'Label','Documentation',...
-    'Callback', @(src,event)web(handles.webdoc));
+    'Callback',@(src,event)web(handles.webdoc));
 
 hmenuhelp_github = uimenu(hmenuhelp,'Label','Github webpage',...
-    'Callback', @(src,event)web(handles.github));
+    'Callback',@(src,event)web(handles.github));
 
 %--------------------------------------------------------------------------
 % creates the Axes Panel
 
-panelgraph_pos = [0.26, 0.01, 0.365, 0.49;...
-                  0.26, 0.5, 0.365, 0.49;...
-                  0.625, 0.5, 0.365, 0.49;...
-                  0.625, 0.01, 0.365, 0.49];
+panelgraph_pos = [.26,.01,.365,.49;...
+                  .26,.5,.365,.49;...
+                  .625,.5,.365,.49;...
+                  .625,.01,.365,.49];
 
 for i = 1:4
-    handles.panel_graph(i) = uipanel(hObject, 'BackgroundColor', 'k', ...
-        'Units', 'normalized', 'Visible', 'on',...
-        'Position', panelgraph_pos(i,:));
+    handles.panel_graph(i) = uipanel(hObject,'BackgroundColor','k',...
+        'Units','normalized','Visible','on',...
+        'Position',panelgraph_pos(i,:));
 end
 
 %--------------------------------------------------------------------------
 % creates the Control Panel and Welcome panel
-panelcontrol_pos = [0.01, 0.01, 0.24, 0.98];
+panelcontrol_pos = [.01,.01,.24,.98];
 
-handles.panel_logo = uipanel(hObject, 'BackgroundColor', 'w', ...
-    'Units', 'normalized', 'Position', panelcontrol_pos,'Tag','panel_logo');
+handles.panel_logo = uipanel(hObject,'BackgroundColor','w',...
+    'Units','normalized','Position',panelcontrol_pos,'Tag','panel_logo');
 
-handles.panel_control = uipanel(hObject, 'BackgroundColor', 'w', ...
-    'Units', 'normalized', 'Position', panelcontrol_pos);
+handles.panel_control = uipanel(hObject,'BackgroundColor','w',...
+    'Units','normalized','Position',panelcontrol_pos);
 
 %--------------------------------------------------------------------------
 % creates the Welcome text
-wt = {['Welcome to ',handles.version];...
+qgtext = {['Welcome to ',handles.version];...
     '';...
     ['fMROI is a free software designed to create regions of',...
     'interest (ROI) in functional magnetic resonance imaging',...
@@ -221,47 +227,31 @@ wt = {['Welcome to ',handles.version];...
     'https://github.com/Proaction-Lab/fmroi'};
 
 
-textquickguidepos = [0.01, 0.35, 0.98, 0.64];
-
-handles.text_quickguide = uicontrol(handles.panel_logo, 'Style', 'text',...
-        'Units', 'normalized', 'String', wt,...
-        'BackgroundColor','w','FontUnits','normalized', 'FontSize', 1/45,...
-        'HorizontalAlignment', 'left','Position', textquickguidepos);
+handles.text_quickguide = uicontrol(handles.panel_logo,'Style','text',...
+        'Units','normalized','String',qgtext,...
+        'BackgroundColor','w','FontUnits','normalized','FontSize',1/45,...
+        'HorizontalAlignment','left','Position',[.01,.35,.98,.64]);
 
 %--------------------------------------------------------------------------
 % creates the Logo axis and text
-axeslogo_pos = [0.2545,0.12,0.4711,0.2000];
 
-handles.axislogo = axes('Parent', handles.panel_logo,'Position',axeslogo_pos, 'Box', 'off',...
-    'Units', 'normalized','XTick', [],'YTick', []);
+handles.axislogo = axes('Parent',handles.panel_logo,...
+    'Box','off','Units','normalized','XTick',[],'YTick',[],...
+    'Position',[.2545,.12,.4711,.2000]);
             
 imshow(fullfile(fmroirootdir,'etc','figs','fmroi_logo.png'))
 
-set(handles.axislogo, 'Tag', 'axislogo')
+set(handles.axislogo,'Tag','axislogo')
 
 logocaption = {'Maintained by members and collaborators of';...
     'Proaction Lab - FPCE, University of Coimbra';...
     'Rua do Colégio Novo - 3001-802 Coimbra, Portugal';...
     'https://proactionlab.fpce.uc.pt'};
 
-textlogopos = [0.01, 0.01, 0.98, 0.09];
-handles.textlogo = uicontrol(handles.panel_logo, 'Style', 'text',...
-    'Units', 'normalized', 'String', logocaption,'FontUnits','normalized',...
-    'BackgroundColor', [1 1 1], 'FontSize', 1/6,'FontAngle','italic',...
-        'HorizontalAlignment', 'center','Position', textlogopos);
-
-% %--------------------------------------------------------------------------
-% % creates the Logo axis and text
-% axeslogo_pos = [0 0 1 1];
-% 
-% handles.axislogo = axes('Parent', handles.panel_logo,'Position',axeslogo_pos, 'Box', 'off',...
-%     'Units', 'normalized','XTick', [],'YTick', []);
-% 
-% auximg = imread(fullfile(fmroirootdir,'etc','figs','quickguide.png'));
-% auximgsharp = imsharpen(auximg);
-% imshow(auximgsharp,'Interpolation','bilinear')
-% 
-% set(handles.axislogo, 'Tag', 'axislogo')
+handles.textlogo = uicontrol(handles.panel_logo,'Style','text',...
+    'Units','normalized','String',logocaption,'FontUnits','normalized',...
+    'BackgroundColor','w','FontSize',1/6,'FontAngle','italic',...
+    'HorizontalAlignment','center','Position',[.01,.01,.98,.09]);
 
 %--------------------------------------------------------------------------
 % creates the Control Panel objects
@@ -270,6 +260,7 @@ create_panel_mainctrl(hObject);
 handles = guidata(hObject);
 
 set(handles.panel_control,'Visible','off');
+
 %--------------------------------------------------------------------------
 % Set the objects to handles
 
@@ -282,21 +273,21 @@ handles.hsubexit = hmenufile_exit;
 handles.config_dir = [];
 handles.fss = 1; % font size scale
 
-
 set(hObject,'Visible','on');
 
-% Update handles structure
 guidata(hObject,handles);
 
+%--------------------------------------------------------------------------
+% fMROI internal functions
 function menufile_exit_callback(hObject, ~)
+
 handles = guidata(hObject);
 selection = questdlg('Do you want to exit fMROI?',...
-      'Exit fMROI',...
-      'Yes','No','Yes'); 
-   switch selection 
-      case 'Yes'
-         delete(handles.fig)
-      case 'No'
-      return
-   end
-% close(handles.fig)
+    'Exit fMROI',...
+    'Yes','No','Yes');
+switch selection
+    case 'Yes'
+        delete(handles.fig)
+    case 'No'
+        return
+end
