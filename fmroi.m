@@ -153,7 +153,7 @@ hmenuhelp_showquickguide = uimenu(hmenuhelp,'Label','Show quick guide',...
     'Callback', @menuhelp_showquickguide_callback);
 
 hmenuhelp_documentation = uimenu(hmenuhelp,'Label','Documentation',...
-    'Callback', @menuhelp_forward_to_documentation);
+    'Callback', @menuhelp_webdoc_callback);
 
 %--------------------------------------------------------------------------
 % creates the Axes Panel
