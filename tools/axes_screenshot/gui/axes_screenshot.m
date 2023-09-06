@@ -20,7 +20,7 @@ fss = handles.fss; % font size scale
 
 %--------------------------------------------------------------------------
 % Set the string in the title bar
-set(handles.text_toolstitlebar,'string','Axes screenshots')
+set(handles.text_toolstitlebar,'string','Axes screenshot')
 
 %--------------------------------------------------------------------------
 % creates the text for out path
