@@ -910,7 +910,11 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask'};
+% datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask'};
+datadir = {'/home/andre/github/tmp/dataset/fmroi-drawmask/';...
+            '/home/andre/github/tmp/dataset/afni-drawmask';...
+            '/home/andre/github/tmp/dataset/fsl-drawmask';...
+            '/home/andre/github/tmp/dataset/mricrogl-drawmask'};
     
 % '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-drawmask';...
@@ -918,13 +922,15 @@ datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask'};
 
 %--------------------------------------------------------------------------
 % Loads the template images
-vsrc = spm_vol('/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
+% vsrc = spm_vol('/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
+vsrc = spm_vol('/home/andre/github/tmp/dataset/templates/complex-shapes.nii.gz');
 srcvol = spm_data_read(vsrc);
 srcvol(srcvol~=1) = 0;
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc';
+% rootoutdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc';
+rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
