@@ -50,7 +50,7 @@ GNU GENERAL PUBLIC LICENSE
 
 ## Development
 
-Want to contribute? Great! Send an email to ***proactiondev@uc.pt***.
+Want to contribute? Great! Contact Andre Peres at ***peres.asc@gmail.com***.
 
 **Default argument names used by roi algoritms:**
 
