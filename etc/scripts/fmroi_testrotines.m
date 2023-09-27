@@ -353,14 +353,15 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask'};
+datadir = {'/media/andre/data8t/rois_Fer/afni-img2mask'};
+%     '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
 %     '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/spm-img2mask'};
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
+rootoutdir = '/media/andre/data8t/rois_Fer/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
@@ -400,9 +401,9 @@ for d = 1:length(datadir) % loop for all evaluated ROI algorithms
             (strfind(roinames{i},'_threshold_')-1));
         switch srcvolstr 
             case 'dmn'
-                srcpath = '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz';
+                srcpath = '/media/andre/data8t/rois_Fer/scripts/default_mode_association-test_z_FDR_0.01.nii'; % '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz';
             case 'syndata'
-                srcpath = '/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii';
+                srcpath = '/media/andre/data8t/rois_Fer/scripts/syntheticdata.nii'; %'/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii';
         end
         vsrc = spm_vol(srcpath);
         srcvol = spm_data_read(vsrc);
