@@ -353,7 +353,7 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/media/andre/data8t/rois_Fer/afni-img2mask'};
+datadir = {'/home/andre/MRIcroGL/mystuff/mricrogl-img2mask'};
 %     '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
 %     '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
@@ -361,7 +361,7 @@ datadir = {'/media/andre/data8t/rois_Fer/afni-img2mask'};
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/media/andre/data8t/rois_Fer/fmroi_qc';
+rootoutdir = '/home/andre/MRIcroGL/mystuff';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
