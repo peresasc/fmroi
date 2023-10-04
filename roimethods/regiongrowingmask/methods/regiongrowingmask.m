@@ -1,4 +1,4 @@
-function mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premask)
+function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,varargin)
 % regiongrowingmask is a region growing algorithm that groups neighboring
 % voxels from a seed iteratively according to a rule. The regiongrowingmask
 % has three rules for growing (grwmode), ascending, descending and 
@@ -40,6 +40,23 @@ function mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premas
 %==========================================================================
 % HEADER
 %==========================================================================
+if ischar(srcvol)
+    srcpath = srcvol;
+    v = spm_vol(srcvol);
+    auxdata = spm_data_read(v);
+    
+    clear srcvol
+    srcvol = auxdata;
+end
+
+if ischar(premask)
+    v = spm_vol(premask);
+    auxpremask = spm_data_read(v);
+    
+    clear premask
+    premask = auxpremask;
+end
+
 if seed(1) < 1 || seed(2) < 1 || seed(3) < 1 ||...
         seed(1) > size(srcvol,1) || seed(2) > size(srcvol,2) ||...
         seed(3) > size(srcvol,3)
@@ -166,4 +183,17 @@ while size(neighbors, 1)
         end
     end
 
+end
+
+%--------------------------------------------------------------------------
+% Save mask to a nifti file
+if ~isempty(varargin)
+    [pn,fn,~] = fileparts(varargin{1});
+    if ~isempty(pn) && ~exist(pn,'dir')
+        mkdir(pn);
+    end
+
+    outpath = fullfile(pn,[fn,'.nii']);
+    mask = uint16(mask);
+    mat2nii(mask,srcpath,outpath)
 end

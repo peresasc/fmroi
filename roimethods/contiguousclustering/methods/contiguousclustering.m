@@ -1,4 +1,4 @@
-function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz)
+function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz,varargin)
 % contiguousclustering group contiguous volxels (if their faces touch).
 % If minthrs is lower than maxthrs, contiguousclustering consider as input
 % those voxels that have values that are lower than minthrs and bigger than
@@ -23,6 +23,15 @@ function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz)
 % Author: Andre Peres, 2019, peres.asc@gmail.com
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
+if ischar(srcvol)
+    srcpath = srcvol;
+    v = spm_vol(srcvol);
+    auxdata = spm_data_read(v);
+    
+    clear srcvol
+    srcvol = auxdata;
+end
+
 bwimg = img2mask(srcvol,minthrs,maxthrs);
 mask = zeros(size(bwimg));
 auxclt = bwconncomp(bwimg,6);
@@ -34,4 +43,17 @@ for i = 1:length(clt)
         count = count +1;
         mask(clt{i}) = count;
     end
+end
+
+%--------------------------------------------------------------------------
+% Save mask to a nifti file
+if ~isempty(varargin)
+    [pn,fn,~] = fileparts(varargin{1});
+    if ~isempty(pn) && ~exist(pn,'dir')
+        mkdir(pn);
+    end
+
+    outpath = fullfile(pn,[fn,'.nii']);
+    mask = uint16(mask);
+    mat2nii(mask,srcpath,outpath)
 end

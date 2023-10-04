@@ -1,4 +1,4 @@
-function mask = img2mask(srcvol,minthrs,maxthrs)
+function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 % img2mask creates a mask determined by the minthrs and maxthrs intensity
 % thresholds. If minthrs is lower than maxthrs, img2mask set to zero those
 % voxels that have values that are lower than minthrs and bigger than
@@ -23,6 +23,7 @@ function mask = img2mask(srcvol,minthrs,maxthrs)
 
 
 if ischar(srcvol)
+    srcpath = srcvol;
     v = spm_vol(srcvol);
     auxdata = spm_data_read(v);
     
@@ -38,3 +39,16 @@ end
 
 mask = zeros(size(srcvol));
 mask(z) = 1;
+
+%--------------------------------------------------------------------------
+% Save mask to a nifti file
+if ~isempty(varargin)
+    [pn,fn,~] = fileparts(varargin{1});
+    if ~isempty(pn) && ~exist(pn,'dir')
+        mkdir(pn);
+    end
+
+    outpath = fullfile(pn,[fn,'.nii']);
+    mask = uint16(mask);
+    mat2nii(mask,srcpath,outpath)
+end
