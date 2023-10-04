@@ -5,7 +5,7 @@ function mask = cubicmask(srcvol,curpos,nvoxels,mode,varargin)
 % 1 and all other voxels are set to 0.
 % 
 % Syntax:
-%   mask = cubicmask(vol,curpos,nvoxel,mode)
+%   mask = cubicmask(vol,curpos,nvoxel,mode,varargin)
 % 
 % Inputs:
 %    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.

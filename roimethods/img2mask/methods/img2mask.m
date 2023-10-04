@@ -8,7 +8,7 @@ function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 % mask = srcvol >= minthrs | srcvol <= maxthrs;
 %
 % Syntax:
-%   mask = img2mask(srcvol,minthrs,maxthrs)
+%   mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 % 
 % Inputs:
 %    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.

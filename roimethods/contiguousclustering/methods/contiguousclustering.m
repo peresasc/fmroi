@@ -7,7 +7,7 @@ function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz,varargin)
 % clusters that have less elements than mincltsz are eliminated.
 %
 % Syntax:
-%   mask = contiguousclustering(data,minthrs,maxthrs,mincltsz)
+%   mask = contiguousclustering(data,minthrs,maxthrs,mincltsz,varargin)
 % 
 % Inputs:
 %     srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI

@@ -5,7 +5,7 @@ function mask = spheremask(srcvol,curpos,nvoxels,mode,varargin)
 % 1 and all other voxels are set to 0.
 %
 % Syntax:
-%   mask = spheremask(srcvol,curpos,nvoxels,mode)
+%   mask = spheremask(srcvol,curpos,nvoxels,mode,varargin)
 %
 % Inputs:
 %    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.

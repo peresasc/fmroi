@@ -3,7 +3,7 @@ function mask = maxkmask(srcvol,premask,kvox,varargin)
 % contained in the region defined by premask. 
 %
 % Syntax:
-%   mask = maxkmask(srcvol,premask,kvox)
+%   mask = maxkmask(srcvol,premask,kvox,varargin)
 % 
 % Inputs:
 %    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.

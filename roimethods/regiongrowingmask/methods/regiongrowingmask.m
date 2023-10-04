@@ -8,8 +8,8 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 % (diffratio).
 %
 % Syntax:
-%   mask = regiongrowingmask(srcvol, seed, diffratio, tfMean, grwmeth,...
-%                            nvox, premask)
+%   mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,...
+%                            varargin)
 %
 % Inputs:
 %      srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI
