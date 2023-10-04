@@ -12,7 +12,8 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 %                            nvox, premask)
 %
 % Inputs:
-%      srcvol: 3D matrix, usually a data volume from a nifti file.
+%      srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI
+%              template.
 %        seed: 3D integer vector with the initial position for the growing
 %              algorithm.
 %   diffratio: Scalar that defines the maximum magnitude difference of the
@@ -35,7 +36,7 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 %      mask: Binary 3D matrix with the same size as srcvol.
 %
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
-%  Last update: Andre Peres, 15/07/2022, peres.asc@gmail.com
+%  Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com
 
 %==========================================================================
 % HEADER

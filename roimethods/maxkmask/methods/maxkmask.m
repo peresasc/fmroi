@@ -6,7 +6,7 @@ function mask = maxkmask(srcvol,premask,kvox,varargin)
 %   mask = maxkmask(srcvol,premask,kvox)
 % 
 % Inputs:
-%    srcvol: 3D matrix, usually a data volume from a nifti file.
+%    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.
 %   premask: Binary 3D matrix with same size as srcvol. If premask is not
 %            a binary matrix, maxkmask will consider as ROI all non-zero
 %            elements.
@@ -16,7 +16,7 @@ function mask = maxkmask(srcvol,premask,kvox,varargin)
 %      mask: Binary 3D matrix with the same size as srcvol.
 % 
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
-%  Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+%  Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com
 
 if ischar(srcvol)
     srcpath = srcvol;

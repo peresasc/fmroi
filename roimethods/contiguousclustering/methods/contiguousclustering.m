@@ -10,7 +10,8 @@ function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz,varargin)
 %   mask = contiguousclustering(data,minthrs,maxthrs,mincltsz)
 % 
 % Inputs:
-%     srcvol: 3D matrix, usually a data volume from a nifti file.
+%     srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI
+%             template.
 %    minthrs: Scalar - Minimum threshold intensity. 
 %    maxthrs: Scalar - Maximum threshold intensity.
 %   mincltsz: Scalar - Minimum cluster size, clusters that have less
@@ -21,7 +22,7 @@ function mask = contiguousclustering(srcvol,minthrs,maxthrs,mincltsz,varargin)
 %             values of mask are the indexes of each clusters.
 % 
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com
 
 if ischar(srcvol)
     srcpath = srcvol;

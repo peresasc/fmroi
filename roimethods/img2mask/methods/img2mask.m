@@ -11,7 +11,7 @@ function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 %   mask = img2mask(srcvol,minthrs,maxthrs)
 % 
 % Inputs:
-%    srcvol: 3D matrix, usually a data volume from a nifti file.
+%    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.
 %   minthrs: Scalar - Minimum threshold intensity. 
 %   maxthrs: Scalar - Maximum threshold intensity.
 %
@@ -19,7 +19,7 @@ function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 %      mask: Binary 3D matrix with the same size as srcvol.
 % 
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
-%  Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+%  Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com
 
 
 if ischar(srcvol)
