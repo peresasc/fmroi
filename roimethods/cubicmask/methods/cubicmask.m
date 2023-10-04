@@ -14,6 +14,9 @@ function mask = cubicmask(srcvol,curpos,nvoxels,mode,varargin)
 %      mode: String with the keywords 'edge' or 'volume' that defines if
 %            nvoxels is the number of voxels that compose the ROI (volume)
 %            or the edge size (edge).
+%  varargin: Output file path for ROIs in NIfTI format. If a different
+%            extension is entered, it will be automatically set to .nii.
+%            Set this parameter only for NIfTI file saving.
 %
 % Output: 
 %     mask: Binary 3D matrix with the same size as srcvol.

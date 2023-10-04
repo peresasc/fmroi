@@ -11,9 +11,13 @@ function mask = maxkmask(srcvol,premask,kvox,varargin)
 %            a binary matrix, maxkmask will consider as ROI all non-zero
 %            elements.
 %      kvox: Integer that defines the number of non-zero elements in mask.
+%  varargin: Output file path for ROIs in NIfTI format. If a different
+%            extension is entered, it will be automatically set to .nii.
+%            Set this parameter only for NIfTI file saving.
 %
 % Output: 
-%      mask: Binary 3D matrix with the same size as srcvol.
+%      mask: Binary 3D matrix or NIfTI file path with the same size as
+%            srcvol.
 % 
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
 %  Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com

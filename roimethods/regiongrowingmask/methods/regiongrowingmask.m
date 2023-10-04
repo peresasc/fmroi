@@ -27,10 +27,14 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 %                'similarity' - searches for the neighbor with the most 
 %                               similar value to the seed.
 %        nvox: Integer that defines the maximum number of voxels in ROI.
-%     premask: Binary 3D matrix with same size as srcvol that defines the
-%              region where the region growing will be applied. If premask
-%              is not a binary matrix, regiongrowingmask will binarize it
-%              considering TRUE all non-zero elements.
+%     premask: Binary 3D matrix or NIfTI file path with same size as srcvol
+%              that defines the region where the region growing will be
+%              applied. If premask is not a binary matrix,
+%              regiongrowingmask will binarize it considering TRUE all
+%              non-zero elements.
+%    varargin: Output file path for ROIs in NIfTI format. If a different
+%              extension is entered, it will be automatically set to .nii.
+%              Set this parameter only for NIfTI file saving.
 %
 % Output:
 %      mask: Binary 3D matrix with the same size as srcvol.

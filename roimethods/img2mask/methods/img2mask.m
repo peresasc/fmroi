@@ -14,6 +14,9 @@ function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 %    srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI template.
 %   minthrs: Scalar - Minimum threshold intensity. 
 %   maxthrs: Scalar - Maximum threshold intensity.
+%  varargin: Output file path for ROIs in NIfTI format. If a different
+%            extension is entered, it will be automatically set to .nii.
+%            Set this parameter only for NIfTI file saving.
 %
 % Output: 
 %      mask: Binary 3D matrix with the same size as srcvol.
