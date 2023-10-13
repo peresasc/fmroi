@@ -1,4 +1,17 @@
-% % gen_complex-shapes
+%--------------------------------------------------------------------------
+%% define_paths
+%--------------------------------------------------------------------------
+
+fmroirootdir = '/home/andre/github/fmroi';
+outdir = '/home/andre/github/tmp/syndata';
+if ~exist(outdir,'dir')
+   mkdir(outdir);
+end
+
+%--------------------------------------------------------------------------
+%% gen_complex-shapes
+%--------------------------------------------------------------------------
+%
 % Left Hypocampus: 1
 %   All voxels are equal to 1.
 %
@@ -23,17 +36,13 @@
 % external spiral: 11 - 12
 %   11-12 linear distributed: from top to base.
 
-
-fmroirootdir = '/home/andre/github/fmroi';
-outdir = '/home/andre/github/tmp/syndata';
 addpath(fullfile(fmroirootdir,'etc','scripts','Mesh_voxelisation','Mesh_voxelisation'));
 
-
-srcvol = fullfile(fmroirootdir,'etc','default_templates',...
-    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+srcpath = fullfile(fmroirootdir,'templates','FreeSurfer',...
+    'cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
 fsidx = [17,53];
 
-v = spm_vol(srcvol);
+v = spm_vol(srcpath);
 data = spm_data_read(v);
 mask = zeros(size(data));
 
@@ -114,7 +123,7 @@ s1val = linspace(12,11,length(s1));
 
 idxs1 = sub2ind(size(mask),s1(:,1),s1(:,2),s1(:,3));
 mask(idxs1) = s1val;
-writematrix([idxs1,s1val'],fullfile(outdir,'external_spiral.csv'));
+% writematrix([idxs1,s1val'],fullfile(outdir,'external_spiral.csv'));
 
 %----------------------------------------------------------------------
 % generate the spiral2
@@ -150,13 +159,15 @@ s2val = linspace(7,8,length(s2));
 idxs2 = sub2ind(size(mask),s2(:,1),s2(:,2),s2(:,3));
 mask(idxs2) = s2val;
 
+s1val = s1val';
 s1del = ismember(idxs1,idxs2);
 idxs1(s1del) = [];
 s1val(s1del) = [];
+
 s1tb = table(idxs1,s1val,'VariableNames',{'index','values'});
 writetable(s1tb,fullfile(outdir,'external_spiral.csv'));
 
-s2tb = table(idxs2,s2val,'VariableNames',{'index','values'});
+s2tb = table(idxs2,s2val','VariableNames',{'index','values'});
 writetable(s2tb,fullfile(outdir,'internal_spiral.csv'));
 
 % figure
@@ -171,46 +182,36 @@ v = spm_create_vol(v);
 v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 v = spm_write_vol(v,mask);
 
-%
-idxs1 = s1(:,1);
-s1val = s1(:,2);
-s1tb = table(idxs1,s1val,'VariableNames',{'index','values'});
-writetable(s1tb,fullfile(outdir,'external_spiral.csv'));
 
-idxs2 = s2(:,1);
-s2val = s2(:,2);
-s2tb = table(idxs2,s2val,'VariableNames',{'index','values'});
-writetable(s2tb,fullfile(outdir,'internal_spiral.csv'));
-
+%--------------------------------------------------------------------------
 %% gen_dmn_gaussnoise
-clear
-tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
-if ~isfolder(tpldir)
-    mkdir(tpldir)
-end
+%--------------------------------------------------------------------------
 
-vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz');
-srcvol = spm_data_read(vsrc);
-as = mean(srcvol(srcvol>0));
+clearvars -except fmroirootdir outdir
+
+srcpath = fullfile(fmroirootdir,'templates','Neurosynth',...
+    'default_mode_association-test_z_FDR_0.01.nii.gz');
+vsrc = spm_vol(srcpath);
+srcdata = spm_data_read(vsrc);
+as = mean(srcdata(srcdata>0));
 an = as/sqrt(5);
-gnoise = an*randn(1,numel(srcvol));
-gnoise = reshape(gnoise,size(srcvol));
-srcvol = srcvol + gnoise;
+gnoise = an*randn(1,numel(srcdata));
+gnoise = reshape(gnoise,size(srcdata));
+srcdata = srcdata + gnoise;
 
-vsrc.fname = fullfile(tpldir,'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii');
+vsrc.fname = fullfile(outdir,'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii');
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-V = spm_write_vol(V,srcvol);
+V = spm_write_vol(V,srcdata);
 
+%--------------------------------------------------------------------------
 %% gen_premasks_syndata
-clear
-tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
-if ~isfolder(tpldir)
-    mkdir(tpldir)
-end
+%--------------------------------------------------------------------------
 
-vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
-srcvol = spm_data_read(vsrc);
+clearvars -except fmroirootdir outdir
+
+srcpath = fullfile(fmroirootdir,'templates','FreeSurfer',...
+    'cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
 
 radius = [8,8,9,15];
 center = [58,57,27;...
@@ -224,39 +225,36 @@ masknames = {'premask-sphere_lhpc';...
              'premask-sphere_cone'};
 
 for i = 1:length(radius)
-
-    roi = spheremask(srcvol,center(i,:),radius(i),'radius');
-
-    vsrc.fname = fullfile(tpldir,[masknames{i},...
+    
+    outpath = fullfile(outdir,[masknames{i},...
         '_radius_',sprintf('%02d',radius(i)),...
         '_center_x',sprintf('%02d',center(i,1)),...
         'y',sprintf('%02d',center(i,2)),...
         'z',sprintf('%02d',center(i,3)),'.nii']);
 
-    V = spm_create_vol(vsrc);
-    V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-    V = spm_write_vol(V,roi);
+    [~] = spheremask(srcpath,center(i,:),radius(i),'radius',outpath);   
 end
 
-%% gen_spheres
-clear
-tpldir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
-if ~isfolder(tpldir)
-    mkdir(tpldir)
-end
+%--------------------------------------------------------------------------
+%% gen_64spheres
+%--------------------------------------------------------------------------
 
-vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
-srcvol = spm_data_read(vsrc);
+clearvars -except fmroirootdir outdir
+
+srcpath = fullfile(fmroirootdir,'etc','default_templates',...
+    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+vsrc = spm_vol(srcpath);
+srcdata = spm_data_read(vsrc);
 
 
-roi = zeros(size(srcvol));
-roisz = zeros(size(srcvol));
+roi = zeros(size(srcdata));
+roisz = zeros(size(srcdata));
 count = 0;
 for i = 13:22:79
     for j = 13:22:79
         for k = 13:22:79
             count = count + 1;
-            auxroi = spheremask(srcvol,[i,j,k],randperm(10,1),'radius');
+            auxroi = spheremask(srcdata,[i,j,k],randperm(10,1),'radius');
             n = numel(find(auxroi(:)));
 
             roi = roi + count*auxroi;
@@ -265,12 +263,33 @@ for i = 13:22:79
     end
 end
 
-vsrc.fname = fullfile(tpldir,'spheres.nii');
+vsrc.fname = fullfile(outdir,'64-spheres.nii');
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,roi);
 
-vsrc.fname = fullfile(tpldir,'spheres_size.nii');
+vsrc.fname = fullfile(outdir,'64-spheres_size.nii');
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,roisz);
+
+%--------------------------------------------------------------------------
+%% gen_3spheres_set
+%--------------------------------------------------------------------------
+
+clearvars -except fmroirootdir outdir
+
+srcpath = fullfile(fmroirootdir,'etc','default_templates',...
+    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+
+center = [46,64,53;...
+          32,64,29;...
+          60,64,29];
+
+mnicoord = {'0_0_32';'28_0_-16';'-28_0_-16'};
+for i = 1:size(center,1)
+    
+    outpath = fullfile(outdir,['3-spheres_',mnicoord{i},'.nii']);
+
+    [~] = spheremask(srcpath,center(i,:),24,'radius',outpath);   
+end
