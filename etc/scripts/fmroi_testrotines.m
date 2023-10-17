@@ -6,18 +6,20 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-for w = 1:2 % strategy for running spheremask and cubicmask separately
-    if w == 1 
-        datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/afni-spheremask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/fsl-spheremask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/spm-spheremask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-spheremask'};
+for w = 2 % strategy for running spheremask and cubicmask separately
+    if w == 1
+         datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask'};
+        % datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-spheremask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/fsl-spheremask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/spm-spheremask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-spheremask'};
     else
-        datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/afni-cubicmask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/fsl-cubicmask';...
-                   '/home/andre/github/tmp/fmroi_qc/dataset/spm-cubicmask'};
+        datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask'};
+        % datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-cubicmask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/fsl-cubicmask';...
+        %            '/home/andre/github/tmp/fmroi_qc/dataset/spm-cubicmask'};
     end
 
 %--------------------------------------------------------------------------
@@ -353,19 +355,30 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/MRIcroGL/mystuff/mricrogl-img2mask'};
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask'};
 %     '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
-%     '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';...
+%     '/home/andre/MRIcroGL/mystuff/mricrogl-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/spm-img2mask'};
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/MRIcroGL/mystuff';
+rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
+
+fmroirootdir = '/home/andre/github/fmroi';
+srcpath_dmn = fullfile(fmroirootdir,'templates',...
+    'Neurosynth','default_mode_association-test_z_FDR_0.01.nii.gz');
+vsrc_dmn = spm_vol(srcpath_dmn);
+srcvol_dmn = spm_data_read(vsrc_dmn);
+
+srcpath_syn = fullfile(fmroirootdir,'templates',...
+    'syndata','complex-shapes.nii.gz');
+vsrc_syn = spm_vol(srcpath_syn);
+srcvol_syn = spm_data_read(vsrc_syn);
 
 %--------------------------------------------------------------------------
 % Extracts the input/output variables: ROI algorithm, ROI type, precision, etc...
@@ -391,23 +404,22 @@ for d = 1:length(datadir) % loop for all evaluated ROI algorithms
     tp = zeros(length(roinames),1);
     prec = zeros(length(roinames),1);
     rec = zeros(length(roinames),1);
+
     for i = 1:length(roinames)
         disp(['Working on ',datafolder{d},' ROI ',num2str(i)]);
 
-%--------------------------------------------------------------------------
-% Loads the template image (DMN or syndata) and thresholds
+    %----------------------------------------------------------------------
+    % Loads the template image (DMN or syndata) and thresholds
         srcvolstr = roinames{i}(...
             (strfind(roinames{i},'srcimg_')+length('srcimg_')):...
             (strfind(roinames{i},'_threshold_')-1));
         switch srcvolstr 
             case 'dmn'
-                srcpath = '/media/andre/data8t/rois_Fer/scripts/default_mode_association-test_z_FDR_0.01.nii'; % '/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01.nii.gz';
+                srcvol = srcvol_dmn;
             case 'syndata'
-                srcpath = '/media/andre/data8t/rois_Fer/scripts/syntheticdata.nii'; %'/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii';
+                srcvol = srcvol_syn;
         end
-        vsrc = spm_vol(srcpath);
-        srcvol = spm_data_read(vsrc);
-
+        
         thrstr = roinames{i}(...
             (strfind(roinames{i},'threshold_')+length('threshold_')):...
             (strfind(roinames{i},'.nii')-1));
@@ -462,16 +474,23 @@ clear
 close all
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {...'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';...
-           '/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'};
+           % '/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
 
 %--------------------------------------------------------------------------
 % Loads template images
-vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres.nii');
+fmroirootdir = '/home/andre/github/fmroi';
+srcpath = fullfile(fmroirootdir,'templates',...
+    'syndata','64-spheres.nii.gz');
+
+vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
-vsz = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/spheres_size.nii');
+szpath = fullfile(fmroirootdir,'templates',...
+    'syndata','64-spheres_size.nii.gz');
+vsz = spm_vol(szpath);
 szvol = spm_data_read(vsz);
+
 sz = unique(szvol);
 sz(sz==0) = [];
 
@@ -595,9 +614,15 @@ datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
 
 %--------------------------------------------------------------------------
 % Template dataset paths
-srcpath = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii'};
+fmroirootdir = '/home/andre/github/fmroi';
+srcpath = fullfile(fmroirootdir,'templates',...
+    'syndata','default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
+vsrc = spm_vol(srcpath);
+srcvol = spm_data_read(vsrc);
 
-vpre = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/aparc+aseg_2mm.nii.gz');
+prepath = fullfile(fmroirootdir,'templates',...
+    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+vpre = spm_vol(prepath);
 prevol = spm_data_read(vpre);
 
 %--------------------------------------------------------------------------
@@ -617,8 +642,6 @@ precision = zeros(length(datadir),1);
 recall = zeros(length(datadir),1);
 f1 = zeros(length(datadir),1);
 for d = 1:length(datadir)
-    vsrc = spm_vol(srcpath{d});
-    srcvol = spm_data_read(vsrc);
     [~,datafolder{d},~] = fileparts(datadir{d});
     algorithm{d} = datafolder{d}(1:strfind(datafolder{d},'-')-1);
     roitype{d} = datafolder{d}(strfind(datafolder{d},'-')+1:end);
