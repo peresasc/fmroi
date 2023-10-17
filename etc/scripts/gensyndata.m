@@ -81,9 +81,9 @@ data = cell(2,1);
 data{1} = mask;
 op{1} = 'AND';
 for i = 1:size(sphcenter,1)
-data{2} = spheremask(mask,sphcenter(i,:),8,'radius');
-it = logic_chain(data,op);
-mask(it) = valit(i);
+    data{2} = spheremask(mask,sphcenter(i,:),8,'radius');
+    it = logic_chain(data,op);
+    mask(it) = valit(i);
 end
 
 %----------------------------------------------------------------------
@@ -176,12 +176,14 @@ writetable(s2tb,fullfile(outdir,'internal_spiral.csv'));
 % plot3(s2(:,1),s2(:,2),s2(:,3))
 
 
-filename = fullfile(outdir,'complex-shapes.nii');
-v.fname = filename;
+outpath = fullfile(outdir,'complex-shapes.nii');
+v.fname = outpath;
 v = spm_create_vol(v);
 v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 v = spm_write_vol(v,mask);
 
+gzip(outpath)
+delete(outpath)
 
 %--------------------------------------------------------------------------
 %% gen_dmn_gaussnoise
@@ -199,11 +201,14 @@ gnoise = an*randn(1,numel(srcdata));
 gnoise = reshape(gnoise,size(srcdata));
 srcdata = srcdata + gnoise;
 
-vsrc.fname = fullfile(outdir,'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii');
+outpath = fullfile(outdir,'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii');
+vsrc.fname = outpath;
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,srcdata);
 
+gzip(outpath)
+delete(outpath)
 %--------------------------------------------------------------------------
 %% gen_premasks_syndata
 %--------------------------------------------------------------------------
@@ -232,7 +237,10 @@ for i = 1:length(radius)
         'y',sprintf('%02d',center(i,2)),...
         'z',sprintf('%02d',center(i,3)),'.nii']);
 
-    [~] = spheremask(srcpath,center(i,:),radius(i),'radius',outpath);   
+    [~] = spheremask(srcpath,center(i,:),radius(i),'radius',outpath);
+
+    gzip(outpath)
+    delete(outpath)
 end
 
 %--------------------------------------------------------------------------
@@ -263,15 +271,21 @@ for i = 13:22:79
     end
 end
 
-vsrc.fname = fullfile(outdir,'64-spheres.nii');
+outpath = fullfile(outdir,'64-spheres.nii');
+vsrc.fname = outpath;
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,roi);
+gzip(outpath)
+delete(outpath)
 
-vsrc.fname = fullfile(outdir,'64-spheres_size.nii');
+outpath = fullfile(outdir,'64-spheres_size.nii');
+vsrc.fname = outpath;
 V = spm_create_vol(vsrc);
 V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
 V = spm_write_vol(V,roisz);
+gzip(outpath)
+delete(outpath)
 
 %--------------------------------------------------------------------------
 %% gen_3spheres_set
@@ -291,5 +305,8 @@ for i = 1:size(center,1)
     
     outpath = fullfile(outdir,['3-spheres_',mnicoord{i},'.nii']);
 
-    [~] = spheremask(srcpath,center(i,:),24,'radius',outpath);   
+    [~] = spheremask(srcpath,center(i,:),24,'radius',outpath);
+
+    gzip(outpath)
+    delete(outpath)
 end

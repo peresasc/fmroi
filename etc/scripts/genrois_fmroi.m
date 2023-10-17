@@ -159,8 +159,8 @@ if ~isfolder(outdir)
 end
 
 fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
+srcpath = fullfile(fmroirootdir,'etc','test_data',...
+    'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
 
 prepath = fullfile(fmroirootdir,'templates',...
     'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
@@ -190,7 +190,11 @@ if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-vsrc = spm_vol('/home/andre/github/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
+fmroirootdir = '/home/andre/github/fmroi';
+srcpath = fullfile(fmroirootdir,'templates',...
+    'syndata','complex-shapes.nii.gz');
+
+vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
 %--------------------------------------------------------------------------
@@ -203,19 +207,16 @@ nvox = {round(linspace(31,221,20));...
         round(linspace(23,221,10));...
         round(linspace(16,115,10))};
 
-premask = srcvol;
+% premask = srcvol;
 count = 0;
 for i = 1:length(grwmode)
     for j = 1:length(nvox{i})
         count = count+1;
 
         disp(['Creating ROI ',grwmode{i},' ',num2str(count)]);
-        
-        roi = regiongrowingmask(srcvol,seed(i,:),diffratio,...
-                                grwmode{i},nvox{i}(j),premask);
- 
+      
         seedstr = num2str(sub2ind(size(srcvol),seed(i,1),seed(i,2),seed(i,3)));
-        vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+        fname = fullfile(outdir,['fmroi-regiongrowing',...
             '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
@@ -223,20 +224,20 @@ for i = 1:length(grwmode)
             '_nvox_',num2str(nvox{i}(j)),...
             '_premask_srcvol.nii']);            
 
-        V = spm_create_vol(vsrc);
-        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-        V = spm_write_vol(V,roi);
+  
+        [~] = regiongrowingmask(srcpath,seed(i,:),diffratio,...
+                                grwmode{i},nvox{i}(j),srcpath,fname);
+ 
     end
 end
 
 %--------------------------------------------------------------------------
 % shapes test
-clear seed diffratio grwmode nvox premask
+clearvars -except fmroirootdir srcpath outdir srcvol count
 
 thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
 grwmode = {'ascending';'descending';'similarity'};
 nvox = inf;
-premask = srcvol;
 
 for i = 1:length(grwmode)
     for j = 1:size(thr,1)
@@ -253,11 +254,8 @@ for i = 1:length(grwmode)
             diffratio = 0.001;
         end
 
-        roi = regiongrowingmask(srcvol,seed,diffratio,...
-                                grwmode{i},nvox,premask);
-
         seedstr = num2str(sub2ind(size(srcvol),seed(1),seed(2),seed(3)));
-        vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+        fname = fullfile(outdir,['fmroi-regiongrowing',...
             '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
@@ -265,23 +263,24 @@ for i = 1:length(grwmode)
             '_nvox_',num2str(nvox),...
             '_premask_srcvol.nii']);            
 
-        V = spm_create_vol(vsrc);
-        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-        V = spm_write_vol(V,roi);
+      
+        [~] = regiongrowingmask(srcpath,seed,diffratio,...
+                                grwmode{i},nvox,srcpath,fname);
+
     end
 end
 
 %--------------------------------------------------------------------------
 % shapes test premask
 
-clear seed diffratio grwmode nvox premask
+clearvars -except fmroirootdir srcpath outdir srcvol count
 
 thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
-
-premasknames = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_lhpc_radius_08_center_x58y57z27.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_rhpc_radius_08_center_x33y57z27.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_tetra_radius_09_center_x47y61z56.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_cone_radius_15_center_x46y84z58.nii'};
+testdir = fullfile(fmroirootdir,'etc','test_data');
+premasknames = {fullfile(testdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
+                fullfile(testdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
+                fullfile(testdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
+                fullfile(testdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
 
 premaskcell = cell(4,1);
 for n = 1:length(premasknames)
@@ -314,20 +313,16 @@ for i = 1:length(grwmode)
             diffratio = 0.001;
         end
 
-        roi = regiongrowingmask(srcvol,seed,diffratio,...
-                                grwmode{i},nvox,premask);
-
         seedstr = num2str(sub2ind(size(srcvol),seed(1),seed(2),seed(3)));
-        vsrc.fname = fullfile(outdir,['fmroi-regiongrowing',...
+        fname = fullfile(outdir,['fmroi-regiongrowing',...
             '_srcimg_syndata',...
             '_seed_',seedstr,...
             '_diffratio_',num2str(diffratio),...
             '_grwmode_',grwmode{i},...
             '_nvox_',num2str(nvox),...
-            '_premask_',pmname,'.nii']);         
+            '_premask_',pmname,'.nii']);
 
-        V = spm_create_vol(vsrc);
-        V.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-        V = spm_write_vol(V,roi);
+        [~] = regiongrowingmask(srcpath,seed,diffratio,...
+                                grwmode{i},nvox,premask,fname);
     end
 end

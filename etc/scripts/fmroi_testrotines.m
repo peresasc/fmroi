@@ -615,8 +615,8 @@ datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
 %--------------------------------------------------------------------------
 % Template dataset paths
 fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
+srcpath = fullfile(fmroirootdir,'etc','test_data',...
+    'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
@@ -722,14 +722,17 @@ datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing'};
 
 %--------------------------------------------------------------------------
 % Loads the template images
-srcdir = '/home/andre/github/tmp/fmroi_qc/dataset/templates';
-vsrc = spm_vol(fullfile(srcdir,'syntheticdata.nii'));
+fmroirootdir = '/home/andre/github/fmroi';
+srcpath = fullfile(fmroirootdir,'templates',...
+    'syndata','complex-shapes.nii.gz');
+vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
-premaskfn = {'/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_lhpc_radius_08_center_x58y57z27.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_rhpc_radius_08_center_x33y57z27.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_tetra_radius_09_center_x47y61z56.nii';...
-                '/home/andre/github/tmp/fmroi_qc/dataset/templates/premask-sphere_cone_radius_15_center_x46y84z58.nii'};
+testdir = fullfile(fmroirootdir,'etc','test_data');
+premaskfn = {fullfile(testdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
+                fullfile(testdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
+                fullfile(testdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
+                fullfile(testdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
 
 premaskcell = cell(4,1);
 for n = 1:length(premaskfn)
@@ -737,8 +740,8 @@ for n = 1:length(premaskfn)
     premaskcell{n} = spm_data_read(vpre);
 end
 
-s1 = readtable(fullfile(srcdir,'external_spiral.csv'));
-s2 = readtable(fullfile(srcdir,'internal_spiral.csv'));
+s1 = readtable(fullfile(testdir,'external_spiral.csv'));
+s2 = readtable(fullfile(testdir,'internal_spiral.csv'));
 
 %--------------------------------------------------------------------------
 % create the output folders
