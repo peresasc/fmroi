@@ -142,9 +142,9 @@ for w = 1:2 % strategy for running spheremask and cubicmask separately
         delete(hmdlav(1))
         delete(hmdlav(3))
         delete(hmdlav(4))
-        title(datafolder{d},'FontSize',16)
-        xlabel('Theoretical Area/Volume','FontSize',12)
-        ylabel('Observed Area/Volume','FontSize',12)
+%         title(datafolder{d},'FontSize',16)
+%         xlabel('Theoretical Area/Volume','FontSize',12)
+%         ylabel('Observed Area/Volume','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
         ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdlav{d}.Coefficients{1,1}),...
@@ -176,9 +176,9 @@ for w = 1:2 % strategy for running spheremask and cubicmask separately
         delete(hmdla(1))
         delete(hmdla(3))
         delete(hmdla(4))
-        title(datafolder{d},'FontSize',16)
-        xlabel('Theoretical Area','FontSize',12)
-        ylabel('Observed Area','FontSize',12)
+%         title(datafolder{d},'FontSize',16)
+%         xlabel('Theoretical Area','FontSize',12)
+%         ylabel('Observed Area','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
         ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdla{d}.Coefficients{2,1}),...
@@ -209,9 +209,9 @@ for w = 1:2 % strategy for running spheremask and cubicmask separately
         delete(hmdlv(1))
         delete(hmdlv(3))
         delete(hmdlv(4))
-        title(datafolder{d},'FontSize',16)
-        xlabel('Theoretical Volume','FontSize',12)
-        ylabel('Observed Volume','FontSize',12)
+%         title(datafolder{d},'FontSize',16)
+%         xlabel('Theoretical Volume','FontSize',12)
+%         ylabel('Observed Volume','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
         ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdlv{d}.Coefficients{1,1}),...
@@ -244,9 +244,9 @@ for w = 1:2 % strategy for running spheremask and cubicmask separately
             delete(hmdlc(3))
             delete(hmdlc(4))
             ax = 'xyz';
-            title(datafolder{d},'FontSize',16)
-            xlabel(['Set ',ax(i),' center'],'FontSize',12)
-            ylabel([ax(i),' mass center'],'FontSize',12)
+%             title(datafolder{d},'FontSize',16)
+%             xlabel(['Set ',ax(i),' center'],'FontSize',12)
+%             ylabel([ax(i),' mass center'],'FontSize',12)
             legend('Data','Linear Fit','Expected fit',...
                 'Location','southeast')
             ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
