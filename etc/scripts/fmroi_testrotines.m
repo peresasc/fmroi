@@ -3,7 +3,7 @@
 %==========================================================================
 
 for w = 1:2 % strategy for running spheremask and cubicmask separately
-clear
+clearvars -except w
 close all
 
 %--------------------------------------------------------------------------
