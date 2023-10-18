@@ -7,7 +7,7 @@ close all
 %--------------------------------------------------------------------------
 % input dataset paths
 datadir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
-for w = 2 % strategy for running spheremask and cubicmask separately
+for w = 1:2 % strategy for running spheremask and cubicmask separately
     if w == 1
         datadir = {fullfile(datadir,'fmroi-spheremask');...
                    fullfile(datadir,'afni-spheremask');...
