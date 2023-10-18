@@ -3,13 +3,12 @@
 %==========================================================================
 
 for w = 1:2 % strategy for running spheremask and cubicmask separately
-clearvars -except w
-close all
+    clearvars -except w
+    close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
-
+    datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
     if w == 1
         datadir = {fullfile(datarootdir,'fmroi-spheremask');...
                    fullfile(datarootdir,'afni-spheremask');...
@@ -133,7 +132,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
        
         % Linear regression of Area/Volume
         mdlav{d} = fitlm(tav,mav);
-        hfigav = figure;
+        hfigav = figure('Position',[675,549,300,280]);
         hptav = plot(tav,mav,'k.');
         hold on
         hmdlav = plot(mdlav{d});
@@ -147,7 +146,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         xlabel('Theoretical Area/Volume','FontSize',12)
         ylabel('Observed Area/Volume','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
-        ha1 = annotation('textbox', [0.15, 0.85, 0.5, 0.05],...
+        ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdlav{d}.Coefficients{1,1}),...
             ' + X*',num2str(mdlav{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
@@ -155,7 +154,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         mdl = mdlav{d};
         currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
                     /mean(mdl.Variables.y); % vector for the current model
-        ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
+        ha2 = annotation('textbox', [0.15, 0.8, 0.75, 0.05],...
             'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
@@ -167,7 +166,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
 
         % Linear regression of Area
         mdla{d} = fitlm(ta,area);
-        hfiga = figure;
+        hfiga = figure('Position',[675,549,300,280]);
         hpta = plot(ta,area,'k.');
         hold on
         hmdla = plot(mdla{d});
@@ -181,7 +180,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         xlabel('Theoretical Area','FontSize',12)
         ylabel('Observed Area','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
-        ha1 = annotation('textbox', [0.15, 0.85, 0.5, 0.05],...
+        ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdla{d}.Coefficients{2,1}),...
             ' + X*',num2str(mdla{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
@@ -189,7 +188,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         mdl = mdla{d};
         currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
                     /mean(mdl.Variables.y); % vector for the current model
-        ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
+        ha2 = annotation('textbox', [0.15, 0.8, 0.75, 0.05],...
             'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
@@ -200,7 +199,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
 
         % Linear regression of Volume
         mdlv{d} = fitlm(tv,vol);
-        hfigv = figure;
+        hfigv = figure('Position',[675,549,300,280]);
         hptv = plot(tv,vol,'k.');
         hold on
         hmdlv = plot(mdlv{d});
@@ -214,7 +213,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         xlabel('Theoretical Volume','FontSize',12)
         ylabel('Observed Volume','FontSize',12)
         legend('Data','Linear Fit','Expected fit','Location','southeast')
-        ha1 = annotation('textbox', [0.15, 0.85, 0.5, 0.05],...
+        ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
             'String', ['Y = ', num2str(mdlv{d}.Coefficients{1,1}),...
             ' + X*',num2str(mdlv{d}.Coefficients{2,1})],...
             'EdgeColor','none','Interpreter', 'none');
@@ -222,7 +221,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         mdl = mdlv{d};
         currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
                     /mean(mdl.Variables.y); % vector for the current model
-        ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
+        ha2 = annotation('textbox', [0.15, 0.8, 0.75, 0.05],...
             'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
         hold off
@@ -234,7 +233,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
         % Linear regression of Center (x,y,z)
         for i = 1:3 % calculates the displacement for x, y, and z separately
             mdlc{d,i} = fitlm(center(:,i),masscenter(:,i));
-            hfigc = figure;
+            hfigc = figure('Position',[675,549,300,280]);
             hptc = plot(center(:,i),masscenter(:,i),'k.');
             hold on
             hmdlc = plot(mdlc{d,i});
@@ -250,7 +249,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
             ylabel([ax(i),' mass center'],'FontSize',12)
             legend('Data','Linear Fit','Expected fit',...
                 'Location','southeast')
-            ha1 = annotation('textbox', [0.15, 0.85, 0.5, 0.05],...
+            ha1 = annotation('textbox', [0.15, 0.85, 0.75, 0.05],...
                 'String', ['Y = ', num2str(mdlc{d,i}.Coefficients{1,1}),...
                 ' + X*',num2str(mdlc{d,i}.Coefficients{2,1})],...
                 'EdgeColor','none','Interpreter', 'none');
@@ -258,7 +257,7 @@ datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
             mdl = mdlc{d,i};
             currnrmse = (sqrt(mean((mdl.Variables.x1-mdl.Variables.y).^2)))...
                     /mean(mdl.Variables.y); % vector for the current model
-            ha2 = annotation('textbox', [0.15, 0.8, 0.5, 0.05],...
+            ha2 = annotation('textbox', [0.15, 0.8, 0.75, 0.05],...
             'String', ['NRMSE = ', num2str(currnrmse)],...
             'EdgeColor','none','Interpreter', 'none');
             hold off
