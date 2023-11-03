@@ -189,13 +189,13 @@ delete(outpath)
 %% gen_dmn_gaussnoise
 %--------------------------------------------------------------------------
 
-clearvars -except fmroirootdir outdir
+clearvars -except fmroirootdir outdir as0
 
 srcpath = fullfile(fmroirootdir,'templates','Neurosynth',...
     'default_mode_association-test_z_FDR_0.01.nii.gz');
 vsrc = spm_vol(srcpath);
 srcdata = spm_data_read(vsrc);
-as = mean(srcdata(srcdata>0));
+as = mean(abs(srcdata(srcdata~=0)));
 an = as/sqrt(5);
 gnoise = an*randn(1,numel(srcdata));
 gnoise = reshape(gnoise,size(srcdata));
