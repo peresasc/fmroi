@@ -32,9 +32,16 @@ outfilename = fullfile(pn,fn);
 %--------------------------------------------------------------------------
 % Generate a table with the ROI center and N of voxels, and save in the
 % outfilename_info.txt
+listimgdata = getimgnamelist(hObject);
+nsrc = find(strcmp(listimgdata,st.roisrcname));
+srcvol = st.vols{nsrc}.private.dat(:,:,:);
+
 datalut = get(handles.table_roilut,'Data');
 nvox = zeros(length(st.roimasks),1);
 center = zeros(length(st.roimasks),3);
+srcmedian = zeros(length(st.roimasks),1);
+srcmean = zeros(length(st.roimasks),1);
+srcstd = zeros(length(st.roimasks),1);
 for i = 1:length(st.roimasks)
     binmask = uint16(logical(st.roimasks{i}));
     [x,y,z] = find3d(binmask);
@@ -42,12 +49,19 @@ for i = 1:length(st.roimasks)
     cpima = round(mean([x,y,z]))';
     cpscan = st.vols{1}.mat*[cpima;1];
     center(i,:) = cpscan(1:3);
+    srcmedian(i) = median(srcvol(logical(binmask)));
+    srcmean(i) = mean(srcvol(logical(binmask)));
+    srcstd(i) = std(srcvol(logical(binmask)));
 end
+
+
 
 infoname = [pn,filesep,fn,'_info.txt'];
 infotable = table(cellfun(@uint16,datalut(:,1)),datalut(:,2),...
-    nvox,center(:,1),center(:,2),center(:,3),...
-    'VariableNames',{'Index','ROI_Names','N_voxels','Center_X','Center_Y','Center_Z'});
+    nvox,center(:,1),center(:,2),center(:,3),srcmedian,srcmean,srcstd,...
+    'VariableNames',{'Index','ROI_Names','N_voxels',...
+    'Center_X','Center_Y','Center_Z',...
+    'Src_median','Src_mean','Src_std'});
 
 writetable(infotable,infoname,...
         'WriteRowNames',true,'Delimiter','tab');
