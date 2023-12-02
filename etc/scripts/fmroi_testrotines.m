@@ -2,25 +2,26 @@
 %% spheremask_cubicmask
 %==========================================================================
 
-for w = 1:2 % strategy for running spheremask and cubicmask separately
+for w = 1%:2 % strategy for running spheremask and cubicmask separately
     clearvars -except w
     close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-    datarootdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/';
-    if w == 1
-        datadir = {fullfile(datarootdir,'fmroi-spheremask');...
-                   fullfile(datarootdir,'afni-spheremask');...
-                   fullfile(datarootdir,'fsl-spheremask');...
-                   fullfile(datarootdir,'spm-spheremask');...
-                   fullfile(datarootdir,'mricrongl-spheremask')};
-    else
-        datadir = {fullfile(datarootdir,'fmroi-cubicmask');...
-                   fullfile(datarootdir,'afni-cubicmask');...
-                   fullfile(datarootdir,'fsl-cubicmask');...
-                   fullfile(datarootdir,'spm-cubicmask')};
-    end
+    datarootdir = '/home/andre/github/tmp/fmroi_qc/dataset';
+    datadir = {fullfile(datarootdir,'afni-cubicmask')};
+    % if w == 1
+    %     datadir = {fullfile(datarootdir,'fmroi-spheremask');...
+    %                fullfile(datarootdir,'afni-spheremask');...
+    %                fullfile(datarootdir,'fsl-spheremask');...
+    %                fullfile(datarootdir,'spm-spheremask');...
+    %                fullfile(datarootdir,'mricrongl-spheremask')};
+    % else
+    %     datadir = {fullfile(datarootdir,'fmroi-cubicmask');...
+    %                fullfile(datarootdir,'afni-cubicmask');...
+    %                fullfile(datarootdir,'fsl-cubicmask');...
+    %                fullfile(datarootdir,'spm-cubicmask')};
+    % end
 
 %--------------------------------------------------------------------------
 % create the output folders
@@ -367,7 +368,7 @@ close all
 
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask'};
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask'};
 %     '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
 %     '/home/andre/MRIcroGL/mystuff/mricrogl-img2mask';...
 %            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
@@ -486,7 +487,8 @@ clear
 close all
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'};
+datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
+           % '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'
            % '/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
 
 %--------------------------------------------------------------------------
