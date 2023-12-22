@@ -4,7 +4,7 @@ _Software dedicated to create ROIs in fMRI data_
 
 [![fMROI logo](./etc/figs/fmroi_logo.png)](https://github.com/proactionlab/fmroi)
 
-**User guide:** [https://fmroi-docs.readthedocs.io](https://fmroi-docs.readthedocs.io/)
+**User guide:** [https://fmroi.readthedocs.io](https://fmroi.readthedocs.io/)
 
 ## Description
 
@@ -20,10 +20,10 @@ fMROI is a free software designed to create regions of interest (ROI) in functio
 
 ### Installing
 
-[Download](https://github.com/proactionlab/fmroi) the fMROI source code and add the root folder (./fMROI) to the Matlab path.<br>
+[Download](https://github.com/peresasc/fmroi) the fMROI source code and add the root folder (./fMROI) to the Matlab path.<br>
 <br>
 Project web page:<br>
-[https://github.com/proactionlab/fmroi](https://github.com/proactionlab/fmroi) 
+[https://github.com/peresasc/fmroi](https://github.com/peresasc/fmroi) 
 
 
 ### Quick Guide
