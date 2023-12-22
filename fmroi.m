@@ -5,7 +5,7 @@ function fmroi()
 % it an ideal tool for researchers in the field of neuroimaging.
 % 
 % Visit the user guide webpage for usage instructions:
-% https://fmroi-docs.readthedocs.io
+% https://fmroi.readthedocs.io
 %
 % Syntax: fmroi
 %
@@ -39,8 +39,8 @@ if ~exist(roimethdir,'dir')
 end
 
 handles.version = 'fMROI 1.0.0';
-handles.webdoc = 'https://fmroi-docs.readthedocs.io';
-handles.github = 'https://github.com/proactionlab/fmroi';
+handles.webdoc = 'https://fmroi.readthedocs.io';
+handles.github = 'https://github.com/peresasc/fmroi';
 
 handles.fmroirootdir = fmroirootdir;
 handles.tpldir = templatedir;
@@ -224,7 +224,7 @@ qgtext = {['Welcome to ',handles.version];...
     'click on the "Save" buttom at the botton of "ROI Table" tab.'];...
     '';...
     'For the complete documentation:';...
-    'https://fmroi-docs.readthedocs.io'};
+    'https://fmroi.readthedocs.io'};
 
 
 handles.text_quickguide = uicontrol(handles.panel_logo,'Style','text',...

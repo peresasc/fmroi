@@ -1,5 +1,5 @@
 Installation
-============
+============docs
 
 Installing **fMROI** is a simple process that can be done by downloading it directly from GitHub or cloning the folder using Git commands. Cloning the repository allows for easy updates to the software. Before installing fMROI, please ensure that you meet the following requirements:
 
@@ -14,7 +14,7 @@ Dependencies
 fMROI Direct Download Installation:
 -----------------------------------
 
-1. Access the fMROI GitHub webpage: [fMROI GitHub webpage](https://github.com/proactionlab/fmroi)
+1. Access the fMROI GitHub webpage: [fMROI GitHub webpage](https://github.com/peresasc/fmroi)
 
 2. Click the "<> Code" button (green button);
 
@@ -29,7 +29,7 @@ fMROI Direct Download Installation:
 Cloning fMROI from GitHub
 -------------------------
 
-1. Access the fMROI GitHub webpage: [fMROI GitHub webpage](https://github.com/proactionlab/fmroi)
+1. Access the fMROI GitHub webpage: [fMROI GitHub webpage](https://github.com/peresasc/fmroi)
 
 2. Click the "Code" button (green button) and select your preferred cloning method: "HTTPS", "SSH", or "GitHub CLI". In this guide, we will describe the SSH method.
 
@@ -42,7 +42,7 @@ Cloning fMROI from GitHub
 5. Use the following command to clone the repository. Git will prompt you to enter your passphrase (if you set one) to access the private key:
 
 ```console
-$ git clone git@github.com:proactionlab/fmroi
+$ git clone git@github.com:peresasc/fmroi
 ```
 
 *If you don't have Git installed in your computer or if you are not sure, please check [this simple guide](https://github.com/git-guides/install-git).*

@@ -2,7 +2,7 @@
 
 _User-Friendly ROI Creation and Neuroimage Visualization Software_
 
-[![fMROI logo](./etc/figs/fmroi_logo.png)](https://github.com/proactionlab/fmroi)
+[![fMROI logo](./etc/figs/fmroi_logo.png)](https://github.com/peresasc/fmroi)
 
 **User guide:** [https://fmroi.readthedocs.io](https://fmroi.readthedocs.io/)
 
