@@ -1,6 +1,6 @@
 # fMROI
 
-_Software dedicated to create ROIs in fMRI data_
+_User-Friendly ROI Creation and Neuroimage Visualization Software_
 
 [![fMROI logo](./etc/figs/fmroi_logo.png)](https://github.com/proactionlab/fmroi)
 
