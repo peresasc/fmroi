@@ -1,31 +1,65 @@
+%% paths_definition
+%========================================================================
+% Test Script for ROI Creation Software
+%
+%------------------------------------------------------------------------
+% This script contains a series of tests for evaluating the functionality
+% and performance of the software tools fMROI, AFNI, FSL, MRIcronGL, and
+% SPM in creating Region of Interests (ROIs). The tests are designed to
+% assess the accuracy, reproducibility, and robustness of the respective
+% software packages. Results from these tests are presented in the paper
+% titled "fMROI: a simple and adaptable toolbox for easy region-of-interest
+% creation", which is currently under review.
+%
+% To execute this code, it is necessary to install fMROI and ensure that
+% it is in the MATLAB path. Additionally, change the current directory to
+% [fmroi root]/etc/scripts before running the script.
+%
+% Author: Andre Peres, 2024.
+%========================================================================
+
+
+
+
+% input datasets path
+datarootdir = '/media/andre/data8t/fmroi/fmroi_qc/dataset';
+
+% root output folder
+rootoutdir = '/media/andre/data8t/fmroi/fmroi_qc';
+
+% fmroi root dir
+[fmroirootdir,~,~] = fileparts(which('fmroi'));
+templatesdir = fullfile(fmroirootdir,'etc','test_data');
+
+
+
 %==========================================================================
 %% spheremask_cubicmask
 %==========================================================================
+close all
 
-for w = 1%:2 % strategy for running spheremask and cubicmask separately
-    clearvars -except w
-    close all
-
+for w = 1:2 % strategy for running spheremask and cubicmask separately
+    clearvars -except w datarootdir rootoutdir templatesdir
+    
 %--------------------------------------------------------------------------
-% input dataset paths
-    datarootdir = '/home/andre/github/tmp/fmroi_qc/dataset';
-    datadir = {fullfile(datarootdir,'afni-cubicmask')};
-    % if w == 1
-    %     datadir = {fullfile(datarootdir,'fmroi-spheremask');...
-    %                fullfile(datarootdir,'afni-spheremask');...
-    %                fullfile(datarootdir,'fsl-spheremask');...
-    %                fullfile(datarootdir,'spm-spheremask');...
-    %                fullfile(datarootdir,'mricrongl-spheremask')};
-    % else
-    %     datadir = {fullfile(datarootdir,'fmroi-cubicmask');...
-    %                fullfile(datarootdir,'afni-cubicmask');...
-    %                fullfile(datarootdir,'fsl-cubicmask');...
-    %                fullfile(datarootdir,'spm-cubicmask')};
-    % end
+
+    % datadir = {fullfile(datarootdir,'afni-cubicmask')};
+    if w == 1
+        datadir = {fullfile(datarootdir,'fmroi-spheremask');...
+                   fullfile(datarootdir,'afni-spheremask');...
+                   fullfile(datarootdir,'fsl-spheremask');...
+                   fullfile(datarootdir,'mricrongl-spheremask');...
+                   fullfile(datarootdir,'spm-spheremask')};
+
+    else
+        datadir = {fullfile(datarootdir,'fmroi-cubicmask');...
+                   fullfile(datarootdir,'afni-cubicmask');...
+                   fullfile(datarootdir,'fsl-cubicmask');...
+                   fullfile(datarootdir,'spm-cubicmask')};
+    end
 
 %--------------------------------------------------------------------------
 % create the output folders
-    rootoutdir = '/home/andre/github/tmp/fmroi_qc';
     figoutdir = fullfile(rootoutdir,'figures');
     if ~isfolder(figoutdir)
         mkdir(figoutdir)
@@ -363,33 +397,29 @@ end
 %==========================================================================
 %% image2mask
 %==========================================================================
-clear
 close all
-
+clearvars -except datarootdir rootoutdir templatesdir
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask'};
-%     '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
-%     '/home/andre/MRIcroGL/mystuff/mricrogl-img2mask';...
-%            '/home/andre/github/tmp/fmroi_qc/dataset/afni-img2mask';...
-%            '/home/andre/github/tmp/fmroi_qc/dataset/spm-img2mask'};
+
+datadir = {fullfile(datarootdir,'fmroi-img2mask');...
+    fullfile(datarootdir,'afni-img2mask');... fullfile(datarootdir,'fsl-img2mask');...
+    fullfile(datarootdir,'mricrogl-img2mask');...
+    fullfile(datarootdir,'spm-img2mask')};
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath_dmn = fullfile(fmroirootdir,'templates',...
-    'Neurosynth','default_mode_association-test_z_FDR_0.01.nii.gz');
+srcpath_dmn = fullfile(templatesdir,...
+    'default_mode_association-test_z_FDR_0.01.nii.gz');
 vsrc_dmn = spm_vol(srcpath_dmn);
 srcvol_dmn = spm_data_read(vsrc_dmn);
 
-srcpath_syn = fullfile(fmroirootdir,'templates',...
-    'syndata','complex-shapes.nii.gz');
+srcpath_syn = fullfile(templatesdir,'complex-shapes.nii.gz');
 vsrc_syn = spm_vol(srcpath_syn);
 srcvol_syn = spm_data_read(vsrc_syn);
 
@@ -483,25 +513,22 @@ writetable(tb,[tboutdir,filesep,roitype{1},'.csv']);
 %==========================================================================
 %% clustermask
 %==========================================================================
-clear
 close all
+clearvars -except datarootdir rootoutdir templatesdir
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
-           % '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask'
-           % '/home/andre/github/tmp/fmroi_qc/dataset/afni-clustermask'};
+
+datadir = {fullfile(datarootdir,'fmroi-clustermask');...
+           fullfile(datarootdir,'afni-clustermask')};
 
 %--------------------------------------------------------------------------
 % Loads template images
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','64-spheres.nii.gz');
+srcpath = fullfile(templatesdir,'64-spheres.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
-szpath = fullfile(fmroirootdir,'templates',...
-    'syndata','64-spheres_size.nii.gz');
+szpath = fullfile(templatesdir,'64-spheres_size.nii.gz');
 vsz = spm_vol(szpath);
 szvol = spm_data_read(vsz);
 
@@ -510,7 +537,6 @@ sz(sz==0) = [];
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
@@ -619,29 +645,26 @@ writetable(tb,[tboutdir,filesep,roitype{1},'_spheres.csv']);
 %==========================================================================
 %% maxkmask
 %==========================================================================
-clear
 close all
-
+clearvars -except datarootdir rootoutdir templatesdir
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask'};
+
+datadir = {fullfile(datarootdir,'fmroi-maxkmask')};
 
 %--------------------------------------------------------------------------
 % Template dataset paths
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'etc','test_data',...
+srcpath = fullfile(templatesdir,...
     'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
-prepath = fullfile(fmroirootdir,'templates',...
-    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+prepath = fullfile(templatesdir,'aparc+aseg_2mm.nii.gz');
 vpre = spm_vol(prepath);
 prevol = spm_data_read(vpre);
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
@@ -727,26 +750,23 @@ writetable(tb,[tboutdir,filesep,roitype{1},'_dmngnoise.csv']);
 %==========================================================================
 %% regiongrowing
 %==========================================================================
-clear
 close all
-
+clearvars -except datarootdir rootoutdir templatesdir
 %--------------------------------------------------------------------------
 % input dataset paths
-datadir = {'/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing'};
+
+datadir = {fullfile(datarootdir,'fmroi-regiongrowing')};
 
 %--------------------------------------------------------------------------
 % Loads the template images
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','complex-shapes.nii.gz');
+srcpath = fullfile(templatesdir,'complex-shapes.nii.gz');
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 
-testdir = fullfile(fmroirootdir,'etc','test_data');
-premaskfn = {fullfile(testdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
-                fullfile(testdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
-                fullfile(testdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
-                fullfile(testdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
+premaskfn = {fullfile(templatesdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
 
 premaskcell = cell(4,1);
 for n = 1:length(premaskfn)
@@ -754,12 +774,11 @@ for n = 1:length(premaskfn)
     premaskcell{n} = spm_data_read(vpre);
 end
 
-s1 = readtable(fullfile(testdir,'external_spiral.csv'));
-s2 = readtable(fullfile(testdir,'internal_spiral.csv'));
+s1 = readtable(fullfile(templatesdir,'external_spiral.csv'));
+s2 = readtable(fullfile(templatesdir,'internal_spiral.csv'));
 
 %--------------------------------------------------------------------------
 % create the output folders
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)
@@ -946,32 +965,25 @@ writetable(tb,[tboutdir,filesep,roitype{1},'_syndata.csv']);
 %==========================================================================
 %% drawmask
 %==========================================================================
-clear
 close all
-
+clearvars -except datarootdir rootoutdir templatesdir
 %--------------------------------------------------------------------------
 % input dataset paths
-% datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask'};
-datadir = {'/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fmroi-drawmask';...
-            '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/afni-drawmask';...
-            '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/fsl-drawmask';...
-            '/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/mricrongl-drawmask'};
-    
-% '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-drawmask';...
-%            '/home/andre/github/tmp/fmroi_qc/dataset/afni-drawmask';...
-%            '/home/andre/github/tmp/fmroi_qc/dataset/mricrongl-drawmask'};
+
+datadir = {fullfile(datarootdir,'fmroi-drawmask');...
+    fullfile(datarootdir,'afni-drawmask');...
+    fullfile(datarootdir,'fsl-drawmask');...
+    fullfile(datarootdir,'mricrongl-drawmask')};
 
 %--------------------------------------------------------------------------
 % Loads the template images
-% vsrc = spm_vol('/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/templates/syntheticdata.nii');
-vsrc = spm_vol('/media/andre/data8t/fmroi/tmp/fmroi_qc/dataset/templates/complex-shapes.nii.gz');
+srcpath = fullfile(templatesdir,'complex-shapes.nii.gz');
+vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
 srcvol(srcvol~=1) = 0;
 
 %--------------------------------------------------------------------------
 % create the output folders
-% rootoutdir = '/media/andre/data8t/fmroi/tmp/fmroi_qc';
-rootoutdir = '/home/andre/github/tmp/fmroi_qc';
 tboutdir = fullfile(rootoutdir,'statstable');
 if ~isfolder(tboutdir)
     mkdir(tboutdir)

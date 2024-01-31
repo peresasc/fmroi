@@ -1,13 +1,43 @@
+%% paths_definition
+%==========================================================================
+% ROI Generation Script for fMROI Software
+%
+%---------------------------------------------------------------------------
+% This script is designed to generate Region of Interests (ROIs) using the
+% fMROI software. It serves as part of the testing suite for assessing the
+% functionality and performance of fMROI in creating ROIs. The generated
+% ROIs were used to evaluate its accuracy, reproducibility, and robustness,
+% as reported in the paper "fMROI: a simple and adaptable toolbox for easy
+% region-of-interest creation," currently under review.
+%
+% To execute the script "genrois_fmroi", fMROI must be installed and
+% executed at least once in the MATLAB session to create the ROIs. You can
+% run the entire script to generate ROIs for the algorithms spheremask,
+% cubicmask, img2mask, contiguousclustering, maxkmask, and 
+% regiongrowingmask in a single execution or run them individually within
+% each cell. Always remember to execute the first cell "paths_definition" 
+% before any ROI creation algorithm.
+%
+% Author: Andre Peres, 2024.
+%==========================================================================
+
+
+
+datarootdir = '/media/andre/data8t/fmroi/fmroi_qc/dataset';
+
+[fmroirootdir,~,~] = fileparts(which('fmroi'));
+templatesdir = fullfile(fmroirootdir,'etc','test_data');
+
 %% spheremask
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-spheremask';
+clearvars -except datarootdir templatesdir
+
+outdir = fullfile(datarootdir,'fmroi-spheremask');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'FreeSurfer','cvs_avg35_inMNI152','T1.nii.gz');
+% FreeSurfer cvs_avg35_inMNI152 T1 isovoxel 1mm, 256x256x256
+srcpath = fullfile(templatesdir,'T1.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
@@ -32,15 +62,15 @@ end
 
 %--------------------------------------------------------------------------
 %% cubicmask
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-cubicmask';
+clearvars -except datarootdir templatesdir
+
+outdir = fullfile(datarootdir,'fmroi-cubicmask');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'FreeSurfer','cvs_avg35_inMNI152','T1.nii.gz');
+% FreeSurfer cvs_avg35_inMNI152 T1 isovoxel 1mm, 256x256x256
+srcpath = fullfile(templatesdir,'T1.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
@@ -65,16 +95,15 @@ end
 
 %% img2mask
 % complex-shapes
+clearvars -except datarootdir templatesdir
 
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-img2mask';
+outdir = fullfile(datarootdir,'fmroi-img2mask');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','complex-shapes.nii.gz');
+% Synthetic data with several shapes isovoxel 2mm, 91x109x91
+srcpath = fullfile(templatesdir,'complex-shapes.nii.gz');
 
 thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
 
@@ -87,9 +116,9 @@ for i = 1:size(thr,1)
     [~] = img2mask(srcpath,thr(i,1),thr(i,2),fname);
 end
 
-% img2mask_dmn
-srcpath = fullfile(fmroirootdir,'templates',...
-    'Neurosynth','default_mode_association-test_z_FDR_0.01.nii.gz');
+% DMN Neurosinth data with isovoxel 2mm, 91x109x91
+srcpath = fullfile(templatesdir,...
+    'default_mode_association-test_z_FDR_0.01.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
@@ -108,25 +137,18 @@ for i = 1:size(thr,1)
 end
 
 %% clustermask
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-clustermask';
+clearvars -except datarootdir templatesdir
+
+outdir = fullfile(datarootdir,'fmroi-clustermask');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','64-spheres.nii.gz');
+% Synthetic data with 64 spheres isovoxel 2mm, 91x109x91
+srcpath = fullfile(templatesdir,'64-spheres.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
-
-% szpath = fullfile(fmroirootdir,'templates',...
-%     'syndata','64-spheres_size.nii.gz');
-% vsz = spm_vol(szpath);
-% szvol = spm_data_read(vsz);
-% sz = unique(szvol);
-% sz(sz==0) = [];
 
 thrs = [.1,inf;17,32;33,inf];
 mincsz = [1,33,123];
@@ -152,18 +174,19 @@ for i = 1:size(thrs,1)
 end
 
 %% maxkmask
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-maxkmask';
+clearvars -except datarootdir templatesdir
+
+outdir = fullfile(datarootdir,'fmroi-maxkmask');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'etc','test_data',...
+% DMN Neurosinth gaussian noise added with isovoxel 2mm, 91x109x91
+srcpath = fullfile(templatesdir,...
     'default_mode_association-test_z_FDR_0.01_gaussnoise_5db.nii.gz');
 
-prepath = fullfile(fmroirootdir,'templates',...
-    'FreeSurfer','cvs_avg35_inMNI152','aparc+aseg_2mm.nii.gz');
+% FreeSurfer cvs_avg35_inMNI152 aparc+aseg isovoxel 2mm, 91x109x91
+prepath = fullfile(templatesdir,'aparc+aseg_2mm.nii.gz');
 vpre = spm_vol(prepath);
 prevol = spm_data_read(vpre);
 
@@ -184,15 +207,15 @@ for i = 1:length(pmidx)
 end
 
 %% regiongrowing
-clear
-outdir = '/home/andre/github/tmp/fmroi_qc/dataset/fmroi-regiongrowing';
+clearvars -except datarootdir templatesdir
+
+outdir = fullfile(datarootdir,'fmroi-regiongrowing');
 if ~isfolder(outdir)
     mkdir(outdir)
 end
 
-fmroirootdir = '/home/andre/github/fmroi';
-srcpath = fullfile(fmroirootdir,'templates',...
-    'syndata','complex-shapes.nii.gz');
+% Synthetic data with several shapes isovoxel 2mm, 91x109x91
+srcpath = fullfile(templatesdir,'complex-shapes.nii.gz');
 
 vsrc = spm_vol(srcpath);
 srcvol = spm_data_read(vsrc);
@@ -233,7 +256,7 @@ end
 
 %--------------------------------------------------------------------------
 % shapes test
-clearvars -except fmroirootdir srcpath outdir srcvol count
+clearvars -except templatesdir srcpath outdir srcvol count
 
 thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
 grwmode = {'ascending';'descending';'similarity'};
@@ -273,14 +296,14 @@ end
 %--------------------------------------------------------------------------
 % shapes test premask
 
-clearvars -except fmroirootdir srcpath outdir srcvol count
+clearvars -except templatesdir srcpath outdir srcvol count
 
 thr = [1,1;3,4;5,5;5.2,5.2;5.4,5.4;5.6,5.6;5.8,5.8;7,8;9,10;11,12];
-testdir = fullfile(fmroirootdir,'etc','test_data');
-premasknames = {fullfile(testdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
-                fullfile(testdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
-                fullfile(testdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
-                fullfile(testdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
+
+premasknames = {fullfile(templatesdir,'premask-sphere_lhpc_radius_08_center_x58y57z27.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_rhpc_radius_08_center_x33y57z27.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_tetra_radius_09_center_x47y61z56.nii.gz');...
+                fullfile(templatesdir,'premask-sphere_cone_radius_15_center_x46y84z58.nii.gz')};
 
 premaskcell = cell(4,1);
 for n = 1:length(premasknames)
