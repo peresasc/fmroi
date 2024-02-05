@@ -1,6 +1,6 @@
 %% paths_definition
 %========================================================================
-% Test Script for ROI Creation Software
+% Quality Control Script for ROI Creation Software
 %
 %------------------------------------------------------------------------
 % This script contains a series of tests for evaluating the functionality
@@ -403,7 +403,8 @@ clearvars -except datarootdir rootoutdir templatesdir
 % input dataset paths
 
 datadir = {fullfile(datarootdir,'fmroi-img2mask');...
-    fullfile(datarootdir,'afni-img2mask');... fullfile(datarootdir,'fsl-img2mask');...
+    fullfile(datarootdir,'afni-img2mask');...
+    fullfile(datarootdir,'fsl-img2mask');...
     fullfile(datarootdir,'mricrogl-img2mask');...
     fullfile(datarootdir,'spm-img2mask')};
 
@@ -470,6 +471,9 @@ for d = 1:length(datadir) % loop for all evaluated ROI algorithms
         minthr = str2double(thrstr(1:strfind(thrstr,'_')-1));
         maxthr = str2double(thrstr(strfind(thrstr,'_')+1:end));
         
+        % if i == 15
+        %     a = 1;
+        % end
 %--------------------------------------------------------------------------
 % Defines the template ROI voxels coordinates
         if minthr <= maxthr
