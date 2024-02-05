@@ -20,3 +20,14 @@ fMROI is a powerful and user-friendly software designed to simplify ROI creation
 
 ***Note:*** *fMROI is continuously improving and expanding its functionality. Stay tuned for future updates, as we strive to enhance the viewer capabilities and incorporate new Matlab toolboxes to further enhance your experience with fMROI.*
 
+<br/>
+<br/>
+
+--------
+*Maintained by members and collaborators of Proaction Lab*<br/>
+*FPCE, University of Coimbra*<br/>
+*Rua do Colégio Novo - 3001-802*<br/>
+*Coimbra, Portugal*<br/>
+[https://proactionlab.fpce.uc.pt](https://proactionlab.fpce.uc.pt)<br/>
+[![proaction_logo](img/proaction_logo.png)](https://proactionlab.fpce.uc.pt)
+
