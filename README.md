@@ -61,5 +61,9 @@ Want to contribute? Great! Contact Andre Peres at ***peres.asc@gmail.com***.
 
 -------
 
+*Maintained by members and collaborators of Proaction Lab*<br/>
+*FPCE, University of Coimbra*<br/>
+*Rua do Colégio Novo - 3001-802*<br/>
+*Coimbra, Portugal*<br/>
 [https://proactionlab.fpce.uc.pt](https://proactionlab.fpce.uc.pt)
 
