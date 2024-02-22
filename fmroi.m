@@ -10,7 +10,7 @@ function fmroi()
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 30/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 22/02/2024, peres.asc@gmail.com
 
 clear global
 
