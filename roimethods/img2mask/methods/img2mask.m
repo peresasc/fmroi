@@ -1,11 +1,11 @@
 function mask = img2mask(srcvol,minthrs,maxthrs,varargin)
 % img2mask creates a mask determined by the minthrs and maxthrs intensity
 % thresholds. If minthrs is lower than maxthrs, img2mask set to zero those
-% voxels that have values that are lower than minthrs and bigger than
+% voxels that have values that are lower than minthrs or bigger than
 % maxthrs, i.e., mask = srcvol >= minthrs & srcvol <= maxthrs.
 % Otherwise, if minthrs is bigger than maxthrs, img2mask set to zero those 
-% voxels that have values lower than minthrs and bigger that maxthrs, i.e.,
-% mask = srcvol >= minthrs | srcvol <= maxthrs;
+% voxels that have values simultaneously lower than minthrs and bigger than
+% maxthrs, i.e., mask = srcvol >= minthrs | srcvol <= maxthrs;
 %
 % Syntax:
 %   mask = img2mask(srcvol,minthrs,maxthrs,varargin)
