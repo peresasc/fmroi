@@ -177,9 +177,12 @@ while size(neighbors, 1)
     for i = -1:1
         for j = -1:1
             for k = -1:1
-                if ismember(sub2ind(size(srcvol),x+i,y+j,z+k),srcmaskidx) &&... % Test if curpos is within the mask bounds
-                        any([i, j, k]) &&... % avoid picking the curvox
-                        ~neighmask(x+i, y+j, z+k) % avoid picking pixel positions already set
+                if ~any([x+i, y+j, z+k] > size(srcvol)) &&... % Test if curpos is within the srcvol bounds
+                   ~any([x+i, y+j, z+k] < [1,1,1]) &&... % Test if curpos is within the srcvol bounds
+                   ismember(sub2ind(size(srcvol),x+i,y+j,z+k),srcmaskidx) &&... % Test if curpos is within the mask bounds
+                   any([i, j, k]) &&... % avoid picking the curvox
+                   ~neighmask(x+i, y+j, z+k) % avoid picking pixel positions already set
+                    
 
                     neighmask(x+i, y+j, z+k) = true;
                     neighbors(end+1,:) = [x+i, y+j, z+k, srcvol(x+i, y+j, z+k)];
