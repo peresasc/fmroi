@@ -12,6 +12,7 @@ function editpos_callback(hObject,~,tag)
 
 global st
 handles = guidata(hObject);
+n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 n = handles.table_selectedcell(1);
 
 if ~exist('tag', 'var') || isempty(tag)
@@ -44,4 +45,22 @@ for i = 1:2
         set(handles.edit_pos(i,j),'String',num2str(cp(i,j)))
     end
 end
+
+voxelvalue = cell(n_image,1);
+for k = 1:n_image
+    cpk = st.vols{k}.mat\cpwld';
+    cpk = round(cpk(1:3))';
+
+    s = size(st.vols{k}.private.dat);
+    if sum((cpk<1)+(cpk>s))
+        voxelvalue{k} = NaN;
+    else
+        voxelvalue{k} = st.vols{k}.private.dat(cpk(1),cpk(2),cpk(3));
+    end
+end
+
+tdata = get(handles.table_listimg,'Data');
+tdata(:,2) = voxelvalue;
+set(handles.table_listimg,'Data',tdata);
+
 draw_slices(hObject)
