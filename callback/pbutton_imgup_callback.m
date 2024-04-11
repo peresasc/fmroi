@@ -46,17 +46,19 @@ if n ~= 1
     for curr_img = n-1:n
         v = handles.imgprop(curr_img).colormap;
         s = get(handles.popup_colormap,'String');
-        
+
         cmap = s{v};
         
-        
-        if strcmp(cmap,'custom')
-        else
-            for i = 1:3
-                colormap(handles.ax{curr_img,i}.ax,cmap)
-            end
+        % workaround to avoid crashing when using custom colormaps
+        if strcmp(cmap,'custom') || strcmp(cmap,'colorLUT')
+            cmap = 'gray';
         end
-        
+
+        for i = 1:3
+            colormap(handles.ax{curr_img,i}.ax,cmap)
+        end
+
+
         c = gettruecolor(handles.ax{curr_img,1}.d.CData,st.vols{curr_img}.private.dat(:,:,:),handles.ax{curr_img,1}.ax.Colormap);
         handles.ax{curr_img,4}.d.CData = c;
         handles.imgprop(curr_img).colormap = v;
