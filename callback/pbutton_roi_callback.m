@@ -24,8 +24,7 @@ st.roisrcname = listimgdata{n};
 
 specialvars = {'hObject';'srcvol';'curpos';'minthrs';'maxthrs'};
 
-% srcvol = st.vols{n}.private.dat(:,:,:);
-srcvol = st.vols{n}.fname;
+srcvol = st.vols{n}.private.dat(:,:,:);
 
 center_cpima = st.vols{n}.mat\[st.centre';1];
 curpos = round(center_cpima(1:3))';
@@ -97,6 +96,7 @@ else
         count = count+1;
         args{i} = get(handles.edit_autogui(count),'String');
     end
+    srcvol = st.vols{n}.fname; % change the matrix by the file name to work with external functions
     for k = 1:length(args)
         args{k} = eval(args{k});
     end
