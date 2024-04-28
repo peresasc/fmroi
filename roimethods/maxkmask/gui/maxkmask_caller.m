@@ -23,7 +23,7 @@ method = lower(handles.buttongroup_spheremasktype.SelectedObject.String);
 if strcmpi(method,'sphere')
     radius = str2double(get(handles.edit_roiradius,'String'));
     premask = spheremask(srcvol, curpos, radius, 'radius');    
-elseif strcmpi(method,'mask')
+elseif strcmpi(method,'mask image')
     premask = img2mask_caller(hObject,'premask');
     handles = guidata(hObject);
 else

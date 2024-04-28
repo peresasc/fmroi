@@ -1,14 +1,15 @@
-function mask = fsl_rectangularcuboidmask(curpos,srcvol,xs,ys,zs)
+function mask = fsl_rectangularcuboidmask(hObject,curpos,srcvol,xs,ys,zs)
 
-x = curpos(1);
-y = curpos(2);
-z = curpos(3);
-% srcvol = '/home/andre/tmp/fsl_test/T1.nii.gz';
+handles = guidata(hObject);
+outpath = fullfile(handles.tmpdir,'fslroi.nii.gz');
+x = curpos(1)-1; % subtract 1 because fsl first voxel is [0,0,0]
+y = curpos(2)-1;
+z = curpos(3)-1;
 
-cmd = 'fslmaths %s -mul 0 -add 1 -roi %d %d %d %d %d %d 0 1 /home/andre/tmp/fsl_test/roi2.nii.gz -odt float';
+cmd = 'fslmaths %s -mul 0 -add 1 -roi %d %d %d %d %d %d 0 1 %s -odt float';
 
 setenv('PATH', [getenv('PATH') ':/usr/local/fsl/bin']);
-system(sprintf(cmd,srcvol,x,xs,y,ys,z,zs));
+system(sprintf(cmd,srcvol,x,xs,y,ys,z,zs,outpath));
 
-v = spm_vol('/home/andre/tmp/fsl_test/roi2.nii.gz');
+v = spm_vol(outpath);
 mask = spm_data_read(v);

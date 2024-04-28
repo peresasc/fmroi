@@ -1,4 +1,4 @@
-function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,varargin)
+function mask = regiongrowingmask(srcvol, seed, diffratio, grwmode, nvox, premask)
 % regiongrowingmask is a region growing algorithm that groups neighboring
 % voxels from a seed iteratively according to a rule. The regiongrowingmask
 % has three rules for growing (grwmode), ascending, descending and 
@@ -8,12 +8,11 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 % (diffratio).
 %
 % Syntax:
-%   mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,...
-%                            varargin)
+%   mask = regiongrowingmask(srcvol, seed, diffratio, tfMean, grwmeth,...
+%                            nvox, premask)
 %
 % Inputs:
-%      srcvol: srcvol: 3D matrix or NIfTI file path used as the ROI
-%              template.
+%      srcvol: 3D matrix, usually a data volume from a nifti file.
 %        seed: 3D integer vector with the initial position for the growing
 %              algorithm.
 %   diffratio: Scalar that defines the maximum magnitude difference of the
@@ -27,41 +26,20 @@ function mask = regiongrowingmask(srcvol,seed,diffratio,grwmode,nvox,premask,var
 %                'similarity' - searches for the neighbor with the most 
 %                               similar value to the seed.
 %        nvox: Integer that defines the maximum number of voxels in ROI.
-%     premask: Binary 3D matrix or NIfTI file path with same size as srcvol
-%              that defines the region where the region growing will be
-%              applied. If premask is not a binary matrix,
-%              regiongrowingmask will binarize it considering TRUE all
-%              non-zero elements.
-%    varargin: Output file path for ROIs in NIfTI format. If a different
-%              extension is entered, it will be automatically set to .nii.
-%              Set this parameter only for NIfTI file saving.
+%     premask: Binary 3D matrix with same size as srcvol that defines the
+%              region where the region growing will be applied. If premask
+%              is not a binary matrix, regiongrowingmask will binarize it
+%              considering TRUE all non-zero elements.
 %
 % Output:
 %      mask: Binary 3D matrix with the same size as srcvol.
 %
 %  Author: Andre Peres, 2019, peres.asc@gmail.com
-%  Last update: Andre Peres, 04/10/2023, peres.asc@gmail.com
+%  Last update: Andre Peres, 15/07/2022, peres.asc@gmail.com
 
 %==========================================================================
 % HEADER
 %==========================================================================
-if ischar(srcvol)
-    srcpath = srcvol;
-    v = spm_vol(srcvol);
-    auxdata = spm_data_read(v);
-    
-    clear srcvol
-    srcvol = auxdata;
-end
-
-if ischar(premask)
-    v = spm_vol(premask);
-    auxpremask = spm_data_read(v);
-    
-    clear premask
-    premask = auxpremask;
-end
-
 if seed(1) < 1 || seed(2) < 1 || seed(3) < 1 ||...
         seed(1) > size(srcvol,1) || seed(2) > size(srcvol,2) ||...
         seed(3) > size(srcvol,3)
@@ -177,12 +155,9 @@ while size(neighbors, 1)
     for i = -1:1
         for j = -1:1
             for k = -1:1
-                if ~any([x+i, y+j, z+k] > size(srcvol)) &&... % Test if curpos is within the srcvol bounds
-                   ~any([x+i, y+j, z+k] < [1,1,1]) &&... % Test if curpos is within the srcvol bounds
-                   ismember(sub2ind(size(srcvol),x+i,y+j,z+k),srcmaskidx) &&... % Test if curpos is within the mask bounds
-                   any([i, j, k]) &&... % avoid picking the curvox
-                   ~neighmask(x+i, y+j, z+k) % avoid picking pixel positions already set
-                    
+                if ismember(sub2ind(size(srcvol),x+i,y+j,z+k),srcmaskidx) &&... % Test if curpos is within the mask bounds
+                        any([i, j, k]) &&... % avoid picking the curvox
+                        ~neighmask(x+i, y+j, z+k) % avoid picking pixel positions already set
 
                     neighmask(x+i, y+j, z+k) = true;
                     neighbors(end+1,:) = [x+i, y+j, z+k, srcvol(x+i, y+j, z+k)];
@@ -191,17 +166,4 @@ while size(neighbors, 1)
         end
     end
 
-end
-
-%--------------------------------------------------------------------------
-% Save mask to a nifti file
-if ~isempty(varargin)
-    [pn,fn,~] = fileparts(varargin{1});
-    if ~isempty(pn) && ~exist(pn,'dir')
-        mkdir(pn);
-    end
-
-    outpath = fullfile(pn,[fn,'.nii']);
-    mask = uint16(mask);
-    mat2nii(mask,srcpath,outpath)
 end

@@ -24,7 +24,8 @@ st.roisrcname = listimgdata{n};
 
 specialvars = {'hObject';'srcvol';'curpos';'minthrs';'maxthrs'};
 
-srcvol = st.vols{n}.private.dat(:,:,:);
+% srcvol = st.vols{n}.private.dat(:,:,:);
+srcvol = st.vols{n}.fname;
 
 center_cpima = st.vols{n}.mat\[st.centre';1];
 curpos = round(center_cpima(1:3))';
