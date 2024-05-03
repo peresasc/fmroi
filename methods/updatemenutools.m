@@ -1,5 +1,7 @@
 function updatemenutools(hObject)
-% updatemenutools is an internal function of fMROI.
+% updatemenutools is an internal function of fMROI. It seraches for folders
+% into [fmroiroot]/tools directory, and atributes a entry in the Tools
+% menu in the main fMROI interface.
 %
 % Syntax:
 %   updatemenutools(hObject)
