@@ -16,4 +16,4 @@ srcpath = get(handles.tools.applymask.edit_scrpath,'String');
 maskpath = get(handles.tools.applymask.edit_maskpath,'String');
 outdir = get(handles.tools.applymask.edit_outdir,'String');
 
-runapplymask(srcpath,maskpath,outdir);
+runapplymask(hObject,srcpath,maskpath,outdir);
