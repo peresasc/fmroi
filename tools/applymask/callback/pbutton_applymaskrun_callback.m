@@ -16,4 +16,15 @@ srcpath = get(handles.tools.applymask.edit_scrpath,'String');
 maskpath = get(handles.tools.applymask.edit_maskpath,'String');
 outdir = get(handles.tools.applymask.edit_outdir,'String');
 
-runapplymask(hObject,srcpath,maskpath,outdir);
+opts.saveimg = get(handles.tools.applymask.checkbox_saveimg,'value');
+opts.savestats = get(handles.tools.applymask.checkbox_savestats,'value');
+opts.savets = get(handles.tools.applymask.checkbox_savets,'value');
+
+if ~(opts.saveimg || opts.savestats || opts.savets)
+    he = errordlg('Please, select at least one type of output!');
+    uiwait(he)
+    return
+end
+
+
+runapplymask(srcpath,maskpath,outdir,opts,hObject);

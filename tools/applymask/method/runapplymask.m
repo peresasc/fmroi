@@ -1,17 +1,21 @@
-function runapplymask(hObject,srcpath,maskpath,outdir,opts)
+function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 
-handles = guidata(hObject);
-if nargin < 4
+if nargin < 3
     he = errordlg('Not enought input arguments!');
     uiwait(he)
     return
-elseif nargin == 4
-    opts.savenii = 1;
+elseif nargin == 3
+    opts.saveimg = 1;
     opts.savestats = 1;
     opts.savets = 1;
+    hObject = nan;
+elseif nargin == 4
+    hObject = nan;
+else
+    handles = guidata(hObject);
 end
 
-if ~(isfield(opts,'savenii') && isfield(opts,'savestats')...
+if ~(isfield(opts,'saveimg') && isfield(opts,'savestats')...
         && isfield(opts,'savets'))
     he = errordlg('opts input argument was not set properly!');
     uiwait(he)
@@ -38,7 +42,6 @@ if isfile(srcpath)
         uiwait(he)
         return
     end
-
 else
     srcsep = strfind(srcpath,';'); % find the file separators
     srcsep = [0,srcsep,length(srcpath)+1]; % adds start and end positions
@@ -93,15 +96,18 @@ end
 
 %--------------------------------------------------------------------------
 % Apply the masks in maskpath to source images in srcpath
+if isobject(hObject)
+    wb1 = get(handles.tools.applymask.wb1,'Position');
+    wb2 = get(handles.tools.applymask.wb2,'Position');    
+else
+    wb = waitbar(0,'Loading images...');
+end
+
 cellts = cell(length(srcpath),1);
 cellstats = cell(length(srcpath),1);
 maskidxall = [];
-wb1 = get(handles.tools.applymask.wb1,'Position');
-wb2 = get(handles.tools.applymask.wb2,'Position');
 for s = 1:length(srcpath)
-    wb2(3) = wb1(3)*(s/length(srcpath)); % updates the waitbar
-    set(handles.tools.applymask.wb2,'Position',wb2)
-    pause(.1)
+    
     srcvol = spm_vol(srcpath{s});
     srcdata = spm_data_read(srcvol);
 
@@ -129,7 +135,15 @@ for s = 1:length(srcpath)
     stats = zeros(6,length(maskidx));
     stats(1,:) = maskidx;
     for mi = 1:length(maskidx) % Mask index loop
-        set(handles.tools.applymask.text_wb,'String',sprintf('Source Image %d/%d - Maskidx %d/%d',s,length(srcpath),mi,length(maskidx)))
+        msg = sprintf('Source Image %d/%d - Maskidx %d/%d',...
+                s,length(srcpath),mi,length(maskidx));
+        if isobject(hObject)
+            set(handles.tools.applymask.text_wb,...
+                'String',msg)            
+        else
+            waitbar((s-1)/length(srcpath),wb,msg);
+        end
+        pause(.1)
         curmask = mask==maskidx(mi);
         if ~isequal(sd,sm) % source image is 4D and mask 3D
             curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
@@ -156,7 +170,7 @@ for s = 1:length(srcpath)
 
         %------------------------------------------------------------------
         % Save masked images to nifti files
-        if opts.savenii
+        if opts.saveimg
             [~,fn,~] = fileparts(srcpath{s});
             filename = sprintf([fn,'_maskid-%03d.nii'],maskidx(mi));
             if size(imgmask,4) == 1 % check if the volume is 3D
@@ -176,6 +190,14 @@ for s = 1:length(srcpath)
     end
     cellts{s} = ts;
     cellstats{s} = stats;
+
+    if isobject(hObject)
+        wb2(3) = wb1(3)*(s/length(srcpath)); % updates the waitbar
+        set(handles.tools.applymask.wb2,'Position',wb2)        
+    else
+        waitbar(s/length(srcpath),wb,msg);
+    end
+    pause(.1)
 end
 
 if length(maskpath)==1
@@ -229,5 +251,11 @@ if opts.savestats
     writetable(stdtable,fullfile(outdir,'std.csv'),'Delimiter','tab');
     writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
     writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
+end
+if isobject(hObject)
+    set(handles.tools.applymask.text_wb,...
+        'String','DONE!!!')    
+else
+    waitbar(1,wb,'DONE!!!');
 end
 disp('DONE!!!')
