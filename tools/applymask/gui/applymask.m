@@ -1,14 +1,57 @@
 function applymask(hObject,~)
-% axes_screenshot is an internal function of fMROI.
+% applymask is an internal function of fMROI. This function cretaes the GUI
+% for applying masks to fMRI images. For more information refer to the
+% function runapplymask.m.
 %
 % Syntax:
-%   axes_screenshot(hObject,~)
+%   applymask(hObject,~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
 %
-% Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
+%
+%--------------------------------------------------------------------------
+%                         runapplymask
+%--------------------------------------------------------------------------
+%
+% runapplymask function applies masks to a set of source images and saves
+% the results as time series and statistics.
+%
+% Syntax:
+% function runapplymask(srcpath,maskpath,outdir,opts,hObject)
+%
+% Inputs:
+%   srcpath: Path to the source images (string, cell array of strings, or a 
+%            text file containing paths separated by semicolons).
+%   maskpath: Path to the mask(s) (string, cell array of strings, or a text 
+%            file containing paths separated by semicolons). One mask can 
+%            be used for all source images or a separate mask can be  
+%            provided for each source image.
+%   outdir: Path to the output directory (string).
+%   opts (optional): A structure containing options for saving outputs.
+%       opts.saveimg (default: 1): Flag indicating if masked images should 
+%                      be saved (logical, 1 to save, 0 to not save).
+%       opts.savestats (default: 1): Flag indicating if statistics should 
+%                      be saved (logical, 1 to save, 0 to not save).
+%       opts.savets (default: 1): Flag indicating if time series data 
+%                      should be saved (logical, 1 to save, 0 to not save).
+%   hObject (optional): Handle to a graphical user interface object 
+%                      (not provided for command line usage). 
+%
+% Outputs: (saved to the output directory)
+%   * Masked images (if opts.saveimg is set to 1).
+%   * Timeseries.mat file containing the source paths, mask paths, 
+%     and time series data (if opts.savets is set to 1).
+%   * Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing 
+%     statistics for each mask applied to each source image (if 
+%     opts.savestats is set to 1).
+%
+% This function requires SPM to be installed.
+%
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
 
 
 delete_panel_tools(hObject)

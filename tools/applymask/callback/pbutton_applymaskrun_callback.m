@@ -7,8 +7,8 @@ function pbutton_applymaskrun_callback(hObject, ~)
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
 %
-% Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
 
 handles = guidata(hObject);
 

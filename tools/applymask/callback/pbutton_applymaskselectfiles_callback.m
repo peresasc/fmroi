@@ -1,14 +1,14 @@
 function pbutton_applymaskselectfiles_callback(hObject,~)
-% pbutton_pathscrsht_callback is an internal function of fMROI.
+% pbutton_applymaskselectfiles_callback is an internal function of fMROI.
 %
 % Syntax:
-%   pbutton_pathscrsht_callback(hObject,~)
+%   pbutton_applymaskselectfiles_callback(hObject,~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
 %
-% Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 23/08/2023, peres.asc@gmail.com
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
