@@ -150,15 +150,21 @@ for s = 1:length(srcpath)
 
     if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
         maskvol = spm_vol(maskpath{s});
-        mask = spm_data_read(maskvol);
+        mask = uint16(spm_data_read(maskvol));
     elseif length(maskpath) > 1
         maskvol = spm_vol(maskpath{s});
-        mask = spm_data_read(maskvol);
+        mask = uint16(spm_data_read(maskvol));
     end
 
     maskidx = unique(mask); % mask indexes for the current source volume
     maskidx(maskidx==0) = [];
     maskidxall = [maskidxall;maskidx]; % mask indexes for all source volumes
+
+    if isempty(maskidx) % check if the mask and srcvol have the same shape
+        he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
+        uiwait(he)
+        return
+    end
 
     sd = size(srcdata);
     sm = size(mask);
