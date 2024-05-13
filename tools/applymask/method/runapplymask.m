@@ -135,7 +135,7 @@ allmaskpath = cell(length(srcpath),size(auxmaskpath,2));
 allsrcpath = cell(length(srcpath),size(auxmaskpath,2));
 for m = 1:size(auxmaskpath,2)
     clear maskpath
-    maskpath = auxmaskpath(:,m);  
+    maskpath = auxmaskpath(:,m);
 
     %--------------------------------------------------------------------------
     % check if the number of masks are the same as source volumes.
@@ -166,7 +166,7 @@ for m = 1:size(auxmaskpath,2)
 
         maskidx = unique(mask); % mask indexes for the current source volume
         maskidx(maskidx==0) = [];
-        
+
 
         if isempty(maskidx) % check if the mask and srcvol have the same shape
             he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
@@ -187,13 +187,14 @@ for m = 1:size(auxmaskpath,2)
         stats(1,:) = maskidx;
         auxmaskidxall = cell(length(maskidx),1);
         for mi = 1:length(maskidx) % Mask index loop
-            msg = sprintf('Source Image %d/%d - Maskidx %d/%d',...
-                s,length(srcpath),mi,length(maskidx));
+            msg = sprintf('Source Image %d/%d - Mask %d/%d - idx %d/%d',...
+                s,length(srcpath),m,size(auxmaskpath,2),mi,length(maskidx));
             if isobject(hObject)
                 set(handles.tools.applymask.text_wb,...
                     'String',msg)
             else
-                waitbar((s-1)/length(srcpath),wb,msg);
+                waitbar((length(srcpath)*(m-1)+s-1)/...
+                (length(srcpath)*size(auxmaskpath,2)),wb,msg);
             end
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
@@ -237,83 +238,93 @@ for m = 1:size(auxmaskpath,2)
                     end
 
                     outpath = fullfile(outdir,filename);
-                    V4 = array4dtonii(srcvol,outpath);
+                    v4 = array4dtonii(srcvol,outpath);
                 end
             end
         end
+        %------------------------------------------------------------------
+        % updates cell arrays
         maskidxall{s,m} = auxmaskidxall;
         cellts{s,m} = ts;
         cellstats{s,m} = stats;
 
+        %------------------------------------------------------------------
+        % updates waitbar
         if isobject(hObject)
-            wb2(3) = wb1(3)*(s/length(srcpath)); % updates the waitbar
+            wb2(3) = wb1(3)*((length(srcpath)*(m-1)+s)/...
+                (length(srcpath)*size(auxmaskpath,2))); % updates the waitbar
             set(handles.tools.applymask.wb2,'Position',wb2)
         else
-            waitbar(s/length(srcpath),wb,msg);
+            waitbar((length(srcpath)*(m-1)+s)/...
+                (length(srcpath)*size(auxmaskpath,2)),wb,msg);
         end
         pause(.1)
     end
-    
-    
+
+
     if length(maskpath)==1
         auxmp = cell(length(srcpath),1);
-        auxmp(:) = maskpath; 
-        maskpath = auxmp;        
+        auxmp(:) = maskpath;
+        maskpath = auxmp;
     end
     allmaskpath(:,m) = auxmp;
     allsrcpath(:,m) = srcpath;
-
-    if opts.savets
-        timeseries = [srcpath,maskpath,cellts];
-        save(fullfile(outdir,'timeseries.mat'),'timeseries');
-
-    end
-
-    if opts.savestats
-        maskidx = unique(maskidxall);
-        maskmedian = nan(length(cellstats),length(maskidx));
-        maskmean = nan(length(cellstats),length(maskidx));
-        maskstd = nan(length(cellstats),length(maskidx));
-        maskmax = nan(length(cellstats),length(maskidx));
-        maskmin = nan(length(cellstats),length(maskidx));
-        for w = 1:length(cellstats)
-            idx = find(ismember(maskidx,cellstats{w}(1,:))); % find the current mask indexes among all indexes
-            maskmedian(w,idx) = cellstats{w}(2,:);
-            maskmean(w,idx) = cellstats{w}(3,:);
-            maskstd(w,idx) = cellstats{w}(4,:);
-            maskmax(w,idx) = cellstats{w}(5,:);
-            maskmin(w,idx) = cellstats{w}(6,:);
-        end
-
-        mediancell = [srcpath,maskpath,num2cell(maskmedian)];
-        meancell = [srcpath,maskpath,num2cell(maskmean)];
-        stdcell = [srcpath,maskpath,num2cell(maskstd)];
-        maxcell = [srcpath,maskpath,num2cell(maskmax)];
-        mincell = [srcpath,maskpath,num2cell(maskmin)];
-
-        varnames = cell(1,length(maskidx));
-        for k = 1:length(maskidx)
-            varnames{k} = sprintf('maskidx_%03d',maskidx(k));
-        end
-        varnames = [{'srcpath'},{'maskpath'},varnames];
-
-        mediantable = cell2table(mediancell,"VariableNames",varnames);
-        meantable = cell2table(meancell,"VariableNames",varnames);
-        stdtable = cell2table(stdcell,"VariableNames",varnames);
-        maxtable = cell2table(maxcell,"VariableNames",varnames);
-        mintable = cell2table(mincell,"VariableNames",varnames);
-
-        writetable(mediantable,fullfile(outdir,'median.csv'),'Delimiter','tab');
-        writetable(meantable,fullfile(outdir,'mean.csv'),'Delimiter','tab');
-        writetable(stdtable,fullfile(outdir,'std.csv'),'Delimiter','tab');
-        writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
-        writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
-    end
-    if isobject(hObject)
-        set(handles.tools.applymask.text_wb,...
-            'String','DONE!!!')
-    else
-        waitbar(1,wb,'DONE!!!');
-    end
 end
+
+if opts.savets
+    timeseries = [allsrcpath(:),allmaskpath(:),cellts(:)];
+    save(fullfile(outdir,'timeseries.mat'),'timeseries');
+end
+
+if opts.savestats
+    c1 = [maskidxall(:)];
+    c2 = [c1{:}];
+    c3 = c2(:);
+
+    maskidx = unique(c3);
+    maskmedian = nan(size(cellstats,1),length(maskidx));
+    maskmean = nan(size(cellstats,1),length(maskidx));
+    maskstd = nan(size(cellstats,1),length(maskidx));
+    maskmax = nan(size(cellstats,1),length(maskidx));
+    maskmin = nan(size(cellstats,1),length(maskidx));
+    for i = 1:size(cellstats,1)
+        for j = 1:size(cellstats,2)
+            for k = 1:length(maskidxall{i,j})
+                idx = find(strcmp(maskidx,maskidxall{i,j}{k})); % find the current mask indexes among all indexes
+                maskmedian(i,idx) = cellstats{i,j}(2,k);
+                maskmean(i,idx) = cellstats{i}(3,k);
+                maskstd(i,idx) = cellstats{i}(4,k);
+                maskmax(i,idx) = cellstats{i}(5,k);
+                maskmin(i,idx) = cellstats{i}(6,k);
+            end
+        end
+    end
+
+    mediancell = [srcpath,num2cell(maskmedian)];
+    meancell = [srcpath,num2cell(maskmean)];
+    stdcell = [srcpath,num2cell(maskstd)];
+    maxcell = [srcpath,num2cell(maskmax)];
+    mincell = [srcpath,num2cell(maskmin)];
+
+    varnames = [{'srcpath'},maskidx'];
+
+    mediantable = cell2table(mediancell,"VariableNames",varnames);
+    meantable = cell2table(meancell,"VariableNames",varnames);
+    stdtable = cell2table(stdcell,"VariableNames",varnames);
+    maxtable = cell2table(maxcell,"VariableNames",varnames);
+    mintable = cell2table(mincell,"VariableNames",varnames);
+
+    writetable(mediantable,fullfile(outdir,'median.csv'),'Delimiter','tab');
+    writetable(meantable,fullfile(outdir,'mean.csv'),'Delimiter','tab');
+    writetable(stdtable,fullfile(outdir,'std.csv'),'Delimiter','tab');
+    writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
+    writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
+end
+if isobject(hObject)
+    set(handles.tools.applymask.text_wb,...
+        'String','DONE!!!')
+else
+    waitbar(1,wb,'DONE!!!');
+end
+
 disp('DONE!!!')
