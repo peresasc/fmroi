@@ -6,29 +6,29 @@ function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 % function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 %
 % Inputs:
-%   srcpath: Path to the source images (string, cell array of strings, or a 
+%   srcpath: Path to the source images (string, cell array of strings, or a
 %            text file containing paths separated by semicolons).
-%   maskpath: Path to the mask(s) (string, cell array of strings, or a text 
-%            file containing paths separated by semicolons). One mask can 
-%            be used for all source images or a separate mask can be  
+%   maskpath: Path to the mask(s) (string, cell array of strings, or a text
+%            file containing paths separated by semicolons). One mask can
+%            be used for all source images or a separate mask can be
 %            provided for each source image.
 %   outdir: Path to the output directory (string).
 %   opts (optional): A structure containing options for saving outputs.
-%       opts.saveimg (default: 1): Flag indicating if masked images should 
+%       opts.saveimg (default: 1): Flag indicating if masked images should
 %                      be saved (logical, 1 to save, 0 to not save).
-%       opts.savestats (default: 1): Flag indicating if statistics should 
+%       opts.savestats (default: 1): Flag indicating if statistics should
 %                      be saved (logical, 1 to save, 0 to not save).
-%       opts.savets (default: 1): Flag indicating if time series data 
+%       opts.savets (default: 1): Flag indicating if time series data
 %                      should be saved (logical, 1 to save, 0 to not save).
-%   hObject (optional): Handle to a graphical user interface object 
-%                      (not provided for command line usage). 
+%   hObject (optional): Handle to a graphical user interface object
+%                      (not provided for command line usage).
 %
 % Outputs: (saved to the output directory)
 %   * Masked images (if opts.saveimg is set to 1).
-%   * Timeseries.mat file containing the source paths, mask paths, 
+%   * Timeseries.mat file containing the source paths, mask paths,
 %     and time series data (if opts.savets is set to 1).
-%   * Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing 
-%     statistics for each mask applied to each source image (if 
+%   * Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing
+%     statistics for each mask applied to each source image (if
 %     opts.savestats is set to 1).
 %
 % This function requires SPM to be installed.
@@ -72,7 +72,7 @@ if isfile(srcpath)
     if strcmpi(ext,'.nii') || strcmpi(ext,'.gz')
         srcpath = {srcpath};
     elseif strcmpi(ext,'.txt')
-        auxsrcpath = readcell(srcpath,'Delimiter',';');
+        auxsrcpath = readcell(srcpath,'Delimiter',[";",'\t']);
         srcpath = auxsrcpath;
     else
         he = errordlg('Invalid file format!');
@@ -97,10 +97,9 @@ if isfile(maskpath)
     [~,~,ext] = fileparts(maskpath);
 
     if strcmpi(ext,'.nii') || strcmpi(ext,'.gz')
-        maskpath = {maskpath};
+        auxmaskpath = {maskpath};
     elseif strcmpi(ext,'.txt')
-        auxmaskpath = readcell(maskpath,'Delimiter',';');
-        maskpath = auxmaskpath;
+        auxmaskpath = readcell(maskpath,'Delimiter',[";",'\t']);
     else
         he = errordlg('Invalid file format!');
         uiwait(he)
@@ -115,190 +114,206 @@ else
     for ms = 1:length(masksep)-1
         auxmaskpath{ms} = maskpath(masksep(ms)+1:masksep(ms+1)-1); % covert paths string to cell array
     end
-    maskpath = auxmaskpath;
+
 end
 
 %--------------------------------------------------------------------------
-% check if the number of masks are the same as source volumes.
-if ~(length(maskpath)==1 || length(maskpath)==length(srcpath))
-    nmf = length(maskpath);
-    nsf = length(srcpath);
-    he = errordlg([...
-        'The number of mask files should be one or the same number',...
-        'as the source images. You have selected ',...
-        sprintf('%d mask files and %d source images!',nmf,nsf)]);
-    uiwait(he)
-    return
-end
-
-%--------------------------------------------------------------------------
-% Apply the masks in maskpath to source images in srcpath
+% Starts the wait bar
 if isobject(hObject)
     wb1 = get(handles.tools.applymask.wb1,'Position');
-    wb2 = get(handles.tools.applymask.wb2,'Position');    
+    wb2 = get(handles.tools.applymask.wb2,'Position');
+    wb2(3) = 0;
+    set(handles.tools.applymask.wb2,'Position',wb2)
 else
     wb = waitbar(0,'Loading images...');
 end
 
-cellts = cell(length(srcpath),1);
-cellstats = cell(length(srcpath),1);
-maskidxall = [];
-for s = 1:length(srcpath)
-    
-    srcvol = spm_vol(srcpath{s});
-    srcdata = spm_data_read(srcvol);
+cellts = cell(length(srcpath),size(auxmaskpath,2));
+cellstats = cell(length(srcpath),size(auxmaskpath,2));
+maskidxall = cell(length(srcpath),size(auxmaskpath,2));
+allmaskpath = cell(length(srcpath),size(auxmaskpath,2));
+allsrcpath = cell(length(srcpath),size(auxmaskpath,2));
+for m = 1:size(auxmaskpath,2)
+    clear maskpath
+    maskpath = auxmaskpath(:,m);  
 
-    if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
-        maskvol = spm_vol(maskpath{s});
-        mask = uint16(spm_data_read(maskvol));
-    elseif length(maskpath) > 1
-        maskvol = spm_vol(maskpath{s});
-        mask = uint16(spm_data_read(maskvol));
-    end
-
-    maskidx = unique(mask); % mask indexes for the current source volume
-    maskidx(maskidx==0) = [];
-    maskidxall = [maskidxall;maskidx]; % mask indexes for all source volumes
-
-    if isempty(maskidx) % check if the mask and srcvol have the same shape
-        he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
+    %--------------------------------------------------------------------------
+    % check if the number of masks are the same as source volumes.
+    if ~(length(maskpath)==1 || length(maskpath)==length(srcpath))
+        nmf = length(maskpath);
+        nsf = length(srcpath);
+        he = errordlg([...
+            'The number of mask files should be one or the same number',...
+            'as the source images. You have selected ',...
+            sprintf('%d mask files and %d source images!',nmf,nsf)]);
         uiwait(he)
         return
     end
 
-    sd = size(srcdata);
-    sm = size(mask);
-    if ~(isequal(sd,sm) || isequal(sd(1:3),sm)) % check if the mask and srcvol have the same shape
-        he = errordlg('The source image and mask have different sizes');
-        uiwait(he)
-        return
-    end
 
-    ts = zeros(length(maskidx),size(srcdata,4));
-    stats = zeros(6,length(maskidx));
-    stats(1,:) = maskidx;
-    for mi = 1:length(maskidx) % Mask index loop
-        msg = sprintf('Source Image %d/%d - Maskidx %d/%d',...
+    for s = 1:length(srcpath)
+
+        srcvol = spm_vol(srcpath{s});
+        srcdata = spm_data_read(srcvol);
+
+        if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
+            maskvol = spm_vol(maskpath{s});
+            mask = uint16(spm_data_read(maskvol));
+        elseif length(maskpath) > 1
+            maskvol = spm_vol(maskpath{s});
+            mask = uint16(spm_data_read(maskvol));
+        end
+
+        maskidx = unique(mask); % mask indexes for the current source volume
+        maskidx(maskidx==0) = [];
+        
+
+        if isempty(maskidx) % check if the mask and srcvol have the same shape
+            he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
+            uiwait(he)
+            return
+        end
+
+        sd = size(srcdata);
+        sm = size(mask);
+        if ~(isequal(sd,sm) || isequal(sd(1:3),sm)) % check if the mask and srcvol have the same shape
+            he = errordlg('The source image and mask have different sizes');
+            uiwait(he)
+            return
+        end
+
+        ts = zeros(length(maskidx),size(srcdata,4));
+        stats = zeros(6,length(maskidx));
+        stats(1,:) = maskidx;
+        auxmaskidxall = cell(length(maskidx),1);
+        for mi = 1:length(maskidx) % Mask index loop
+            msg = sprintf('Source Image %d/%d - Maskidx %d/%d',...
                 s,length(srcpath),mi,length(maskidx));
-        if isobject(hObject)
-            set(handles.tools.applymask.text_wb,...
-                'String',msg)            
-        else
-            waitbar((s-1)/length(srcpath),wb,msg);
-        end
-        pause(.1)
-        curmask = mask==maskidx(mi);
-        if ~isequal(sd,sm) % source image is 4D and mask 3D
-            curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
-            imgmask = srcdata.*curmask;
-        else
-            imgmask = srcdata.*(curmask);
-        end
-        %------------------------------------------------------------------
-        % Calculates the average time-series
-
-        for t = 1:size(imgmask,4) % Using loop inteady identation is slower but allows for using different masks for each time point
-            curimg = squeeze(imgmask(:,:,:,t));
-            ts(mi,t) = mean(curimg(squeeze(curmask(:,:,:,t))));
-        end
-
-
-        %------------------------------------------------------------------
-        % Calculates the stats
-        stats(2,mi) = median(imgmask(curmask));
-        stats(3,mi) = mean(imgmask(curmask));
-        stats(4,mi) = std(imgmask(curmask));
-        stats(5,mi) = max(imgmask(curmask));
-        stats(6,mi) = min(imgmask(curmask));
-
-        %------------------------------------------------------------------
-        % Save masked images to nifti files
-        if opts.saveimg
-            [~,fn,~] = fileparts(srcpath{s});
-            filename = sprintf([fn,'_maskid-%03d.nii'],maskidx(mi));
-            if size(imgmask,4) == 1 % check if the volume is 3D
-                srcvol.fname = fullfile(outdir,filename);
-                v = spm_create_vol(srcvol);
-                v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-                v = spm_write_vol(v,imgmask);
+            if isobject(hObject)
+                set(handles.tools.applymask.text_wb,...
+                    'String',msg)
             else
-                for k = 1:length(srcvol)
-                    srcvol(k).dat = squeeze(imgmask(:,:,:,k));
-                end
+                waitbar((s-1)/length(srcpath),wb,msg);
+            end
+            pause(.1)
+            auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
+            curmask = mask==maskidx(mi);
+            if ~isequal(sd,sm) % source image is 4D and mask 3D
+                curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
+                imgmask = srcdata.*curmask;
+            else
+                imgmask = srcdata.*(curmask);
+            end
+            %------------------------------------------------------------------
+            % Calculates the average time-series
 
-                outpath = fullfile(outdir,filename);
-                V4 = array4dtonii(srcvol,outpath);
+            for t = 1:size(imgmask,4) % Using loop inteady identation is slower but allows for using different masks for each time point
+                curimg = squeeze(imgmask(:,:,:,t));
+                ts(mi,t) = mean(curimg(squeeze(curmask(:,:,:,t))));
+            end
+
+
+            %------------------------------------------------------------------
+            % Calculates the stats
+            stats(2,mi) = median(imgmask(curmask));
+            stats(3,mi) = mean(imgmask(curmask));
+            stats(4,mi) = std(imgmask(curmask));
+            stats(5,mi) = max(imgmask(curmask));
+            stats(6,mi) = min(imgmask(curmask));
+
+            %------------------------------------------------------------------
+            % Save masked images to nifti files
+            if opts.saveimg
+                [~,fn,~] = fileparts(srcpath{s});
+                filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],m,maskidx(mi));
+                if size(imgmask,4) == 1 % check if the volume is 3D
+                    srcvol.fname = fullfile(outdir,filename);
+                    v = spm_create_vol(srcvol);
+                    v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
+                    v = spm_write_vol(v,imgmask);
+                else
+                    for k = 1:length(srcvol)
+                        srcvol(k).dat = squeeze(imgmask(:,:,:,k));
+                    end
+
+                    outpath = fullfile(outdir,filename);
+                    V4 = array4dtonii(srcvol,outpath);
+                end
             end
         end
-    end
-    cellts{s} = ts;
-    cellstats{s} = stats;
+        maskidxall{s,m} = auxmaskidxall;
+        cellts{s,m} = ts;
+        cellstats{s,m} = stats;
 
+        if isobject(hObject)
+            wb2(3) = wb1(3)*(s/length(srcpath)); % updates the waitbar
+            set(handles.tools.applymask.wb2,'Position',wb2)
+        else
+            waitbar(s/length(srcpath),wb,msg);
+        end
+        pause(.1)
+    end
+    
+    
+    if length(maskpath)==1
+        auxmp = cell(length(srcpath),1);
+        auxmp(:) = maskpath; 
+        maskpath = auxmp;        
+    end
+    allmaskpath(:,m) = auxmp;
+    allsrcpath(:,m) = srcpath;
+
+    if opts.savets
+        timeseries = [srcpath,maskpath,cellts];
+        save(fullfile(outdir,'timeseries.mat'),'timeseries');
+
+    end
+
+    if opts.savestats
+        maskidx = unique(maskidxall);
+        maskmedian = nan(length(cellstats),length(maskidx));
+        maskmean = nan(length(cellstats),length(maskidx));
+        maskstd = nan(length(cellstats),length(maskidx));
+        maskmax = nan(length(cellstats),length(maskidx));
+        maskmin = nan(length(cellstats),length(maskidx));
+        for w = 1:length(cellstats)
+            idx = find(ismember(maskidx,cellstats{w}(1,:))); % find the current mask indexes among all indexes
+            maskmedian(w,idx) = cellstats{w}(2,:);
+            maskmean(w,idx) = cellstats{w}(3,:);
+            maskstd(w,idx) = cellstats{w}(4,:);
+            maskmax(w,idx) = cellstats{w}(5,:);
+            maskmin(w,idx) = cellstats{w}(6,:);
+        end
+
+        mediancell = [srcpath,maskpath,num2cell(maskmedian)];
+        meancell = [srcpath,maskpath,num2cell(maskmean)];
+        stdcell = [srcpath,maskpath,num2cell(maskstd)];
+        maxcell = [srcpath,maskpath,num2cell(maskmax)];
+        mincell = [srcpath,maskpath,num2cell(maskmin)];
+
+        varnames = cell(1,length(maskidx));
+        for k = 1:length(maskidx)
+            varnames{k} = sprintf('maskidx_%03d',maskidx(k));
+        end
+        varnames = [{'srcpath'},{'maskpath'},varnames];
+
+        mediantable = cell2table(mediancell,"VariableNames",varnames);
+        meantable = cell2table(meancell,"VariableNames",varnames);
+        stdtable = cell2table(stdcell,"VariableNames",varnames);
+        maxtable = cell2table(maxcell,"VariableNames",varnames);
+        mintable = cell2table(mincell,"VariableNames",varnames);
+
+        writetable(mediantable,fullfile(outdir,'median.csv'),'Delimiter','tab');
+        writetable(meantable,fullfile(outdir,'mean.csv'),'Delimiter','tab');
+        writetable(stdtable,fullfile(outdir,'std.csv'),'Delimiter','tab');
+        writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
+        writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
+    end
     if isobject(hObject)
-        wb2(3) = wb1(3)*(s/length(srcpath)); % updates the waitbar
-        set(handles.tools.applymask.wb2,'Position',wb2)        
+        set(handles.tools.applymask.text_wb,...
+            'String','DONE!!!')
     else
-        waitbar(s/length(srcpath),wb,msg);
+        waitbar(1,wb,'DONE!!!');
     end
-    pause(.1)
-end
-
-if length(maskpath)==1
-    auxmaskpath = cell(size(srcpath));
-    auxmaskpath(:) = maskpath;
-    maskpath = auxmaskpath;
-end
-
-if opts.savets
-    timeseries = [srcpath,maskpath,cellts];
-    save(fullfile(outdir,'timeseries.mat'),'timeseries');
-
-end
-
-if opts.savestats
-    maskidx = unique(maskidxall);
-    maskmedian = nan(length(cellstats),length(maskidx));
-    maskmean = nan(length(cellstats),length(maskidx));
-    maskstd = nan(length(cellstats),length(maskidx));
-    maskmax = nan(length(cellstats),length(maskidx));
-    maskmin = nan(length(cellstats),length(maskidx));
-    for w = 1:length(cellstats)
-        idx = find(ismember(maskidx,cellstats{w}(1,:))); % find the current mask indexes among all indexes
-        maskmedian(w,idx) = cellstats{w}(2,:);
-        maskmean(w,idx) = cellstats{w}(3,:);
-        maskstd(w,idx) = cellstats{w}(4,:);
-        maskmax(w,idx) = cellstats{w}(5,:);
-        maskmin(w,idx) = cellstats{w}(6,:);
-    end
-
-    mediancell = [srcpath,maskpath,num2cell(maskmedian)];
-    meancell = [srcpath,maskpath,num2cell(maskmean)];
-    stdcell = [srcpath,maskpath,num2cell(maskstd)];
-    maxcell = [srcpath,maskpath,num2cell(maskmax)];
-    mincell = [srcpath,maskpath,num2cell(maskmin)];
-
-    varnames = cell(1,length(maskidx));
-    for k = 1:length(maskidx)
-        varnames{k} = sprintf('maskidx_%03d',maskidx(k));
-    end
-    varnames = [{'srcpath'},{'maskpath'},varnames];
-
-    mediantable = cell2table(mediancell,"VariableNames",varnames);
-    meantable = cell2table(meancell,"VariableNames",varnames);
-    stdtable = cell2table(stdcell,"VariableNames",varnames);
-    maxtable = cell2table(maxcell,"VariableNames",varnames);
-    mintable = cell2table(mincell,"VariableNames",varnames);
-
-    writetable(mediantable,fullfile(outdir,'median.csv'),'Delimiter','tab');
-    writetable(meantable,fullfile(outdir,'mean.csv'),'Delimiter','tab');
-    writetable(stdtable,fullfile(outdir,'std.csv'),'Delimiter','tab');
-    writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
-    writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
-end
-if isobject(hObject)
-    set(handles.tools.applymask.text_wb,...
-        'String','DONE!!!')    
-else
-    waitbar(1,wb,'DONE!!!');
 end
 disp('DONE!!!')
