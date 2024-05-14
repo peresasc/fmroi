@@ -231,14 +231,14 @@ for m = 1:size(auxmaskpath,2)
                     srcvol.fname = fullfile(outdir,filename);
                     v = spm_create_vol(srcvol);
                     v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-                    v = spm_write_vol(v,imgmask);
+                    spm_write_vol(v,imgmask);
                 else
                     for k = 1:length(srcvol)
                         srcvol(k).dat = squeeze(imgmask(:,:,:,k));
                     end
 
                     outpath = fullfile(outdir,filename);
-                    v4 = array4dtonii(srcvol,outpath);
+                    array4dtonii(srcvol,outpath);
                 end
             end
         end
@@ -265,7 +265,6 @@ for m = 1:size(auxmaskpath,2)
     if length(maskpath)==1
         auxmp = cell(length(srcpath),1);
         auxmp(:) = maskpath;
-        maskpath = auxmp;
     end
     allmaskpath(:,m) = auxmp;
     allsrcpath(:,m) = srcpath;
