@@ -136,6 +136,8 @@ allsrcpath = cell(length(srcpath),size(auxmaskpath,2));
 for m = 1:size(auxmaskpath,2)
     clear maskpath
     maskpath = auxmaskpath(:,m);
+    maskpath(~cellfun(@ischar,maskpath)) = [];
+    maskpath(~isfile(maskpath)) = [];
 
     %--------------------------------------------------------------------------
     % check if the number of masks are the same as source volumes.
