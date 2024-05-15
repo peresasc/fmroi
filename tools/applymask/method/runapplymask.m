@@ -45,6 +45,7 @@ elseif nargin == 3
     opts.saveimg = 1;
     opts.savestats = 1;
     opts.savets = 1;
+    opts.groupts = 0;
     hObject = nan;
 elseif nargin == 4
     hObject = nan;
@@ -130,7 +131,7 @@ end
 
 cellts = cell(length(srcpath),size(auxmaskpath,2));
 cellstats = cell(length(srcpath),size(auxmaskpath,2));
-maskidxall = cell(length(srcpath),size(auxmaskpath,2));
+allmaskidx = cell(length(srcpath),size(auxmaskpath,2));
 allmaskpath = cell(length(srcpath),size(auxmaskpath,2));
 allsrcpath = cell(length(srcpath),size(auxmaskpath,2));
 for m = 1:size(auxmaskpath,2)
@@ -246,7 +247,7 @@ for m = 1:size(auxmaskpath,2)
         end
         %------------------------------------------------------------------
         % updates cell arrays
-        maskidxall{s,m} = auxmaskidxall;
+        allmaskidx{s,m} = auxmaskidxall;
         cellts{s,m} = ts;
         cellstats{s,m} = stats;
 
@@ -263,22 +264,37 @@ for m = 1:size(auxmaskpath,2)
         pause(.1)
     end
 
-
-    if length(maskpath)==1
-        auxmp = cell(length(srcpath),1);
-        auxmp(:) = maskpath;
-    end
-    allmaskpath(:,m) = auxmp;
+    allmaskpath(:,m) = maskpath;
     allsrcpath(:,m) = srcpath;
 end
 
 if opts.savets
-    timeseries = [allsrcpath(:),allmaskpath(:),cellts(:)];
-    save(fullfile(outdir,'timeseries.mat'),'timeseries');
+    if opts.groupts
+        usrcpath = unique(allsrcpath(:));
+        timeseries = cell(length(usrcpath),4);
+        for i = 1:length(usrcpath)
+            srcts = cellts(strcmp(allsrcpath,usrcpath{i}));
+            idx = allmaskidx(strcmp(allsrcpath,usrcpath{i}));
+            timeseries{i,1} = usrcpath{i};
+            timeseries{i,2} = allmaskpath(strcmp(allsrcpath,usrcpath{i}));
+            timeseries{i,3} = cat(1,idx{:});
+            timeseries{i,4} = cat(1,srcts{:});
+        end
+        tstab = cell2table(timeseries,"VariableNames",...
+            {'srcpath','maskpath','maskidx','timeseries'});
+        save(fullfile(outdir,'timeseriestab.mat'),'tstab');
+    else
+        for j = 1:size(cellts,2)
+            timeseries = [allsrcpath(:,j),allmaskpath(:,j),allmaskidx(:,j),cellts(:,j)];
+            tstab = cell2table(timeseries,"VariableNames",...
+                {'srcpath','maskpath','maskidx','timeseries'});
+            save(fullfile(outdir,['timeseriestab',sprintf('_mask-%03d',j),'.mat']),'tstab');
+        end
+    end    
 end
 
 if opts.savestats
-    c1 = [maskidxall(:)];
+    c1 = [allmaskidx(:)];
     c2 = [c1{:}];
     c3 = c2(:);
 
@@ -290,8 +306,8 @@ if opts.savestats
     maskmin = nan(size(cellstats,1),length(maskidx));
     for i = 1:size(cellstats,1)
         for j = 1:size(cellstats,2)
-            for k = 1:length(maskidxall{i,j})
-                idx = find(strcmp(maskidx,maskidxall{i,j}{k})); % find the current mask indexes among all indexes
+            for k = 1:length(allmaskidx{i,j})
+                idx = find(strcmp(maskidx,allmaskidx{i,j}{k})); % find the current mask indexes among all indexes
                 maskmedian(i,idx) = cellstats{i,j}(2,k);
                 maskmean(i,idx) = cellstats{i}(3,k);
                 maskstd(i,idx) = cellstats{i}(4,k);

@@ -1,4 +1,4 @@
-function pbutton_applymaskrun_callback(hObject, ~)
+function pbutton_applymaskrun_callback(hObject,~)
 % pbutton_applymaskrun_callback is an internal function of fMROI.
 %
 % Syntax:
@@ -19,6 +19,7 @@ outdir = get(handles.tools.applymask.edit_outdir,'String');
 opts.saveimg = get(handles.tools.applymask.checkbox_saveimg,'value');
 opts.savestats = get(handles.tools.applymask.checkbox_savestats,'value');
 opts.savets = get(handles.tools.applymask.checkbox_savets,'value');
+opts.groupts = get(handles.tools.applymask.checkbox_groupts,'value');
 
 if ~(opts.saveimg || opts.savestats || opts.savets)
     he = errordlg('Please, select at least one type of output!');
