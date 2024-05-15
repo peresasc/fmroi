@@ -65,6 +65,13 @@ if isempty(srcpath) || isempty(maskpath)
     uiwait(he)
     return
 end
+
+%--------------------------------------------------------------------------
+% Check if oudir exists, otherwise it creates outdir
+if ~isfolder(outdir)
+    mkdir(outdir)
+end
+
 %--------------------------------------------------------------------------
 % loading the source paths
 if isfile(srcpath)
