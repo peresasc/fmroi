@@ -40,9 +40,13 @@ if isfile(tspath)
 
     if strcmpi(ext,'.mat')
         tspath = {tspath};
-    elseif strcmpi(ext,'.txt')
+    elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
         auxtspath = readcell(tspath,'Delimiter',[";",'\t']);
-        tspath = auxtspath;
+        if isnumeric(auxtspath{1})
+            tspath = {tspath};
+        else
+            tspath = auxtspath;
+        end
     else
         he = errordlg('Invalid file format!');
         uiwait(he)
@@ -71,25 +75,45 @@ else
 end
 
 
-for i = 1:length(tspath)
-    aux = load(tspath{i});
-    tsfields = fieldnames(aux);
-    tsdata = aux.(tsfields{1});
-    if istable(tsdata)
-        tscol = find(strcmp(tsdata.Properties.VariableNames,'timeseries'));
-        if tscol
-            ts = tsdata.timeseries;
-        else
-            he = errordlg('The table does not have variable name timeseries');
-            uiwait(he)
-            return
+for k = 1:length(tspath)
+
+    %----------------------------------------------------------------------
+    % loads time-series data
+    [~,~,ext] = fileparts(tspath{k});
+
+    if strcmpi(ext,'.mat')
+        aux = load(tspath{k});
+        tsfields = fieldnames(aux);
+        tsdata = aux.(tsfields{1});
+        if istable(tsdata)
+            tscol = find(strcmp(tsdata.Properties.VariableNames,'timeseries'));
+            if tscol
+                tscell = tsdata.timeseries;
+            else
+                he = errordlg('The table does not have variable name timeseries');
+                uiwait(he)
+                return
+            end
+
+        elseif iscell(tsdata)
+            tscell = tscell(:,end);
         end
 
-    elseif iscell(tsdata)
-        ts = ts(:,end);
+    elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
+        tscell = {readmatrix(tspath{k})};
     end
-    
-    for s = 1
+
+    %----------------------------------------------------------------------
+    % calculates the connectomes
+    for s = 1:length(tscell)
+        ts = tscell{s};
+        zconnec = nan(size(ts,1));
+        for i = 1:size(ts,1)-1
+            for j = i+1:size(ts,1)
+                r = corrcoef(ts(i,:),ts(j,:));
+                zconnec(i,j) = atanh(r(1,2));
+            end
+        end
     end
 
 end

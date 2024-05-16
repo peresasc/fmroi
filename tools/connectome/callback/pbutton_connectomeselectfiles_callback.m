@@ -14,7 +14,7 @@ handles = guidata(hObject);
 
 switch hObject
     case handles.tools.connectome.pbutton_tspath
-        extfilt = {'*.mat';'*.txt'};
+        extfilt = {'*.mat';'*.txt';'*.csv';'*.tsv'};
         [fn,pn,idx] = uigetfile(extfilt,'Select the time-series files','MultiSelect','on');
         if ~idx
             return
