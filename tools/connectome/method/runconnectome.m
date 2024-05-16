@@ -41,7 +41,7 @@ if isfile(tspath)
     if strcmpi(ext,'.mat')
         tspath = {tspath};
     elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-        auxtspath = readcell(tspath,'Delimiter',[";",'\t']);
+        auxtspath = readcell(tspath,'Delimiter',[";","\t"]);
         if isnumeric(auxtspath{1})
             tspath = {tspath};
         else
@@ -105,15 +105,26 @@ for k = 1:length(tspath)
 
     %----------------------------------------------------------------------
     % calculates the connectomes
+    rconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
+    pconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
+    zconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     for s = 1:length(tscell)
         ts = tscell{s};
-        zconnec = nan(size(ts,1));
         for i = 1:size(ts,1)-1
             for j = i+1:size(ts,1)
-                r = corrcoef(ts(i,:),ts(j,:));
-                zconnec(i,j) = atanh(r(1,2));
+                [r,p] = corr(ts(i,:)',ts(j,:)','type','Pearson');
+                rconnec(i,j,s) = r;
+                pconnec(i,j,s) = p;
+                zconnec(i,j,s) = atanh(r);
             end
         end
     end
-
+    
+    if length(tspath)==1
+        zfilename = 'zconnec.mat';
+    else
+        zfilename = sprintf('zconnec_ts%d.mat',k);
+    end
+    save(fullfile(outdir,zfilename),'zconnec');
 end
+
