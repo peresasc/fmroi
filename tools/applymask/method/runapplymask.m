@@ -302,10 +302,9 @@ end
 
 if opts.savestats
     c1 = [allmaskidx(:)];
-    c2 = [c1{:}];
-    c3 = c2(:);
+    c2 = cat(1,c1{:});
 
-    maskidx = unique(c3);
+    maskidx = unique(c2);
     maskmedian = nan(size(cellstats,1),length(maskidx));
     maskmean = nan(size(cellstats,1),length(maskidx));
     maskstd = nan(size(cellstats,1),length(maskidx));

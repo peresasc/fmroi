@@ -13,18 +13,18 @@ function pbutton_runconnectome_callback(hObject,~)
 handles = guidata(hObject);
 
 tspath = get(handles.tools.connectome.edit_tspath,'String');
+roinames = get(handles.tools.connectome.edit_roinamepath,'String');
 outdir = get(handles.tools.connectome.edit_outdir,'String');
 
-opts = 1;
-% opts.saveimg = get(handles.tools.connectome.checkbox_saveimg,'value');
-% opts.savestats = get(handles.tools.connectome.checkbox_savestats,'value');
-% opts.savets = get(handles.tools.connectome.checkbox_savets,'value');
-% opts.groupts = get(handles.tools.connectome.checkbox_groupts,'value');
+opts.rsave = get(handles.tools.connectome.checkbox_rsave,'value');
+opts.psave = get(handles.tools.connectome.checkbox_psave,'value');
+opts.zsave = get(handles.tools.connectome.checkbox_zsave,'value');
+opts.ftsave = get(handles.tools.connectome.checkbox_ftsave,'value');
 
-% if ~(opts.saveimg || opts.savestats || opts.savets)
-%     he = errordlg('Please, select at least one type of output!');
-%     uiwait(he)
-%     return
-% end
+if ~(opts.rsave || opts.zsave || opts.ftsave)
+    he = errordlg('Please, select at least one type of output!');
+    uiwait(he)
+    return
+end
 
-runconnectome(tspath,outdir,opts,hObject);
+runconnectome(tspath,outdir,roinames,opts,hObject);

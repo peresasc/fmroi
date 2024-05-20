@@ -1,4 +1,4 @@
-function runconnectome(tspath,outdir,opts,hObject)
+function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
 % Last update: Andre Peres, 15/05/2024, peres.asc@gmail.com
@@ -9,12 +9,17 @@ if nargin < 2
     uiwait(he)
     return
 elseif nargin == 2
-    opts.saveimg = 1;
-    opts.savestats = 1;
-    opts.savets = 1;
-    opts.groupts = 0;
+    roinamespath = [];
+    opts.rsave = 1;
+    opts.zsave = 1;
+    opts.ftsave = 1;
     hObject = nan;
 elseif nargin == 3
+    opts.rsave = 1;
+    opts.zsave = 1;
+    opts.ftsave = 1;
+    hObject = nan;
+elseif nargin == 4
     hObject = nan;
 else
     handles = guidata(hObject);
@@ -34,7 +39,7 @@ if ~isfolder(outdir)
 end
 
 %--------------------------------------------------------------------------
-% loading the source paths
+% load the source paths
 if isfile(tspath)
     [~,~,ext] = fileparts(tspath);
 
@@ -61,6 +66,34 @@ else
         auxtspath{ss} = tspath(pathsep(ss)+1:pathsep(ss+1)-1); % convert paths string to cell array
     end
     tspath = auxtspath;
+end
+
+%--------------------------------------------------------------------------
+% load the ROI names
+if ~isempty(roinamespath)
+    if ischar(roinamespath)
+        if isfile(roinamespath)
+            [~,~,ext] = fileparts(roinamespath);
+            if strcmpi(ext,'.mat')
+                auxroinames = load(roinamespath);
+                roinamefields = fieldnames(auxroinames);
+                auxroinames = auxroinames.(roinamefields{1});
+
+            elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
+                auxroinames = readcell(roinamespath,'Delimiter',[";",'\t']);                
+            else
+                roinamespath = [];
+            end
+        else
+            roinamespath = [];
+        end
+
+    elseif iscell(roinamespath)
+        auxroinames = roinamespath;
+
+    else
+        roinamespath = [];
+    end
 end
 
 %--------------------------------------------------------------------------
@@ -119,12 +152,70 @@ for k = 1:length(tspath)
             end
         end
     end
-    
+
+
+    if isempty(roinamespath)
+        warning(['ROI names have an invalid file format! ',...
+            'Generic names will be assigned to the ROIs.']);
+        roinames = cell(size(tscell{1},1),1);
+        for n = 1:length(roinames)
+            roinames{n} = ['roi_',num2str(n)];
+        end
+    elseif size(auxroinames,2)==1
+        roinames = auxroinames;
+
+    else
+        roinames = auxroinames(:,k);
+        roinames(~cellfun(@ischar,roinames)) = [];
+        if ~size(auxroinames,2)==length(tspath)
+            warning(['The number of ROI names columns is different ',...
+                'from the number of selected time-series files! ',...
+                'Generic names will be assigned to the ROIs.']);
+            roinames = cell(size(tscell{1},1),1);
+            for n = 1:length(roinames)
+                roinames{n} = ['roi_',num2str(n)];
+            end
+        end
+    end
+
     if length(tspath)==1
         zfilename = 'zconnec.mat';
+        roinames_fn = 'roinames.mat';
     else
         zfilename = sprintf('zconnec_ts%d.mat',k);
+        roinames_fn = sprintf('roinames_ts%d.mat',k);
     end
-    save(fullfile(outdir,zfilename),'zconnec');
+
+    if opts.rsave
+        if length(tspath)==1
+            rfilename = 'rconnec.mat';
+            rftfilename = 'rfeatmat.mat';
+            rfeatmat = 'rfeatmat.csv';
+            rftnames = 'rftnames.csv';
+        else
+            rfilename = sprintf('rconnec_ts%d.mat',k);
+            rftfilename = sprintf('rfeatmat_ts%d.mat',k);
+            rfeatmat = sprintf('rfeatmat_ts%d.csv',k);
+            rftnames = sprintf('rftnames_ts%d.csv',k);
+        end
+        save(fullfile(outdir,rfilename),'rconnec');
+
+        if opts.ftsave
+            [ft,posft,ftnames] = connectome2featmatrix(rconnec,roinames);
+            save(fullfile(outdir,rftfilename),'ft','posft','ftnames');
+            writematrix(ft,rfeatmat,'Delimiter','tab');
+            writecell(ftnames,rftnames,'Delimiter','tab');
+        end
+    end
+    
+    % if opts.zsave
+    %     save(fullfile(outdir,zfilename),'zconnec');
+    %     if opt.ftsave
+    %         [ft,posft,ftnames] = connectome2featmatrix(zconnec,roinames);
+    %         save()
+    %     end
+    % end
+    % save(fullfile(outdir,roinames_fn),'roinames');
+    
 end
 
