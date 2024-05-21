@@ -79,7 +79,7 @@ if isfile(srcpath)
 
     if strcmpi(ext,'.nii') || strcmpi(ext,'.gz')
         srcpath = {srcpath};
-    elseif strcmpi(ext,'.txt')
+    elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
         auxsrcpath = readcell(srcpath,'Delimiter',[";",'\t']);
         srcpath = auxsrcpath;
     else
@@ -106,7 +106,7 @@ if isfile(maskpath)
 
     if strcmpi(ext,'.nii') || strcmpi(ext,'.gz')
         auxmaskpath = {maskpath};
-    elseif strcmpi(ext,'.txt')
+    elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
         auxmaskpath = readcell(maskpath,'Delimiter',[";",'\t']);
     else
         he = errordlg('Invalid file format!');

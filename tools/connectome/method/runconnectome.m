@@ -11,11 +11,13 @@ if nargin < 2
 elseif nargin == 2
     roinamespath = [];
     opts.rsave = 1;
+    opts.psave = 1;
     opts.zsave = 1;
     opts.ftsave = 1;
     hObject = nan;
 elseif nargin == 3
     opts.rsave = 1;
+    opts.psave = 1;
     opts.zsave = 1;
     opts.ftsave = 1;
     hObject = nan;
@@ -153,7 +155,8 @@ for k = 1:length(tspath)
         end
     end
 
-
+    %----------------------------------------------------------------------
+    % Generate ROI names 
     if isempty(roinamespath)
         warning(['ROI names have an invalid file format! ',...
             'Generic names will be assigned to the ROIs.']);
@@ -161,6 +164,7 @@ for k = 1:length(tspath)
         for n = 1:length(roinames)
             roinames{n} = ['roi_',num2str(n)];
         end
+
     elseif size(auxroinames,2)==1
         roinames = auxroinames;
 
@@ -178,14 +182,9 @@ for k = 1:length(tspath)
         end
     end
 
-    if length(tspath)==1
-        zfilename = 'zconnec.mat';
-        roinames_fn = 'roinames.mat';
-    else
-        zfilename = sprintf('zconnec_ts%d.mat',k);
-        roinames_fn = sprintf('roinames_ts%d.mat',k);
-    end
-
+    
+    %----------------------------------------------------------------------
+    % Save Pearson correlation coefficient connectome
     if opts.rsave
         if length(tspath)==1
             rfilename = 'rconnec.mat';
@@ -198,7 +197,7 @@ for k = 1:length(tspath)
             rfeatmat = sprintf('rfeatmat_ts%d.csv',k);
             rftnames = sprintf('rftnames_ts%d.csv',k);
         end
-        save(fullfile(outdir,rfilename),'rconnec');
+        save(fullfile(outdir,rfilename),'rconnec','roinames');
 
         if opts.ftsave
             [ft,posft,ftnames] = connectome2featmatrix(rconnec,roinames);
@@ -207,15 +206,52 @@ for k = 1:length(tspath)
             writecell(ftnames,rftnames,'Delimiter','tab');
         end
     end
-    
-    % if opts.zsave
-    %     save(fullfile(outdir,zfilename),'zconnec');
-    %     if opt.ftsave
-    %         [ft,posft,ftnames] = connectome2featmatrix(zconnec,roinames);
-    %         save()
-    %     end
-    % end
-    % save(fullfile(outdir,roinames_fn),'roinames');
-    
-end
 
+    %----------------------------------------------------------------------
+    % Save p-values connectome
+    if opts.psave
+        if length(tspath)==1
+            pfilename = 'pconnec.mat';
+            pftfilename = 'pfeatmat.mat';
+            pfeatmat = 'pfeatmat.csv';
+            pftnames = 'pftnames.csv';
+        else
+            pfilename = sprintf('pconnec_ts%d.mat',k);
+            pftfilename = sprintf('pfeatmat_ts%d.mat',k);
+            pfeatmat = sprintf('pfeatmat_ts%d.csv',k);
+            pftnames = sprintf('pftnames_ts%d.csv',k);
+        end
+        save(fullfile(outdir,pfilename),'pconnec','roinames');
+
+        if opts.ftsave
+            [ft,posft,ftnames] = connectome2featmatrix(pconnec,roinames);
+            save(fullfile(outdir,pftfilename),'ft','posft','ftnames');
+            writematrix(ft,pfeatmat,'Delimiter','tab');
+            writecell(ftnames,pftnames,'Delimiter','tab');
+        end
+    end
+
+    %----------------------------------------------------------------------
+    % Save Fisher Transformation connectome
+    if opts.zsave
+        if length(tspath)==1
+            zfilename = 'zconnec.mat';
+            zftfilename = 'zfeatmat.mat';
+            zfeatmat = 'zfeatmat.csv';
+            zftnames = 'zftnames.csv';
+        else
+            zfilename = sprintf('zconnec_ts%d.mat',k);
+            zftfilename = sprintf('zfeatmat_ts%d.mat',k);
+            zfeatmat = sprintf('zfeatmat_ts%d.csv',k);
+            zftnames = sprintf('zftnames_ts%d.csv',k);
+        end
+        save(fullfile(outdir,zfilename),'zconnec','roinames');
+
+        if opts.ftsave
+            [ft,posft,ftnames] = connectome2featmatrix(zconnec,roinames);
+            save(fullfile(outdir,zftfilename),'ft','posft','ftnames');
+            writematrix(ft,zfeatmat,'Delimiter','tab');
+            writecell(ftnames,zftnames,'Delimiter','tab');
+        end
+    end  
+end
