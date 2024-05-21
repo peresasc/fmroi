@@ -12,6 +12,8 @@ function pbutton_runconnectome_callback(hObject,~)
 
 handles = guidata(hObject);
 
+set(handles.tools.connectome.text_wb,'String','Initializing...')
+pause(.1)
 tspath = get(handles.tools.connectome.edit_tspath,'String');
 roinames = get(handles.tools.connectome.edit_roinamepath,'String');
 outdir = get(handles.tools.connectome.edit_outdir,'String');

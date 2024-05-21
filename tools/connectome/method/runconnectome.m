@@ -27,6 +27,14 @@ else
     handles = guidata(hObject);
 end
 
+%--------------------------------------------------------------------------
+% Starts the status message
+if isobject(hObject)
+    set(handles.tools.connectome.text_wb,'String','Working...')
+    pause(.1)
+else
+    Disp('Working...');
+end
 
 if isempty(tspath) || isempty(outdir)
     he = errordlg('Please, select the time-series and outputh paths!');
@@ -97,18 +105,6 @@ if ~isempty(roinamespath)
         roinamespath = [];
     end
 end
-
-%--------------------------------------------------------------------------
-% Starts the wait bar
-if isobject(hObject)
-    wb1 = get(handles.tools.connectome.wb1,'Position');
-    wb2 = get(handles.tools.connectome.wb2,'Position');
-    wb2(3) = 0;
-    set(handles.tools.connectome.wb2,'Position',wb2)
-else
-    wb = waitbar(0,'Loading time-series...');
-end
-
 
 for k = 1:length(tspath)
 
@@ -202,8 +198,8 @@ for k = 1:length(tspath)
         if opts.ftsave
             [ft,posft,ftnames] = connectome2featmatrix(rconnec,roinames);
             save(fullfile(outdir,rftfilename),'ft','posft','ftnames');
-            writematrix(ft,rfeatmat,'Delimiter','tab');
-            writecell(ftnames,rftnames,'Delimiter','tab');
+            writematrix(ft,fullfile(outdir,rfeatmat),'Delimiter','tab');
+            writecell(ftnames,fullfile(outdir,rftnames),'Delimiter','tab');
         end
     end
 
@@ -226,8 +222,8 @@ for k = 1:length(tspath)
         if opts.ftsave
             [ft,posft,ftnames] = connectome2featmatrix(pconnec,roinames);
             save(fullfile(outdir,pftfilename),'ft','posft','ftnames');
-            writematrix(ft,pfeatmat,'Delimiter','tab');
-            writecell(ftnames,pftnames,'Delimiter','tab');
+            writematrix(ft,fullfile(outdir,pfeatmat),'Delimiter','tab');
+            writecell(ftnames,fullfile(outdir,pftnames),'Delimiter','tab');
         end
     end
 
@@ -250,8 +246,16 @@ for k = 1:length(tspath)
         if opts.ftsave
             [ft,posft,ftnames] = connectome2featmatrix(zconnec,roinames);
             save(fullfile(outdir,zftfilename),'ft','posft','ftnames');
-            writematrix(ft,zfeatmat,'Delimiter','tab');
-            writecell(ftnames,zftnames,'Delimiter','tab');
+            writematrix(ft,fullfile(outdir,zfeatmat),'Delimiter','tab');
+            writecell(ftnames,fullfile(outdir,zftnames),'Delimiter','tab');
         end
     end  
+end
+
+%--------------------------------------------------------------------------
+% Set status message as done
+if isobject(hObject)
+    set(handles.tools.connectome.text_wb,'String','Done!!!')
+else
+    Disp('Done!!!');
 end
