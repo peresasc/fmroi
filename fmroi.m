@@ -47,15 +47,29 @@ handles.tpldir = templatedir;
 handles.toolsdir = toolsdir;
 handles.roimethdir = roimethdir;
 
-addpath(fullfile(fmroirootdir,'callback'),...
-    fullfile(fmroirootdir,'gui'),...
-    fullfile(fmroirootdir,'methods'),...
-    fullfile(fmroirootdir,'etc','figs'));
+matlabpathcell = regexp(path, pathsep, 'split');
 
-addpath(genpath(fullfile(fmroirootdir,'toolbox')));
-addpath(genpath(handles.toolsdir));
-addpath(genpath(handles.roimethdir));
+pathstoadd = [fullfile(fmroirootdir,'callback'),pathsep,...
+    fullfile(fmroirootdir,'gui'),pathsep,...
+    fullfile(fmroirootdir,'methods'),pathsep,...
+    fullfile(fmroirootdir,'etc','figs'),pathsep,...
+    genpath(handles.roimethdir),...
+    genpath(handles.toolsdir),...
+    genpath(fullfile(fmroirootdir,'toolbox'))];
 
+ptoaddcell = regexp(pathstoadd, pathsep, 'split');
+ptoaddcell(~isfolder(ptoaddcell)) = [];
+
+if any(~ismember(ptoaddcell,matlabpathcell))
+    addpath(pathstoadd);
+
+    a = questdlg(['Do you wish to save the fMROI paths for use in ',...
+        'future MATLAB sessions?'],'Save fMROI paths','Yes','No','Yes');
+    
+    if strcmpi(a,'yes')
+        savepath
+    end
+end
 
 %--------------------------------------------------------------------------
 % Create main Figure
