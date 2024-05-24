@@ -58,6 +58,7 @@ delete_panel_tools(hObject)
 create_panel_tools(hObject)
 
 handles = guidata(hObject);
+set(handles.panel_control,'Visible','on');
 
 fss = handles.fss; % font size scale
 
