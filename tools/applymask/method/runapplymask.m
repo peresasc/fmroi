@@ -275,6 +275,8 @@ for m = 1:size(auxmaskpath,2)
     allsrcpath(:,m) = srcpath;
 end
 
+%--------------------------------------------------------------------------
+% Save time-series
 if opts.savets
     if opts.groupts
         usrcpath = unique(allsrcpath(:));
@@ -286,20 +288,33 @@ if opts.savets
             timeseries{i,2} = allmaskpath(strcmp(allsrcpath,usrcpath{i}));
             timeseries{i,3} = cat(1,idx{:});
             timeseries{i,4} = cat(1,srcts{:});
+
+            tsname = [allsrcpath(strcmp(allsrcpath,usrcpath{i})),timeseries{i,2}];
+            tsnametab = cell2table(tsname,"VariableNames",...
+            {'srcpath','maskpath'});
+            writetable(tsnametab,fullfile(outdir,['tsfilename',sprintf('_img-%03d',i),'.csv']),'Delimiter','tab');
+            writematrix(timeseries{i,4},fullfile(outdir,['timeseries',sprintf('_img-%03d',i),'.csv']),'Delimiter','tab');
         end
         tstab = cell2table(timeseries,"VariableNames",...
             {'srcpath','maskpath','maskidx','timeseries'});
         save(fullfile(outdir,'timeseriestab.mat'),'tstab');
+        
     else
         for j = 1:size(cellts,2)
             timeseries = [allsrcpath(:,j),allmaskpath(:,j),allmaskidx(:,j),cellts(:,j)];
             tstab = cell2table(timeseries,"VariableNames",...
                 {'srcpath','maskpath','maskidx','timeseries'});
             save(fullfile(outdir,['timeseriestab',sprintf('_mask-%03d',j),'.mat']),'tstab');
+            for i = 1:size(cellts,1)
+                writetable(tstab(i,1:2),fullfile(outdir,['tsfilename',sprintf('_img-%03d_mask-%03d',i,j),'.csv']),'Delimiter','tab');
+                writematrix(cellts{i,j},fullfile(outdir,['timeseries',sprintf('_img-%03d_mask-%03d',i,j),'.csv']),'Delimiter','tab');
+            end
         end
     end    
 end
 
+%--------------------------------------------------------------------------
+% Save ROI stats
 if opts.savestats
     c1 = [allmaskidx(:)];
     c2 = cat(1,c1{:});
@@ -343,6 +358,9 @@ if opts.savestats
     writetable(maxtable,fullfile(outdir,'max.csv'),'Delimiter','tab');
     writetable(mintable,fullfile(outdir,'min.csv'),'Delimiter','tab');
 end
+
+%--------------------------------------------------------------------------
+% Update waitbar
 if isobject(hObject)
     set(handles.tools.applymask.text_wb,...
         'String','DONE!!!')
