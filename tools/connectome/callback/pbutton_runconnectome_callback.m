@@ -1,8 +1,8 @@
 function pbutton_runconnectome_callback(hObject,~)
-% pbutton_connectomerun_callback is an internal function of fMROI.
+% pbutton_runconnectome_callback is an internal function of fMROI.
 %
 % Syntax:
-%   pbutton_connectomerun_callback(hObject,~)
+%   pbutton_runconnectome_callback(hObject,~)
 %
 % Inputs:
 %   hObject: handle of the figure that contains the fMROI main window.
