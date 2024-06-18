@@ -3,7 +3,7 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 % Fisher transformation connectomes from input time-series data and saves
 % the results in specified output directories. Optionally, it can save the
 % results as feature matrices for machine-learning use.
-
+%
 %
 % Inputs:
 %         tspath: Path(s) to the time-series data file(s). Supported 

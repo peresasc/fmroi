@@ -1,8 +1,61 @@
 function connectome(hObject,~)
+% connectome is an internal function of fMROI. This function cretes 
+% connectomes from time-series and performs statical analysis. For more 
+% information refer to the function runconnectome.m.
+%
+% Syntax:
+%   connectome(hObject,~)
+%
+% Inputs:
+%   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
 % Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
-
+%
+%--------------------------------------------------------------------------
+%                        runconnectome header
+%--------------------------------------------------------------------------
+%
+% runconnectome computes Pearson correlation coefficients, p-values, and
+% Fisher transformation connectomes from input time-series data and saves
+% the results in specified output directories. Optionally, it can save the
+% results as feature matrices for machine-learning use.
+%
+%
+% Inputs:
+%         tspath: Path(s) to the time-series data file(s). Supported 
+%                 formats are .mat, .txt, .csv, and .tsv. For .mat files, 
+%                 the data can be a table, cell array, or numeric array:
+%                    - If a table or cell array, each time-series within
+%                      each cell is processed separately, resulting in as
+%                      many connectomes as the number of cells.
+%                    - If a numeric array (matrix) or any other file type,
+%                      a single connectome is generated for all the
+%                      time-series, treating them as from the same subject.
+%         outdir: Directory where the output files will be saved.
+%   roinamespath: (Optional) Path to the file containing ROI names.
+%                 Supported formats are .mat, .txt, .csv, and .tsv.
+%                 The file must have the same length as the number of
+%                 time-series. Each ROI name in roinamespath corresponds
+%                 to the ROI from which each time-series was extracted.
+%                 If not provided, generic names will be assigned.
+%           opts: (Optional - default: 1) Structure containing options:
+%                     opts.rsave: Save Pearson correlation connectome.
+%                     opts.psave: Save p-values connectome.
+%                     opts.zsave: Save Fisher transformation connectome.
+%                    opts.ftsave: Save feature matrices. 
+%        hObject: (Optional - default: NaN) Handle to the graphical user 
+%                 interface object. Not provided for command line usage.
+%
+% Outputs:
+%   The runconnectome saves the computed connectomes and feature matrices 
+%   in the specified output directory. The filenames include 'rconnec.mat', 
+%   'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices
+%   as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV 
+%   versions.
+%
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 15/05/2024, peres.asc@gmail.com
 
 delete_panel_tools(hObject)
 create_panel_tools(hObject)
