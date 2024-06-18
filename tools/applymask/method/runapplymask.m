@@ -6,12 +6,12 @@ function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 % function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 %
 % Inputs:
-%    srcpath: Path to the source images (string, cell array of strings, or a
-%            text file containing paths separated by semicolons).
+%    srcpath: Path to the source images (string, cell array of strings, or 
+%             a text file containing paths separated by semicolons).
 %   maskpath: Path to the mask(s) (string, cell array of strings, or a text
-%            file containing paths separated by semicolons). One mask can
-%            be used for all source images or a separate mask can be
-%            provided for each source image.
+%             file containing paths separated by semicolons). One mask can
+%             be used for all source images or a separate mask can be
+%             provided for each source image.
 %     outdir: Path to the output directory (string).
 %       opts: (optional) A structure containing options for saving outputs.
 %           opts.saveimg: (default: 1) Flag indicating if masked images 
