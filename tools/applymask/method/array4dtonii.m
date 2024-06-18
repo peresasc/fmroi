@@ -1,5 +1,47 @@
 function V4 = array4dtonii(V,fname,dt,RT)
-% Adapt from spm_file_merge
+% array4dtonii saves 4D matrices to NIFTI files.This function was adapted
+% from SMP spm_file_merge.m function.
+%
+% Originally, SPM did not operate with 4D NIFTI files. Instead, it created 
+% a structure array spm_vol and stored each 3D image in a different index
+% of the structure array. However, SPM has a tool to merge 3D NIFTI files
+% into a single 4D NIFTI file. Therefore, with a small modification to this
+% function, it is possible to save 4D matrices directly to NIFTI files.
+%
+% Specifically, the following modifications were made:
+%
+% 1. The line:
+% vdat = cat(4,V.dat);
+% was added to concatenate all 3D volumes stored in the spm_vol structure
+% into a single 4D volume.
+%
+% 2. The line:
+% ni.dat(:,:,:,i) = N(i).dat(:,:,:,ind(i,1),ind(i,2));
+% was changed to:
+% ni.dat(:,:,:,i) = vdat(:,:,:,ind(i,1),ind(i,2));
+% so that the variable ni.dat receives the 4D matrix.
+%
+% Syntax:
+% function V4 = array4dtonii(V,fname,dt,RT)
+%
+% Inputs:
+%       V: multidimensional spm_vol cantaining the 4D-data to be saved as
+%       nifiti-file
+%   fname: filename for output 4D volume [defaults: '4D.nii']
+%      dt: datatype (see spm_type) [defaults: 0], where 0 means same 
+%          datatype than first input volume.
+%      RT: Repetition time (TR) in seconds [defaults: NaN].
+%
+% Outputs:
+%      V4: spm_vol structure representing the 4D volume, saved to a 
+%          nifti-file at 'fname'.
+%
+% Adapted by Andre Peres, 2024, peres.asc@gmail.com
+%
+%--------------------------------------------------------------------------
+%                    Original spm_file_merge header
+%--------------------------------------------------------------------------
+%
 % Concatenate 3D volumes into a single 4D volume
 % FUNCTION V4 = spm_file_merge(V,fname,dt)
 % V      - images to concatenate (char array or spm_vol struct)
@@ -17,7 +59,7 @@ function V4 = array4dtonii(V,fname,dt,RT)
 % differences between the input and output images values.
 %__________________________________________________________________________
 % Copyright (C) 2009-2018 Wellcome Trust Centre for Neuroimaging
-
+%
 % John Ashburner
 % $Id: spm_file_merge.m 7354 2018-06-22 10:44:22Z guillaume $
 
