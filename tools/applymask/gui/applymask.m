@@ -23,29 +23,38 @@ function applymask(hObject,~)
 % function runapplymask(srcpath,maskpath,outdir,opts,hObject)
 %
 % Inputs:
-%   srcpath: Path to the source images (string, cell array of strings, or a 
+%   srcpath: Path to the source images (string, cell array of strings, or a
 %            text file containing paths separated by semicolons).
-%   maskpath: Path to the mask(s) (string, cell array of strings, or a text 
-%            file containing paths separated by semicolons). One mask can 
-%            be used for all source images or a separate mask can be  
+%   maskpath: Path to the mask(s) (string, cell array of strings, or a text
+%            file containing paths separated by semicolons). One mask can
+%            be used for all source images or a separate mask can be
 %            provided for each source image.
 %   outdir: Path to the output directory (string).
 %   opts (optional): A structure containing options for saving outputs.
-%       opts.saveimg (default: 1): Flag indicating if masked images should 
+%       opts.saveimg (default: 1): Flag indicating if masked images should
 %                      be saved (logical, 1 to save, 0 to not save).
-%       opts.savestats (default: 1): Flag indicating if statistics should 
+%       opts.savestats (default: 1): Flag indicating if statistics should
 %                      be saved (logical, 1 to save, 0 to not save).
-%       opts.savets (default: 1): Flag indicating if time series data 
+%       opts.savets (default: 1): Flag indicating if time series data
 %                      should be saved (logical, 1 to save, 0 to not save).
-%   hObject (optional): Handle to a graphical user interface object 
-%                      (not provided for command line usage). 
+%       opts.groupts (default: 0): Flag used to control how the time series
+%                      data is saved. If opts.groupts is set to 1, then the
+%                      time series data will be saved grouped by source
+%                      image. This means that all of the masks for a 
+%                      particular source image will be saved together in a
+%                      single file. However, if opts.groupts is set to 0, 
+%                      then the time series data will be saved for each 
+%                      mask separately. This means that there will be a 
+%                      separate file for each mask.
+%   hObject (optional): Handle to a graphical user interface object
+%                      (not provided for command line usage).
 %
 % Outputs: (saved to the output directory)
 %   * Masked images (if opts.saveimg is set to 1).
-%   * Timeseries.mat file containing the source paths, mask paths, 
+%   * Timeseries.mat file containing the source paths, mask paths,
 %     and time series data (if opts.savets is set to 1).
-%   * Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing 
-%     statistics for each mask applied to each source image (if 
+%   * Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing
+%     statistics for each mask applied to each source image (if
 %     opts.savestats is set to 1).
 %
 % This function requires SPM to be installed.
