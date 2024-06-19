@@ -1,4 +1,45 @@
 function [ft,posft,ftnames] = connectome2featmatrix(fcinput,roinamespath)
+% CONNECTOME2FEATMATRIX Convert connectome data to feature matrix format.
+%
+% This function processes input functional connectivity (FC) data to 
+% generate feature matrices. Optionally, it includes ROI names in the 
+% output feature names.
+%
+% Syntax:
+%  function [ft,posft,ftnames] =...
+%                  connectome2featmatrix(fcinput,roinamespath)
+%
+% Inputs:
+%         fcinput: Functional connectivity correlation matrix (connectome).
+%                  Can be a single numeric array, a cell array of matrices,
+%                  or a file path. If the input is a cell array, 
+%                  connectome2featmatrix will treat each data within the 
+%                  cells as a new sample, resulting in as many connectomes
+%                  as the number of cells. The supported file formats are 
+%                  .mat, .txt, .csv, and .tsv.
+%    roinamespath: (Optional) Path to the file containing ROI names.
+%                  Supported formats are .mat, .txt, .csv, and .tsv.
+%                  The file must have the same length as the number of
+%                  connectome lines/columns (it is a square matrix).
+%                  Each ROI name in roinamespath corresponds to the ROI 
+%                  from which each time-series was extracted. If not 
+%                  provided, generic names will be assigned.
+%
+% Outputs:
+%              ft: Feature matrix with each row representing a vectorized 
+%                  upper triangle of the input connectomes.
+%           posft: Position mapping of the feature vectors back to the 
+%                  original matrix space.
+%         ftnames: Cell array containing names for each feature based on 
+%                  the ROI names.
+%
+% Examples:
+%  [ft, posft, ftnames] = connectome2featmatrix('connectome.mat')
+%  [ft, posft, ftnames] = connectome2featmatrix({'connectome1.mat',...
+%                         'connectome2.mat'},'roinames.txt')
+%
+% Author: Andre Peres, 2024, peres.asc@gmail.com
+% Last update: Andre Peres, 19/06/2024, peres.asc@gmail.com
 
 if nargin < 2
     roinamespath = [];
@@ -19,7 +60,9 @@ if ~isempty(roinamespath)
                 roinamefields = fieldnames(roinames);
                 roinames = roinames.(roinamefields{1});
 
-            elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
+            elseif strcmpi(ext,'.txt') ||...
+                   strcmpi(ext,'.csv') ||...
+                   strcmpi(ext,'.tsv')
                 roinames = readcell(roinamespath,'Delimiter',[";",'\t']);                
             else
                 roinamespath = [];
@@ -47,7 +90,9 @@ for s = 1:length(fcinput)
             auxconn = load(fcinput{s});
             connfields = fieldnames(auxconn);
             connec = auxconn.(connfields{1});
-        elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv') % otherwise the path must point to a square matrix
+        elseif strcmpi(ext,'.txt') ||...
+               strcmpi(ext,'.csv') ||...
+               strcmpi(ext,'.tsv') % otherwise the path must point to a square matrix
             connec = readmatrix(curinput,'Delimiter',[";","\t"]);
         end
 

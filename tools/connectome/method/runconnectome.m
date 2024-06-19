@@ -9,9 +9,16 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %         tspath: Path(s) to the time-series data file(s). Supported 
 %                 formats are .mat, .txt, .csv, and .tsv. For .mat files, 
 %                 the data can be a table, cell array, or numeric array:
-%                    - If a table or cell array, each time-series within
-%                      each cell is processed separately, resulting in as
-%                      many connectomes as the number of cells.
+%                    - If a Matlab table, it must have a variable named as
+%                      "timeseries" from where the time-series are
+%                      extracted and stored in a cell array. Time-series 
+%                      within each cell is processed separately, resulting 
+%                      in as many connectomes as the number of cells.
+%                      It is possible to obtain this table directly from 
+%                      the applymask algorithm (fmroi/tools).
+%                    - If a cell array, each time-series within each cell
+%                      is processed separately, resulting in as many 
+%                      connectomes as the number of cells.
 %                    - If a numeric array (matrix) or any other file type,
 %                      a single connectome is generated for all the
 %                      time-series, treating them as from the same subject.
