@@ -20,6 +20,7 @@ nav:
     - 'installation.md'
     - 'overview.md'
     - 'roi_creation.md'
+    - 'Extra Tools': 'extra_tools.md'
     - 'Importing new features': 'importing_features.md'
     - 'developers.md'
     - 'contact.md'
