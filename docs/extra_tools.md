@@ -1,5 +1,6 @@
 Extra Tools
 ============
+The extra tools offer a range of additional functions that, while not crucial to the core functionality of fMROI, can be highly beneficial for various tasks. These tools can be found in the "Tools" menu. By default, fMROI 1.0.x includes a screenshot assistant that enables automated capture of multiple slices and the creation of image mosaics. Additionally, fMROI features an import assistant in the "Config" menu to simplify the integration of new tools. The files for these extra tools are stored in the "tools" folder within the fMROI root directory.
 
 Applymask
 ----------
@@ -26,3 +27,27 @@ Applymask (or runapplymask for command line use) function applies masks to a set
     - Median.csv, Mean.csv, Std.csv, Max.csv, Min.csv files containing statistics for each mask applied to each source image (if opts.savestats is set to 1).
 
 *This function requires SPM 12 to be installed.*
+
+Connectome
+-----------
+ Connectome (or runconnectome for command line use) computes Pearson correlation coefficients, p-values, and Fisher transformation connectomes from input time-series data and saves the results in specified output directories. Optionally, it can save the results as feature matrices for machine-learning use.
+
+
+- **Inputs:**
+    - **tspath:** Path(s) to the time-series data file(s). Supported formats are .mat, .txt, .csv, and .tsv. For .mat files, the data can be a table, cell array, or numeric array:
+        - If a Matlab table, it must have a variable named as "timeseries" from where the time-series are extracted and stored in a cell array. Time-series within each cell is processed separately, resulting in as many connectomes as the number of cells. It is possible to obtain this table directly from the applymask algorithm (fmroi/tools).
+        - If a cell array, each time-series within each cell is processed separately, resulting in as many connectomes as the number of cells.
+        - If a numeric array (matrix) or any other file type, a single connectome is generated for all the time-series, treating them as from the same subject.
+    - **outdir:** Directory where the output files will be saved.
+    - **roinamespath:** (Optional) Path to the file containing ROI names. Supported formats are .mat, .txt, .csv, and .tsv. The file must have the same length as the number of time-series. Each ROI name in roinamespath corresponds to the ROI from which each time-series was extracted.
+                 If not provided, generic names will be assigned.
+    - **opts:** (Optional - default: 1) Structure containing options:
+        - opts.rsave: Save Pearson correlation connectome.
+        - opts.psave: Save p-values connectome.
+        - opts.zsave: Save Fisher transformation connectome.
+        - opts.ftsave: Save feature matrices. 
+    - **hObject:** (Optional - default: NaN) Handle to the graphical user 
+                 interface object. Not provided for command line usage.
+
+- **Outputs:**
+    - The runconnectome saves the computed connectomes and feature matrices in the specified output directory. The filenames include 'rconnec.mat', 'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV versions.
