@@ -1,5 +1,11 @@
 function multislice(hObject)
-% multislice is an internal function of fMROI.
+% multislice is an internal function of fMROI. It is designed to create a 
+% series of image slices displayed in a horizontal sequence within the 
+% fMROI application. This facilitates the visualization of a range of 
+% slices from the current dataset, allowing for comprehensive comparison 
+% and analysis. For a comprehensive user guide, please access the
+% documentation webpage:
+% https://fmroi.readthedocs.io/en/latest/extra_tools
 %
 % Syntax:
 %   multislice(hObject)

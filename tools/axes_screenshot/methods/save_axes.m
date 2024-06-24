@@ -1,5 +1,10 @@
 function save_axes(hObject)
-% save_axes is an internal function of fMROI.
+% save_axes is an internal function of fMROI. It allows users to capture 
+% and save images of selected axes from the main window to a specified
+% output path. Users can specify which axes to save and the range of slices
+% to include. For a comprehensive user guide, please access the
+% documentation webpage:
+% https://fmroi.readthedocs.io/en/latest/extra_tools
 %
 % Syntax:
 %   save_axes(hObject,~)

@@ -1,5 +1,10 @@
 function mosaic(hObject)
-% mosaic is an internal function of fMROI.
+% mosaic is an internal function of fMROI. It arranges  multiple image
+% slices into a mosaic format within the main window of  the fMROI
+% application. This facilitates the visualization and analysis  of multiple
+% slices simultaneously. For a comprehensive user guide, please access the
+% documentation webpage:
+% https://fmroi.readthedocs.io/en/latest/extra_tools
 %
 % Syntax:
 %   mosaic(hObject)
