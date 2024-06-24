@@ -51,3 +51,51 @@ Connectome
 
 - **Outputs:**
     - The runconnectome saves the computed connectomes and feature matrices in the specified output directory. The filenames include 'rconnec.mat', 'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV versions.
+
+
+axes_screenshot
+----------------
+
+**Overview**
+
+The `axes_screenshot` toolbox is a set of MATLAB functions designed to capture and save screenshots of different axes configurations within the fMROI application. It can save slices programmatically, generate mosaic and slice sequences, and save them to most used image formats like PNG, JPEG, and TIFF. For more details about supported file formats, refer to the MATLAB `imwrite` function documentation.
+
+
+**Usage**
+
+To open the Axes Screenshot Tool, go to fMROI main menu ´Tools´ and select ´axes_screenshot´.
+
+*Generating a Multislice Screenshot*
+
+In the dropdown menu labeled "Mode", select "Multi-slice".
+To open the Multislice tool and set the Parameters:
+
+- Number of Slices: Enter the number of slices to capture in the "Slices" field.
+- Initial Slice: Enter the starting slice number in the "Init Slice" field.
+- Last Slice: Enter the ending slice number in the "Last Slice" field.
+- Target slice: Select the target slice type (Axial, Coronal, or Saggital) from the "Target slice" drop dow menu. 
+- Slice Overlap: Enter the slice overlap percentage (between captured slices) in the "Slice Overlap" field. The slider below the 'Overlap' field allows you to adjust this value interactively.
+
+Once the parameters are set, click the "Gen" button to generate the multislice picture. The "Slice Overlap" slider can be used to adjust the position of the slices. If you want to invert the the slices order, set any negative value (between 0 and -1) in the "Overlap" field.
+Once you are happy with the resulting picture, enter the full output file name in the "Out path" field (default: ./fmroiscreenshot.png). Click the "Save" button to save the multislice screenshots to the specified file.
+
+
+*Generating a Mosaic Screenshot*
+In the dropdown menu labeled "Screenshot Mode", select "Mosaic".
+To open the Mosaic tool and set the Parameters:
+
+- Columns: Enter the number of columns in the mosaic in the "Columns" field.
+- Lines: Enter the number of lines in the mosaic in the "Lines" field.
+- Initial Slice: Enter the starting slice number in the "Init slice" field.
+- Last Slice: Enter the ending slice number in the "Last slice" field.
+- Target slice: Select the target slice type (Axial, Coronal, or Saggital) from the "Target slice" drop dow menu.
+- Column Overlap: Enter the column overlap percentage in the "Column Overlap" text box.
+- Line Overlap: Enter the line overlap percentage in the "Line Overlap" text box.
+
+Once the parameters are set, click the "Gen" button to generate the mosaic picture. The mosaic will be displayed in the main axes of the GUI, and its slices' positions can be adjusted by moving the "Overlap" slider. If you want to invert the horizontal or vertical order of the slices, set any negative value (between 0 and -1) in the "Column Overlap" and "Line Overlap" fields respectively.
+Once you are happy with the resulting picture, enter the full output file name in the "Out path" field (default: ./fmroiscreenshot.png). Click the "Save" button to save the mosaic screenshots to the specified file.
+
+
+***Notes***
+- *Ensure all required fields are filled before generating or saving screenshots.*
+- *Adjust overlap percentages carefully to avoid overlapping images improperly.*
