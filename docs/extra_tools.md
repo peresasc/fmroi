@@ -53,7 +53,7 @@ Connectome
     - The runconnectome saves the computed connectomes and feature matrices in the specified output directory. The filenames include 'rconnec.mat', 'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV versions.
 
 
-axes_screenshot
+Axes Screenshot
 ----------------
 
 **Overview**
@@ -81,6 +81,7 @@ Once you are happy with the resulting picture, enter the full output file name i
 
 
 *Generating a Mosaic Screenshot*
+
 In the dropdown menu labeled "Screenshot Mode", select "Mosaic".
 To open the Mosaic tool and set the Parameters:
 
@@ -96,6 +97,4 @@ Once the parameters are set, click the "Gen" button to generate the mosaic pictu
 Once you are happy with the resulting picture, enter the full output file name in the "Out path" field (default: ./fmroiscreenshot.png). Click the "Save" button to save the mosaic screenshots to the specified file.
 
 
-***Notes***
-- *Ensure all required fields are filled before generating or saving screenshots.*
-- *Adjust overlap percentages carefully to avoid overlapping images improperly.*
+***Notes*** - *Ensure all required fields are filled before generating or saving screenshots. Adjust overlap percentages carefully to avoid overlapping images improperly.*
