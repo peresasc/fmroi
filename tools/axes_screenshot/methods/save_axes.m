@@ -20,6 +20,8 @@ handles = guidata(hObject);
 outfilename = get(handles.edit_outscrshtpath,'string');
 [pn,fn,ext] = fileparts(outfilename);
 
+%--------------------------------------------------------------------------
+% get the axes to save
 actax = [];
 for i = 1:length(handles.checkbox_saveaxis)
     if handles.checkbox_saveaxis(i).Value
@@ -33,17 +35,21 @@ if isempty(actax)
     return
 end
 
-if handles.radio_slices(2).Value
+%--------------------------------------------------------------------------
+% get the slices to save
+if handles.radio_slices(2).Value % manual selection
     sl2save = cell(3,1);
     for i = 1:3
         sl2save{i} = eval(['[',handles.edit_slices2save(i).String,']']);
     end
 else
-    sl2save = [];
+    sl2save = []; % get only the current displayed slices
 end
 
+%--------------------------------------------------------------------------
+% save the slices to an image file
 ax_tag = {'axi','cor','sag','vol'};
-for i = actax
+for i = actax % loop for each axes type
     ax = axes('Parent',handles.panel_graph(i),...
         'Box','off','Units','normalized','XTick',[],'YTick',[],...
         'color','none','Position',[0,0,1,1]);

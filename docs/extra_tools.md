@@ -56,24 +56,27 @@ Connectome
 Axes Screenshot
 ----------------
 
-**Overview**
+### Overview
 
 The `axes_screenshot` toolbox is a set of MATLAB functions designed to capture and save screenshots of different axes configurations within the fMROI application. It can save slices programmatically, generate mosaic and slice sequences, and save them to most used image formats like PNG, JPEG, and TIFF. For more details about supported file formats, refer to the MATLAB `imwrite` function documentation.
 
 
-**Usage**
+### Usage
 
 To open the Axes Screenshot Tool, go to fMROI main menu ´Tools´ and select ´axes_screenshot´.
 
-*Generating Sigle Slices Screenshots*
+**Generating Single Slices Screenshots**
 
 In the dropdown menu labeled "Mode", select "Axes".
-To open the Sigle Slices Screenshots tool and set the Parameters:
+To open the Single Slices Screenshots tool and set the Parameters:
 
 - Select the axes to be saved: Tick the checkboxes "Axes" related to the axes that you want to save (Axi - Axial; Cor - Coronal; Sag - Sagittal; Vol - Volumetric render).
-- Select the slices to be saved: In the radio button group "Slices", select "Current slices" to save the slices that are displayed in the fMROI axes, or check "Select slices" to manually enter the slices to be saved. Selecting "Select slices" enables the fields "Axi", "Cor", and "Sag" to manually enter the slices to be saved. 
+- Select the slices to be saved: In the radio button group "Slices", select "Current slices" to save the slices that are displayed in the fMROI axes, or check "Select slices" to manually enter the slices to be saved. Selecting "Select slices" enables the fields "Axi", "Cor", and "Sag" to manually enter the slices number to be saved. The slice number must be provided in voxel coordinates (matrix index) separeted by comas (,). To specify a range of slices, use a colon (:) between the starting and ending slice number. Example: To save axial slices 10, 16, 20, 21, 22, 23, 24, 25, 30, 35, 40, 45, 50 you can enter each slice separated by comas or simply `10,16,20:25,30:5:50` in the "Axi" field.
 
-*Generating a Multislice Screenshot*
+Once the parameters are set, enter the full output file name in the "Out path" field (default: ./fmroiscreenshot.png). Click the "Save" button to save each selected slice to a separate file. Each filename will be appended with a suffix identifying the axis type and slice number (e.g., saving slice 10 from the axial axis with the default name would result in "fmroiscreenshot_axi10.png").
+
+
+**Generating a Multislice Screenshot**
 
 In the dropdown menu labeled "Mode", select "Multi-slice".
 To open the Multislice tool and set the Parameters:
@@ -88,7 +91,7 @@ Once the parameters are set, click the "Gen" button to generate the multislice p
 Once you are happy with the resulting picture, enter the full output file name in the "Out path" field (default: ./fmroiscreenshot.png). Click the "Save" button to save the multislice screenshots to the specified file.
 
 
-*Generating a Mosaic Screenshot*
+**Generating a Mosaic Screenshot**
 
 In the dropdown menu labeled "Screenshot Mode", select "Mosaic".
 To open the Mosaic tool and set the Parameters:

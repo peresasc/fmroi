@@ -1,5 +1,5 @@
 Installation
-============docs
+============
 
 Installing **fMROI** is a simple process that can be done by downloading it directly from GitHub or cloning the folder using Git commands. Cloning the repository allows for easy updates to the software. Before installing fMROI, please ensure that you meet the following requirements:
 
