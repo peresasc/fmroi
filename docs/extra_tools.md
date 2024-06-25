@@ -65,6 +65,14 @@ The `axes_screenshot` toolbox is a set of MATLAB functions designed to capture a
 
 To open the Axes Screenshot Tool, go to fMROI main menu ´Tools´ and select ´axes_screenshot´.
 
+*Generating Sigle Slices Screenshots*
+
+In the dropdown menu labeled "Mode", select "Axes".
+To open the Sigle Slices Screenshots tool and set the Parameters:
+
+- Select the axes to be saved: Tick the checkboxes "Axes" related to the axes that you want to save (Axi - Axial; Cor - Coronal; Sag - Sagittal; Vol - Volumetric render).
+- Select the slices to be saved: In the radio button group "Slices", select "Current slices" to save the slices that are displayed in the fMROI axes, or check "Select slices" to manually enter the slices to be saved. Selecting "Select slices" enables the fields "Axi", "Cor", and "Sag" to manually enter the slices to be saved. 
+
 *Generating a Multislice Screenshot*
 
 In the dropdown menu labeled "Mode", select "Multi-slice".
