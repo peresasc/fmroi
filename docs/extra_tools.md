@@ -16,9 +16,9 @@ Applymask (or runapplymask for command line use) function applies masks to a set
     - **outdir:** Path to the output directory (string).
     - **opts:** (optional) A structure containing options for saving outputs.
         - *opts.saveimg:* (default: 1) Flag indicating if masked images should be saved (logical, 1 to save, 0 to not save).
-        - *opts.savestats:* (default: 1) Flag indicating if statistics should be saved (logical, 1 to save, 0 to not save).
+        - *opts.savestats:* (default: 1) Flag indicating if statistics should be saved (logical, 1 to save, 0 to not save). The saved stats are mean, median, standard deviation, maximum value, and minimum value for each subject and ROI.
         - *opts.savets:* (default: 1) Flag indicating if time series data should be saved (logical, 1 to save, 0 to not save).
-        - *opts.groupts:* (default: 0) Flag used to control how the time series data is saved. If opts.groupts is set to 1, then thetime series data will be saved grouped by source image. This means that all of the masks for a particular source image will be saved together in a single file. However, if opts.groupts is set to 0, then the time series data will be saved for each mask separately. This means that there will be a separate file for each mask.
+        - *opts.groupts:* (default: 0) Flag used to control how the time series data is saved. If opts.groupts is set to 1, then the time series data will be saved grouped by source image. This means that all of the time series for a particular source image will be saved together in a single file. However, if opts.groupts is set to 0, then the time series data will be saved for each mask separately. This means that there will be a separate file for each mask.
     - **hObject:** (Optional - default: NaN) Handle to the graphical user interface object. Not provided for command line usage.
 
  - **Outputs:** runapplymask saves to the output directory the following data:
