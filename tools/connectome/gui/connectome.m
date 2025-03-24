@@ -25,7 +25,10 @@ function connectome(hObject,~)
 % Inputs:
 %         tspath: Path(s) to the time-series data file(s). Supported 
 %                 formats are .mat, .txt, .csv, and .tsv. For .mat files, 
-%                 the data can be a table, cell array, or numeric array:
+%                 the data can be a table, cell array, or numeric array.
+%                 Note that for all supported file types, each row 
+%                 corresponds to a sample and each column corresponds to
+%                 a time stamp.
 %                    - If a Matlab table, it must have a variable named as
 %                      "timeseries" from where the time-series are
 %                      extracted and stored in a cell array. Time-series 
