@@ -55,13 +55,31 @@ handles.popup_colormap = uicontrol(handles.panel_control, 'Style', 'popup',...
     'String', {'popup'},'FontUnits','normalized','FontSize',.4,...    
     'background','w','Callback',@popup_colormap_callback);
 
-
-colorpath = fullfile(matlabroot,'toolbox','matlab','graphics','color');
-if exist(colorpath, 'dir')
+% for R2023b and older version in linux
+if exist(fullfile(matlabroot,'toolbox','matlab','graphics','color'),'dir') 
+    colorpath = fullfile(matlabroot,'toolbox','matlab','graphics','color');
     colordir = dir(colorpath);
     cmaps = cell(length(colordir),1);
     
-    for i = 1:size(colordir)
+    for i = 1:length(colordir)
+        if length(colordir(i).name) > 2
+            cmaps{i} = colordir(i).name(1:end-2);
+        else
+            cmaps{i} = colordir(i).name;
+        end
+    end
+    cmaps{1} = 'custom';
+    cmaps{2} = 'colorLUT';
+
+% for R2024b and newer version in linux
+elseif exist(fullfile(matlabroot,'toolbox','matlab','graphics',...
+                      'graphics','color'),'dir') 
+    colorpath = fullfile(matlabroot,'toolbox','matlab','graphics',...
+                         'graphics','color');
+    colordir = dir(colorpath);
+    cmaps = cell(length(colordir),1);
+    
+    for i = 1:length(colordir) 
         if length(colordir(i).name) > 2
             cmaps{i} = colordir(i).name(1:end-2);
         else
