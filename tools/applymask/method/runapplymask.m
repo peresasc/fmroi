@@ -243,7 +243,7 @@ for m = 1:size(auxmaskpath,2)
             %------------------------------------------------------------------
             % Calculates the average time-series
 
-            for t = 1:size(imgmask,4) % Using loop inteady identation is slower but allows for using different masks for each time point
+            for t = 1:size(imgmask,4) % Using loop instead identation is slower but allows for using different masks for each time point
                 curimg = squeeze(imgmask(:,:,:,t));
                 ts(mi,t) = mean(curimg(squeeze(curmask(:,:,:,t))));
             end
