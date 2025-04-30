@@ -190,6 +190,9 @@ for m = 1:size(auxmaskpath,2)
 
         srcvol = spm_vol(srcpath{s});
         srcdata = spm_data_read(srcvol);
+        if ~opts.saveimg
+            clear srcvol
+        end
 
         if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
             maskvol = spm_vol(maskpath{s});
@@ -203,7 +206,7 @@ for m = 1:size(auxmaskpath,2)
         maskidx(maskidx==0) = [];
 
 
-        if isempty(maskidx) % check if the mask and srcvol have the same shape
+        if isempty(maskidx) % check if the mask is empty
             he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
             uiwait(he)
             return
@@ -211,7 +214,7 @@ for m = 1:size(auxmaskpath,2)
 
         sd = size(srcdata);
         sm = size(mask);
-        if ~(isequal(sd,sm) || isequal(sd(1:3),sm)) % check if the mask and srcvol have the same shape
+        if ~(isequal(sd,sm) || isequal(sd(1:3),sm)) % check if the mask and srcdata have the same shape
             he = errordlg('The source image and mask have different sizes');
             uiwait(he)
             return
@@ -234,32 +237,53 @@ for m = 1:size(auxmaskpath,2)
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
             curmask = mask==maskidx(mi);
-            if ~isequal(sd,sm) % source image is 4D and mask 3D
-                curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
-                imgmask = srcdata.*curmask;
-            else
-                imgmask = srcdata.*(curmask);
+            
+            % if ~isequal(sd,sm) % source image is 4D and mask 3D
+            %     curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
+            %     datamask = srcdata.*curmask;
+            % else
+            %     datamask = srcdata.*(curmask);
+            % end
+            
+            datamask = cell(sd(4),1);
+            for t = 1:sd(4)
+                curdata = squeeze(srcdata(:,:,:,t));
+                if ~isequal(sd,sm)                    
+                    datamask{t} = curdata(curmask)';
+                else
+                    datamask{t} = curdata(squeeze(curmask(:,:,:,t)))';
+                end
             end
+
+
             %------------------------------------------------------------------
             % Calculates the average time-series
-
-            for t = 1:size(imgmask,4) % Using loop instead identation is slower but allows for using different masks for each time point
-                curimg = squeeze(imgmask(:,:,:,t));
-                ts(mi,t) = mean(curimg(squeeze(curmask(:,:,:,t))));
+            vecdatamask = [];
+            for t = 1:length(datamask) % Using loop instead identation is slower but allows for using different masks for each time point
+                ts(mi,t) = mean(datamask{t});
+                vecdatamask = [vecdatamask,datamask{t}];
             end
 
 
             %------------------------------------------------------------------
             % Calculates the stats
-            stats(2,mi) = median(imgmask(curmask));
-            stats(3,mi) = mean(imgmask(curmask));
-            stats(4,mi) = std(imgmask(curmask));
-            stats(5,mi) = max(imgmask(curmask));
-            stats(6,mi) = min(imgmask(curmask));
+            stats(2,mi) = median(vecdatamask);
+            stats(3,mi) = mean(vecdatamask);
+            stats(4,mi) = std(vecdatamask);
+            stats(5,mi) = max(vecdatamask);
+            stats(6,mi) = min(vecdatamask);
 
             %------------------------------------------------------------------
             % Save masked images to nifti files
             if opts.saveimg
+                if ~isequal(sd,sm) % source image is 4D and mask 3D
+                    curmask4d = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D                    
+                else
+                    curmask4d = curmask;
+                end
+                
+                imgmask = zeros(size(srcdata));
+                imgmask(curmask4d) = vecdatamask;
                 [~,fn,~] = fileparts(srcpath{s});
                 filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],m,maskidx(mi));
                 if size(imgmask,4) == 1 % check if the volume is 3D
