@@ -188,12 +188,9 @@ for m = 1:size(auxmaskpath,2)
 
     for s = 1:length(srcpath)
 
-        srcvol = spm_vol(srcpath{s});
-        srcdata = spm_data_read(srcvol);
-        if ~opts.saveimg
-            clear srcvol
-        end
-
+        srcdata = spm_vol(srcpath{s});
+        srcdata = spm_data_read(srcdata);
+        
         if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
             maskvol = spm_vol(maskpath{s});
             mask = uint16(spm_data_read(maskvol));
@@ -276,12 +273,13 @@ for m = 1:size(auxmaskpath,2)
             %------------------------------------------------------------------
             % Save masked images to nifti files
             if opts.saveimg
+                srcvol = spm_vol(srcpath{s});
                 if ~isequal(sd,sm) % source image is 4D and mask 3D
                     curmask4d = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D                    
                 else
                     curmask4d = curmask;
                 end
-                
+
                 imgmask = zeros(size(srcdata));
                 imgmask(curmask4d) = vecdatamask;
                 [~,fn,~] = fileparts(srcpath{s});
