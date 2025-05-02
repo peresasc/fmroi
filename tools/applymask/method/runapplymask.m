@@ -186,16 +186,17 @@ for m = 1:size(auxmaskpath,2)
     end
 
 
-    for s = 1:length(srcpath)
+    for s = 1:length(srcpath)        
 
-        srcdata = spm_vol(srcpath{s});
-        srcdata = spm_data_read(srcdata);
-
-        if opts.saveimg
+        if opts.saveimg % Avoid unnecessary loading of the SPM vol structure to save RAM
             srcvol = spm_vol(srcpath{s});
+            srcdata = spm_data_read(srcvol);
+        else
+            srcdata = spm_vol(srcpath{s});
+            srcdata = spm_data_read(srcdata);
         end
         
-        if s == 1 % avoid unecessary loading the mask in case it is the same for all source volumes
+        if s == 1 % avoid unnecessary loading of the mask in case it is the same for all source volumes
             maskvol = spm_vol(maskpath{s});
             mask = uint16(spm_data_read(maskvol));
         elseif length(maskpath) > 1
