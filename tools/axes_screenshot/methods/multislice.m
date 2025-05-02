@@ -68,7 +68,8 @@ for i = 1:3
     
     cursorvis(3,i) = get(handles.ax{n_image,i}.txy,'Visible');
     set(handles.ax{n_image,i}.txy,'Visible','off')
-    
+
+    set(handles.ax{n_image,i}.tb,'Visible','off');    
 end
 
 %--------------------------------------------------------------------------
@@ -145,6 +146,8 @@ for i = 1:3
     set(handles.ax{n_image,i}.lx,'Visible',cursorvis(1,i))
     set(handles.ax{n_image,i}.ly,'Visible',cursorvis(2,i))
     set(handles.ax{n_image,i}.txy,'Visible',cursorvis(3,i))
+
+    set(handles.ax{n_image,i}.tb,'Visible','on');
 end
 
 guidata(hObject,handles)

@@ -86,13 +86,15 @@ for i = 1:4
         c = gettruecolor(slices{1},st.vols{1}.private.dat(:,:,:),ax.Colormap);
         d  = surface('Parent',ax,'XData',x,'YData',y,'ZData',z,'CData',c,...
             'FaceColor','flat','EdgeColor','none');
-
-        handles.ax{n_image,i} = struct('ax',ax,'d',d);
-        tb = axtoolbar(handles.ax{n_image,i}.ax,{'zoomin','zoomout','restoreview','pan','rotate'});
+        
+        % Create a custom floating toolbar
+        tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan','rotate'});
         btn = axtoolbarbtn(tb,'push');
         btn.Icon = 'gridoff.png';
         btn.Tooltip = 'Grid view';
         btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
+
+        handles.ax{n_image,i} = struct('ax',ax,'d',d,'tb',tb);
     else
         ax = axes('Parent', handles.panel_graph(i),...
             'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
@@ -115,14 +117,18 @@ for i = 1:4
             'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
         set(txy,'Visible','off')
 
-        handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,'txy',txy);
-        tb = axtoolbar(handles.ax{n_image,i}.ax,...
-            {'zoomin','zoomout','restoreview','pan'},...
+        % Create a custom floating toolbar
+        tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan'},...
             'SelectionChangedFcn',@toolbarselection);
         btn = axtoolbarbtn(tb,'push');
         btn.Icon = 'gridoff.png';
         btn.Tooltip = 'Grid view';
         btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
+
+        handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,...
+                                       'tb',tb,'txy',txy);
+        
+        % Synchronizes the axes limits allowing to zoom or pan in one axes and display the same range of data in the another axis.
         if n_image > 1
             linkaxes([handles.ax{n_image,i}.ax,handles.ax{n_image-1,i}.ax],'xy')
         end
