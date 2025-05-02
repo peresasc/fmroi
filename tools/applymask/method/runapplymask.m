@@ -240,13 +240,6 @@ for m = 1:size(auxmaskpath,2)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
             curmask = mask==maskidx(mi);
             
-            % if ~isequal(sd,sm) % source image is 4D and mask 3D
-            %     curmask = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D
-            %     datamask = srcdata.*curmask;
-            % else
-            %     datamask = srcdata.*(curmask);
-            % end
-            
             datamask = cell(sd(4),1);
             for t = 1:sd(4)
                 curdata = squeeze(srcdata(:,:,:,t));
