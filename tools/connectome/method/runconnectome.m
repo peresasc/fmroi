@@ -6,21 +6,21 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %
 %
 % Inputs:
-%         tspath: Path(s) to the time-series data file(s). Supported 
-%                 formats are .mat, .txt, .csv, and .tsv. For .mat files, 
+%         tspath: Path(s) to the time-series data file(s). Supported
+%                 formats are .mat, .txt, .csv, and .tsv. For .mat files,
 %                 the data can be a table, cell array, or numeric array.
-%                 Note that for all supported file types, each row 
+%                 Note that for all supported file types, each row
 %                 corresponds to a sample and each column corresponds to
 %                 a time stamp:
 %                    - If a Matlab table, it must have a variable named as
 %                      "timeseries" from where the time-series are
-%                      extracted and stored in a cell array. Time-series 
-%                      within each cell is processed separately, resulting 
+%                      extracted and stored in a cell array. Time-series
+%                      within each cell is processed separately, resulting
 %                      in as many connectomes as the number of cells.
-%                      It is possible to obtain this table directly from 
+%                      It is possible to obtain this table directly from
 %                      the applymask algorithm (fmroi/tools).
 %                    - If a cell array, each time-series within each cell
-%                      is processed separately, resulting in as many 
+%                      is processed separately, resulting in as many
 %                      connectomes as the number of cells.
 %                    - If a numeric array (matrix) or any other file type,
 %                      a single connectome is generated for all the
@@ -36,15 +36,15 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %                     opts.rsave: Save Pearson correlation connectome.
 %                     opts.psave: Save p-values connectome.
 %                     opts.zsave: Save Fisher transformation connectome.
-%                    opts.ftsave: Save feature matrices. 
-%        hObject: (Optional - default: NaN) Handle to the graphical user 
+%                    opts.ftsave: Save feature matrices.
+%        hObject: (Optional - default: NaN) Handle to the graphical user
 %                 interface object. Not provided for command line usage.
 %
 % Outputs:
-%   The runconnectome saves the computed connectomes and feature matrices 
-%   in the specified output directory. The filenames include 'rconnec.mat', 
+%   The runconnectome saves the computed connectomes and feature matrices
+%   in the specified output directory. The filenames include 'rconnec.mat',
 %   'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices
-%   as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV 
+%   as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV
 %   versions.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
@@ -61,17 +61,94 @@ elseif nargin == 2
     opts.psave = 1;
     opts.zsave = 1;
     opts.ftsave = 1;
+    opts.tr = 1;
+    opts.highpass = 'none';
+    opts.lowpass = 'none';
     hObject = nan;
 elseif nargin == 3
     opts.rsave = 1;
-    opts.psave = 1;
+    opts.psave = 1;srcvol
     opts.zsave = 1;
     opts.ftsave = 1;
+    opts.tr = 1;
+    opts.highpass = 'none';
+    opts.lowpass = 'none';
     hObject = nan;
 elseif nargin == 4
     hObject = nan;
 else
     handles = guidata(hObject);
+end
+
+%--------------------------------------------------------------------------
+% Convert opts.tr to double
+if isnumeric(opts.tr) && isscalar(opts.tr)
+    tr = double(opts.tr);
+    disp(['TR equal to ',num2str(tr),' s.']);
+
+elseif ischar(opts.tr)
+    tr = str2double(opts.tr);
+
+    if isnan(tr)
+        tr = 1;
+        disp(['Warning: Invalid TR value format. ',...
+            'TR set to ',num2str(tr),' s.']);
+    else
+        disp(['TR equal to ',num2str(tr),' s.']);
+    end
+
+else
+    tr = 1;
+    disp(['Warning: Invalid TR value format. ',...
+        'TR set to ',num2str(tr),' s.']);
+end
+
+%--------------------------------------------------------------------------
+% Convert opts.highpass to double
+if isnumeric(opts.highpass) && isscalar(opts.highpass)
+    hp = double(opts.highpass);
+    disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
+
+elseif ischar(opts.highpass)
+    hp = str2double(opts.highpass);
+
+    if strcmpi(opts.highpass,'none')
+        disp('Warning: High-pass filter will not be applied.');
+    elseif isnan(hp)
+        disp(['Warning: Invalid High-pass filter value format. ',...
+            'No filter will be applied.']);
+    else
+        disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
+    end
+
+else
+    hp = nan;
+    disp(['Warning: Invalid High-pass filter value format. ',...
+        'No filter will be applied.']);
+end
+
+%--------------------------------------------------------------------------
+% Convert opts.lowpass to double
+if isnumeric(opts.lowpass) && isscalar(opts.lowpass)
+    lp = double(opts.lowpass);
+    disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
+
+elseif ischar(opts.lowpass)
+    lp = str2double(opts.lowpass);
+
+    if strcmpi(opts.lowpass,'none')
+        disp('Warning: Low-pass filter will not be applied.');
+    elseif isnan(lp)
+        disp(['Warning: Invalid Low-pass filter value format. ',...
+            'No filter will be applied.']);
+    else
+        disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
+    end
+
+else
+    lp = nan;
+    disp(['Warning: Invalid Low-pass filter value format. ',...
+        'No filter will be applied.']);
 end
 
 %--------------------------------------------------------------------------
@@ -137,7 +214,7 @@ if ~isempty(roinamespath)
                 auxroinames = auxroinames.(roinamefields{1});
 
             elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-                auxroinames = readcell(roinamespath,'Delimiter',[";",'\t']);                
+                auxroinames = readcell(roinamespath,'Delimiter',[";",'\t']);
             else
                 roinamespath = [];
             end
@@ -190,6 +267,7 @@ for k = 1:length(tspath)
     zconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     for s = 1:length(tscell)
         ts = tscell{s};
+        ts = tsfilter(ts,hp,lp,tr);
         for i = 1:size(ts,1)-1
             for j = i+1:size(ts,1)
                 [r,p] = corr(ts(i,:)',ts(j,:)','type','Pearson');
@@ -201,7 +279,7 @@ for k = 1:length(tspath)
     end
 
     %----------------------------------------------------------------------
-    % Generate ROI names 
+    % Generate ROI names
     if isempty(roinamespath)
         warning(['ROI names have an invalid file format! ',...
             'Generic names will be assigned to the ROIs.']);
@@ -227,7 +305,7 @@ for k = 1:length(tspath)
         end
     end
 
-    
+
     %----------------------------------------------------------------------
     % Save Pearson correlation coefficient connectome
     if opts.rsave
@@ -298,7 +376,7 @@ for k = 1:length(tspath)
             writematrix(ft,fullfile(outdir,zfeatmat),'Delimiter','tab');
             writecell(ftnames,fullfile(outdir,zftnames),'Delimiter','tab');
         end
-    end  
+    end
 end
 
 %--------------------------------------------------------------------------
@@ -308,3 +386,53 @@ if isobject(hObject)
 else
     disp('Done!!!');
 end
+
+%==========================================================================
+% Auxiliar functions
+function tsfilt = tsfilter(ts,hp,lp,tr)
+
+fs = 1/tr;  % Sampling frequency in Hz
+ts = ts';
+if isnan(hp) && isnan(lp) % No filter is applied
+    tsfilt = ts;
+
+elseif isnan(lp) % high-pass filter
+    % Normalize cutoff frequencies based on the Nyquist frequency
+    Wn = hp/(fs/2);
+
+    if Wn <= 0 || Wn >= 1
+        error('Invalid highpass cutoff frequency relative to sampling rate.');
+    end
+
+    [b,a] = butter(1,Wn,'high');
+    tsfilt = filtfilt(b,a,ts);  % Apply zero-phase high-pass filter
+
+elseif isnan(hp) % low-pass filter
+    % Normalize cutoff frequencies based on the Nyquist frequency
+    Wn = lp/(fs/2);
+
+    if Wn <= 0 || Wn >= 1
+        error('Invalid lowpass cutoff frequency relative to sampling rate.');
+    end
+
+    [b, a] = butter(1, Wn, 'low');
+    tsfilt = filtfilt(b, a, ts);  % Apply zero-phase low-pass filter
+
+else % band-pass filter
+    % Normalize cutoff frequencies based on the Nyquist frequency
+    Wn = [hp lp]/(fs/2);
+
+    % Validate bandpass range
+    if Wn(1) >= Wn(2) || Wn(1) <= 0 || Wn(2) >= 1
+        error(['Invalid bandpass range: check highpass and lowpass ',...
+            'values relative to sampling rate.']);
+    end
+
+    % Design first-order Butterworth bandpass filter
+    [b,a] = butter(1,Wn,'bandpass');
+
+    % Apply zero-phase filtering (forward and reverse) to avoid phase distortion
+    tsfilt = filtfilt(b,a,ts);
+end
+
+tsfilt = tsfilt';
