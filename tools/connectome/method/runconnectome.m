@@ -262,12 +262,14 @@ for k = 1:length(tspath)
 
     %----------------------------------------------------------------------
     % calculates the connectomes
+    tsfilt = cell(size(tscell));
     rconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     pconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     zconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     for s = 1:length(tscell)
         ts = tscell{s};
         ts = tsfilter(ts,hp,lp,tr);
+        tsfilt{s} = ts;
         for i = 1:size(ts,1)-1
             for j = i+1:size(ts,1)
                 [r,p] = corr(ts(i,:)',ts(j,:)','type','Pearson');
@@ -305,6 +307,15 @@ for k = 1:length(tspath)
         end
     end
 
+    %----------------------------------------------------------------------
+    % Save filtered time seriess
+
+    if length(tspath)==1
+        tsfilename = 'tsfilt.mat';
+    else
+        tsfilename = sprintf('tsfilt%d.mat',k);
+    end
+    save(fullfile(outdir,tsfilename),'tsfilt');
 
     %----------------------------------------------------------------------
     % Save Pearson correlation coefficient connectome
