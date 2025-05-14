@@ -45,7 +45,11 @@ Connectome
         - opts.rsave: Save Pearson correlation connectome.
         - opts.psave: Save p-values connectome.
         - opts.zsave: Save Fisher transformation connectome.
-        - opts.ftsave: Save feature matrices. 
+        - opts.ftsave: Save feature matrices.
+        - opts.tr: Repetition time (TR) in seconds. Used to compute the sampling frequency for filtering.
+        - opts.highpass: High-pass filter cutoff frequency in Hz. Can be a numeric value or the string 'none'. If a numeric value is given, a first-order Butterworth high-pass or band-pass filter is applied depending on whether opts.lowpass is also set.
+        - opts.lowpass: Low-pass filter cutoff frequency in Hz. Can be a numeric value or the string 'none'. If a numeric value is given, a first-order Butterworth low-pass or band-pass filter is applied depending on whether opts.highpass is also set.
+        
     - **hObject:** (Optional - default: NaN) Handle to the graphical user 
                  interface object. Not provided for command line usage.
 

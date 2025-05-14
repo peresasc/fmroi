@@ -33,10 +33,26 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %                 to the ROI from which each time-series was extracted.
 %                 If not provided, generic names will be assigned.
 %           opts: (Optional - default: 1) Structure containing options:
-%                     opts.rsave: Save Pearson correlation connectome.
-%                     opts.psave: Save p-values connectome.
-%                     opts.zsave: Save Fisher transformation connectome.
-%                    opts.ftsave: Save feature matrices.
+%                    opts.rsave: Save Pearson correlation connectome.
+%                    opts.psave: Save p-values connectome.
+%                    opts.zsave: Save Fisher transformation connectome.
+%                   opts.ftsave: Save feature matrices.
+%                       opts.tr: Repetition time (TR) in seconds. Used to 
+%                                compute the sampling frequency for 
+%                                filtering.
+%                 opts.highpass: High-pass filter cutoff frequency in Hz. 
+%                                Can be a numeric value or the string 
+%                                'none'. If a numeric value is given, a 
+%                                first-order Butterworth high-pass or 
+%                                band-pass filter is applied depending
+%                                on whether opts.lowpass is also set.
+%                  opts.lowpass: Low-pass filter cutoff frequency in Hz. 
+%                                Can be a numeric value or the string 
+%                                'none'. If a numeric value is given, a 
+%                                first-order Butterworth low-pass or 
+%                                band-pass filter is applied depending
+%                                on whether opts.highpass is also set.
+%
 %        hObject: (Optional - default: NaN) Handle to the graphical user
 %                 interface object. Not provided for command line usage.
 %
@@ -48,7 +64,7 @@ function runconnectome(tspath,outdir,roinamespath,opts,hObject)
 %   versions.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 15/05/2024, peres.asc@gmail.com
+% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
 
 
 if nargin < 2

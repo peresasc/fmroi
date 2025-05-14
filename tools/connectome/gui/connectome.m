@@ -10,7 +10,7 @@ function connectome(hObject,~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
+% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
 %
 %--------------------------------------------------------------------------
 %                        runconnectome header
@@ -23,21 +23,21 @@ function connectome(hObject,~)
 %
 %
 % Inputs:
-%         tspath: Path(s) to the time-series data file(s). Supported 
-%                 formats are .mat, .txt, .csv, and .tsv. For .mat files, 
+%         tspath: Path(s) to the time-series data file(s). Supported
+%                 formats are .mat, .txt, .csv, and .tsv. For .mat files,
 %                 the data can be a table, cell array, or numeric array.
-%                 Note that for all supported file types, each row 
+%                 Note that for all supported file types, each row
 %                 corresponds to a sample and each column corresponds to
-%                 a time stamp.
+%                 a time stamp:
 %                    - If a Matlab table, it must have a variable named as
 %                      "timeseries" from where the time-series are
-%                      extracted and stored in a cell array. Time-series 
-%                      within each cell is processed separately, resulting 
+%                      extracted and stored in a cell array. Time-series
+%                      within each cell is processed separately, resulting
 %                      in as many connectomes as the number of cells.
-%                      It is possible to obtain this table directly from 
+%                      It is possible to obtain this table directly from
 %                      the applymask algorithm (fmroi/tools).
 %                    - If a cell array, each time-series within each cell
-%                      is processed separately, resulting in as many 
+%                      is processed separately, resulting in as many
 %                      connectomes as the number of cells.
 %                    - If a numeric array (matrix) or any other file type,
 %                      a single connectome is generated for all the
@@ -50,22 +50,38 @@ function connectome(hObject,~)
 %                 to the ROI from which each time-series was extracted.
 %                 If not provided, generic names will be assigned.
 %           opts: (Optional - default: 1) Structure containing options:
-%                     opts.rsave: Save Pearson correlation connectome.
-%                     opts.psave: Save p-values connectome.
-%                     opts.zsave: Save Fisher transformation connectome.
-%                    opts.ftsave: Save feature matrices. 
-%        hObject: (Optional - default: NaN) Handle to the graphical user 
+%                    opts.rsave: Save Pearson correlation connectome.
+%                    opts.psave: Save p-values connectome.
+%                    opts.zsave: Save Fisher transformation connectome.
+%                   opts.ftsave: Save feature matrices.
+%                       opts.tr: Repetition time (TR) in seconds. Used to 
+%                                compute the sampling frequency for 
+%                                filtering.
+%                 opts.highpass: High-pass filter cutoff frequency in Hz. 
+%                                Can be a numeric value or the string 
+%                                'none'. If a numeric value is given, a 
+%                                first-order Butterworth high-pass or 
+%                                band-pass filter is applied depending
+%                                on whether opts.lowpass is also set.
+%                  opts.lowpass: Low-pass filter cutoff frequency in Hz. 
+%                                Can be a numeric value or the string 
+%                                'none'. If a numeric value is given, a 
+%                                first-order Butterworth low-pass or 
+%                                band-pass filter is applied depending
+%                                on whether opts.highpass is also set.
+%
+%        hObject: (Optional - default: NaN) Handle to the graphical user
 %                 interface object. Not provided for command line usage.
 %
 % Outputs:
-%   The runconnectome saves the computed connectomes and feature matrices 
-%   in the specified output directory. The filenames include 'rconnec.mat', 
+%   The runconnectome saves the computed connectomes and feature matrices
+%   in the specified output directory. The filenames include 'rconnec.mat',
 %   'pconnec.mat', 'zconnec.mat', and their corresponding feature matrices
-%   as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV 
+%   as 'rfeatmat.mat', 'pfeatmat.mat', 'zfeatmat.mat', and their CSV
 %   versions.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 15/05/2024, peres.asc@gmail.com
+% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
 
 delete_panel_tools(hObject)
 create_panel_tools(hObject)
