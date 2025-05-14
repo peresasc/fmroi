@@ -75,7 +75,7 @@ function applymask(hObject,~)
 % Author: Andre Peres, 2024, peres.asc@gmail.com
 % Last update: Andre Peres, 06/05/2024, peres.asc@gmail.com
 
-
+delete_panel_settings(hObject)
 delete_panel_tools(hObject)
 create_panel_tools(hObject)
 
@@ -172,8 +172,15 @@ handles.tools.applymask.pbutton_outdir = uicontrol(handles.panel_tools,...
 % creates the run pushbutton
 handles.tools.applymask.pbutton_run = uicontrol(handles.panel_tools,...
     'Style','PushButton','Units','normalized','String','Run',...
-    'FontUnits','normalized','FontSize',fss*.7,...
-    'Position',[.62,.26,.2,.12],'Callback',@pbutton_applymaskrun_callback);
+    'FontUnits','normalized','FontSize',fss*.5,...
+    'Position',[.51,.26,.22,.12],'Callback',@pbutton_applymaskrun_callback);
+
+%==========================================================================
+% creates the settings pushbutton
+handles.tools.applymask.pbutton_settings = uicontrol(handles.panel_tools,...
+    'Style','PushButton','Units','normalized','String','Settings',...
+    'FontUnits','normalized','FontSize',fss*.5,...
+    'Position',[.77,.26,.22,.12],'Callback',@pbutton_applymasksettings_callback);
 
 %==========================================================================
 % creates the options checkboxes

@@ -130,9 +130,9 @@ if isfile(maskpath)
     [~,~,ext] = fileparts(maskpath);
 
     if strcmpi(ext,'.nii') || strcmpi(ext,'.gz')
-        auxmaskpath = {maskpath};
+        masktypespath = {maskpath};
     elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-        auxmaskpath = readcell(maskpath,'Delimiter',[";",'\t']);
+        masktypespath = readcell(maskpath,'Delimiter',[";",'\t']);
     else
         he = errordlg('Invalid file format!');
         uiwait(he)
@@ -143,9 +143,9 @@ else
     masksep = strfind(maskpath,';');
     masksep = [0,masksep,length(maskpath)+1]; % adds start and end positions
 
-    auxmaskpath = cell(length(masksep)-1,1);
+    masktypespath = cell(length(masksep)-1,1);
     for ms = 1:length(masksep)-1
-        auxmaskpath{ms} = maskpath(masksep(ms)+1:masksep(ms+1)-1); % covert paths string to cell array
+        masktypespath{ms} = maskpath(masksep(ms)+1:masksep(ms+1)-1); % covert paths string to cell array
     end
 
 end
@@ -161,14 +161,14 @@ else
     wb = waitbar(0,'Loading images...');
 end
 
-cellts = cell(length(srcpath),size(auxmaskpath,2));
-cellstats = cell(length(srcpath),size(auxmaskpath,2));
-allmaskidx = cell(length(srcpath),size(auxmaskpath,2));
-allmaskpath = cell(length(srcpath),size(auxmaskpath,2));
-allsrcpath = cell(length(srcpath),size(auxmaskpath,2));
-for m = 1:size(auxmaskpath,2)
+cellts = cell(length(srcpath),size(masktypespath,2));
+cellstats = cell(length(srcpath),size(masktypespath,2));
+allmaskidx = cell(length(srcpath),size(masktypespath,2));
+allmaskpath = cell(length(srcpath),size(masktypespath,2));
+allsrcpath = cell(length(srcpath),size(masktypespath,2));
+for m = 1:size(masktypespath,2) % iterates over the different mask types
     clear maskpath
-    maskpath = auxmaskpath(:,m);
+    maskpath = masktypespath(:,m);
     maskpath(~cellfun(@ischar,maskpath)) = [];
     maskpath(~isfile(maskpath)) = [];
 
@@ -228,13 +228,13 @@ for m = 1:size(auxmaskpath,2)
         auxmaskidxall = cell(length(maskidx),1);
         for mi = 1:length(maskidx) % Mask index loop
             msg = sprintf('Source Image %d/%d - Mask %d/%d - idx %d/%d',...
-                s,length(srcpath),m,size(auxmaskpath,2),mi,length(maskidx));
+                s,length(srcpath),m,size(masktypespath,2),mi,length(maskidx));
             if isobject(hObject)
                 set(handles.tools.applymask.text_wb,...
                     'String',msg)
             else
                 waitbar((length(srcpath)*(m-1)+s-1)/...
-                (length(srcpath)*size(auxmaskpath,2)),wb,msg);
+                (length(srcpath)*size(masktypespath,2)),wb,msg);
             end
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
@@ -306,11 +306,11 @@ for m = 1:size(auxmaskpath,2)
         % updates waitbar
         if isobject(hObject)
             wb2(3) = wb1(3)*((length(srcpath)*(m-1)+s)/...
-                (length(srcpath)*size(auxmaskpath,2))); % updates the waitbar
+                (length(srcpath)*size(masktypespath,2))); % updates the waitbar
             set(handles.tools.applymask.wb2,'Position',wb2)
         else
             waitbar((length(srcpath)*(m-1)+s)/...
-                (length(srcpath)*size(auxmaskpath,2)),wb,msg);
+                (length(srcpath)*size(masktypespath,2)),wb,msg);
         end
         pause(.1)
     end
