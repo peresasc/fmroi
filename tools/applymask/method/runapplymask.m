@@ -166,6 +166,7 @@ cellstats = cell(length(srcpath),size(masktypespath,2));
 allmaskidx = cell(length(srcpath),size(masktypespath,2));
 allmaskpath = cell(length(srcpath),size(masktypespath,2));
 allsrcpath = cell(length(srcpath),size(masktypespath,2));
+
 for m = 1:size(masktypespath,2) % iterates over the different mask types
     clear maskpath
     maskpath = masktypespath(:,m);
@@ -185,7 +186,6 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
         return
     end
 
-
     for s = 1:length(srcpath)        
 
         if opts.saveimg % Avoid unnecessary loading of the SPM vol structure to save RAM
@@ -204,28 +204,47 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             mask = uint16(spm_data_read(maskvol));
         end
 
+        masknd = ndims(mask);  % get the number of dimensions of the mask
+        if masknd ~= 3  % check if the mask does not have exactly 3 dimensions
+            msg = sprintf(['The mask ',maskpath{s},...
+                ' must have 3 dimensions.\n', ...
+                'The mask has %d dimensions.'], ...
+                masknd);
+            he = errordlg(msg,'Invalid Mask Dimensions');
+            uiwait(he)
+            return
+        end
+
         maskidx = unique(mask); % mask indexes for the current source volume
         maskidx(maskidx==0) = [];
 
-
         if isempty(maskidx) % check if the mask is empty
-            he = errordlg(['The mask ',maskpath{s},' has no indices different from zero. Check if the indices are positive integers']);
+            he = errordlg(['The mask ',maskpath{s},...
+                ' has no indices different from zero.',...
+                ' Check if the indices are positive integers']);
             uiwait(he)
             return
         end
-
+        
         sd = size(srcdata);
         sm = size(mask);
-        if ~(isequal(sd,sm) || isequal(sd(1:3),sm)) % check if the mask and srcdata have the same shape
-            he = errordlg('The source image and mask have different sizes');
+        if ~isequal(sd(1:3),sm) % check if the mask and srcdata have the same shape
+            msg = sprintf(['The source image and the mask do not match',...
+                ' in spatial dimensions!\n', ...
+                'Source image dimensions: [%d %d %d]\n', ...
+                'Mask dimensions: [%d %d %d]'], ...
+                sd(1), sd(2), sd(3), sm(1), sm(2), sm(3));
+            he = errordlg(msg, 'Dimension Mismatch');
             uiwait(he)
             return
         end
 
-        ts = zeros(length(maskidx),size(srcdata,4));
+        ts = zeros(length(maskidx),sd(4));
+        ts2 = zeros(length(maskidx),sd(4));
         stats = zeros(6,length(maskidx));
         stats(1,:) = maskidx;
         auxmaskidxall = cell(length(maskidx),1);
+
         for mi = 1:length(maskidx) % Mask index loop
             msg = sprintf('Source Image %d/%d - Mask %d/%d - idx %d/%d',...
                 s,length(srcpath),m,size(masktypespath,2),mi,length(maskidx));
@@ -238,49 +257,37 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             end
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
-            curmask = mask==maskidx(mi);
-            
-            datamask = cell(sd(4),1);
-            for t = 1:sd(4)
-                curdata = squeeze(srcdata(:,:,:,t));
-                if ~isequal(sd,sm)                    
-                    datamask{t} = curdata(curmask)';
-                else
-                    datamask{t} = curdata(squeeze(curmask(:,:,:,t)))';
-                end
-            end
-
+            curmask = mask==maskidx(mi);           
 
             %------------------------------------------------------------------
             % Calculates the average time-series
-            vecdatamask = [];
-            for t = 1:length(datamask) % Using loop instead identation is slower but allows for using different masks for each time point
-                ts(mi,t) = mean(datamask{t});
-                vecdatamask = [vecdatamask,datamask{t}];
-            end
-
+            srcdata2D = reshape(srcdata,[],sd(4));  % reshape to (x*y*z,t)
+            mask1D = curmask(:);
+            
+            auxts = srcdata2D(logical(mask1D),:); % Apply the mask in srcdata
+            %==============================================================
+            %                   IMPLEMENT FILTERS
+            %==============================================================
+            ts(mi,:) = mean(auxts);
 
             %------------------------------------------------------------------
             % Calculates the stats
-            stats(2,mi) = median(vecdatamask);
-            stats(3,mi) = mean(vecdatamask);
-            stats(4,mi) = std(vecdatamask);
-            stats(5,mi) = max(vecdatamask);
-            stats(6,mi) = min(vecdatamask);
+            stats(2,mi) = median(auxts(:));
+            stats(3,mi) = mean(auxts(:));
+            stats(4,mi) = std(auxts(:));
+            stats(5,mi) = max(auxts(:));
+            stats(6,mi) = min(auxts(:));
 
             %------------------------------------------------------------------
             % Save masked images to nifti files
-            if opts.saveimg
-                if ~isequal(sd,sm) % source image is 4D and mask 3D
-                    curmask4d = repmat(curmask,1,1,1,sd(4)); % transform the 3D mask to 4D                    
-                else
-                    curmask4d = curmask;
-                end
+            if opts.saveimg                
+                imgmask = zeros(size(srcdata2D));
+                imgmask(logical(mask1D),:) = auxts;
+                imgmask = reshape(imgmask,sd);
 
-                imgmask = zeros(size(srcdata));
-                imgmask(curmask4d) = vecdatamask;
                 [~,fn,~] = fileparts(srcpath{s});
-                filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],m,maskidx(mi));
+                filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],...
+                                    m,maskidx(mi));
                 if size(imgmask,4) == 1 % check if the volume is 3D
                     srcvol.fname = fullfile(outdir,filename);
                     v = spm_create_vol(srcvol);
