@@ -228,6 +228,7 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
         
         sd = size(srcdata);
         sm = size(mask);
+        srcdata2D = reshape(srcdata,[],sd(4));  % reshape to (x*y*z,t)
         if ~isequal(sd(1:3),sm) % check if the mask and srcdata have the same shape
             msg = sprintf(['The source image and the mask do not match',...
                 ' in spatial dimensions!\n', ...
@@ -258,11 +259,10 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
             curmask = mask==maskidx(mi);           
-
-            %------------------------------------------------------------------
-            % Calculates the average time-series
-            srcdata2D = reshape(srcdata,[],sd(4));  % reshape to (x*y*z,t)
             mask1D = curmask(:);
+           
+            %------------------------------------------------------------------
+            % Calculates the average time-series           
             
             auxts = srcdata2D(logical(mask1D),:); % Apply the mask in srcdata
             %==============================================================
