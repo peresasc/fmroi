@@ -74,3 +74,56 @@ else % band-pass filter
 end
 
 toc
+%%
+% Suponha que confounds seja sua tabela
+confounds = readtable("/home/andre/tmp/applymask_test/maismemoria/sub-01_ses-01_task-rest_desc-confounds_regressors.csv");
+varNames = confounds.Properties.VariableNames;
+
+% Buscar por 'compcor' ou 'csf' nos nomes das variáveis (case-insensitive)
+wm = contains(varNames, 'csf', 'IgnoreCase', true);
+csf = contains(varNames, 'white_matter', 'IgnoreCase', true);
+compcor = contains(varNames, 'comp_cor', 'IgnoreCase', true);
+trans = contains(varNames, 'trans', 'IgnoreCase', true);
+rot = contains(varNames, 'rot', 'IgnoreCase', true);
+
+
+% Combinar os dois critérios
+sel = wm | csf | compcor | trans | rot;
+
+% Obter os nomes das variáveis correspondentes
+selvars = varNames(sel);
+
+% Extrair os dados numéricos das colunas selecionadas
+selconf = table2array(confounds(:, selvars));
+selconf = nan2num(selconf);
+
+% Salvar como CSV sem cabeçalho (apenas os valores)
+writematrix(selconf, 'confounds_selected.csv', 'Delimiter', 'tab');
+% clearvars -except selconf
+%%
+tic
+X = double(selconf);  % design matrix (t x n_confounds)
+
+% Add intercept (constant regressor)
+X = [X, ones(size(X,1),1)];  % (t x (n_confounds + 1))
+
+% Transpose fMRI to be (t x n_voxels) for regression
+Y = double(auxts');  % (t x n_voxels)
+
+% Solve GLM: get residuals after regressing out confounds
+beta = X \ Y;             % (n_confounds+1 x n_voxels)
+Y_hat = X * beta;         % predicted signal
+residuals = Y - Y_hat;    % residuals = cleaned signal
+
+% Transpose back to (n_voxels x t)
+auxts = residuals';
+toc
+% Result:
+% cleaned_fmri is the confound-regressed fMRI data of size (n_voxels, t)
+
+%%
+tic
+infmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm.nii';
+outfmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm_smooth.nii';
+spm_smooth(infmri, outfmri, [6 6 6]);
+toc
