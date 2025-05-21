@@ -11,38 +11,38 @@ if isnan(hp) && isnan(lp) % No filter is applied
 
 elseif isnan(lp) % high-pass filter
     % Normalize cutoff frequencies based on the Nyquist frequency
-    Wn = hp/(fs/2);
+    wn = hp/(fs/2);
 
-    if Wn <= 0 || Wn >= 1
+    if wn <= 0 || wn >= 1
         error('Invalid highpass cutoff frequency relative to sampling rate.');
     end
 
-    [b,a] = butter(n,Wn,'high');
+    [b,a] = butter(n,wn,'high');
     tsfilt = filtfilt(b,a,ts);  % Apply zero-phase high-pass filter
 
 elseif isnan(hp) % low-pass filter
     % Normalize cutoff frequencies based on the Nyquist frequency
-    Wn = lp/(fs/2);
+    wn = lp/(fs/2);
 
-    if Wn <= 0 || Wn >= 1
+    if wn <= 0 || wn >= 1
         error('Invalid lowpass cutoff frequency relative to sampling rate.');
     end
 
-    [b, a] = butter(1, Wn, 'low');
+    [b, a] = butter(1, wn, 'low');
     tsfilt = filtfilt(b, a, ts);  % Apply zero-phase low-pass filter
 
 else % band-pass filter
     % Normalize cutoff frequencies based on the Nyquist frequency
-    Wn = [hp lp]/(fs/2);
+    wn = [hp lp]/(fs/2);
 
     % Validate bandpass range
-    if Wn(1) >= Wn(2) || Wn(1) <= 0 || Wn(2) >= 1
+    if wn(1) >= wn(2) || wn(1) <= 0 || wn(2) >= 1
         error(['Invalid bandpass range: check highpass and lowpass ',...
             'values relative to sampling rate.']);
     end
 
     % Design first-order Butterworth bandpass filter
-    [b,a] = butter(1,Wn,'bandpass');
+    [b,a] = butter(1,wn,'bandpass');
 
     % Apply zero-phase filtering (forward and reverse) to avoid phase distortion
     tsfilt = filtfilt(b,a,ts);
