@@ -24,10 +24,10 @@ toc
 
 %%
 tic
-ts = timeseries';
+ts = ts';
 hp = 0.001;
 lp = 0.08;
-tr = 2;
+tr = 1;
 
 fs = 1/tr;  % Sampling frequency in Hz
 
@@ -68,10 +68,23 @@ else % band-pass filter
 
     % Design first-order Butterworth bandpass filter
     [b,a] = butter(1,Wn,'bandpass');
+    % figure
+    % freqz(b,a)
 
     % Apply zero-phase filtering (forward and reverse) to avoid phase distortion
     tsfilt = filtfilt(b,a,ts);
 end
+
+
+[H, f] = freqz(b, a, 1024, fs);  % agora 'f' está em Hz
+
+% Plot customizado
+figure;
+plot(f, abs(H));
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Frequency response (Hz) of high-pass Butterworth filter');
+grid on;
 
 toc
 %%
@@ -127,3 +140,10 @@ infmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm.nii';
 outfmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm_smooth.nii';
 spm_smooth(infmri, outfmri, [6 6 6]);
 toc
+
+%%
+
+smoothed4D = zeros(size(fmri4D), 'like', fmri4D);
+for t = 1:size(fmri4D, 4)
+    smoothed4D(:,:,:,t) = imbilatfilt3(fmri4D(:,:,:,t), 2, 0.1);  % ajuste os parâmetros
+end
