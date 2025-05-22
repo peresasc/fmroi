@@ -112,11 +112,6 @@ handles.tools.settings.edit_filterorder = uicontrol(handles.panel_filter,...
 handles.tools.settings.axes_butter = axes('Parent',handles.panel_filter,...
     'Units','normalized','Position',[.59,.25,.38,.7]);
 
-guidata(hObject,handles);
-
-updatebuttergraph(hObject);
-
-handles = guidata(hObject);
 
 %==========================================================================
 % Creates GLM regress out panel
@@ -202,8 +197,8 @@ handles.panel_smooth = uipanel(handles.panel_settings,'BackgroundColor','w',...
 % creates the text for FWHM
 handles.tools.settings.text_fwhm = uicontrol(handles.panel_smooth,...
     'Style','text','Units','normalized','String','FWHM (mm):',...
-    'FontUnits','normalized','FontSize',fss*.5,'BackgroundColor','w',...
-    'HorizontalAlignment','right','Position',[.02,.2,.22,.6]);
+    'FontUnits','normalized','FontSize',fss*.6,'BackgroundColor','w',...
+    'HorizontalAlignment','right','Position',[.01,.25,.26,.5]);
 
 % Java fix due uicontrol missing vertical alignment property
 jh = findjobj(handles.tools.settings.text_fwhm);
@@ -212,8 +207,8 @@ jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
 % creates the edit text for FWHM
 handles.tools.settings.edit_smooth = uicontrol(handles.panel_smooth,...
     'Style','edit','Units','normalized','BackgroundColor','w',...
-    'String','6','FontUnits','normalized','FontSize',fss*.5,...
-    'HorizontalAlignment','center','Position',[.25,.2,.22,.6]);
+    'String','6','FontUnits','normalized','FontSize',fss*.6,...
+    'HorizontalAlignment','center','Position',[.28,.25,.22,.5]);
 
 %==========================================================================
 % creates Gaussian z-score checkbox
@@ -221,13 +216,17 @@ handles.tools.settings.edit_smooth = uicontrol(handles.panel_smooth,...
 handles.tools.settings.checkbox_zscore = uicontrol(handles.panel_settings,...
     'Style','checkbox','Units','normalized','String','Apply z-score',...
     'FontUnits','normalized','FontSize',fss*.6,'BackgroundColor','w',...
-    'Position',[0.01,.07,.24,.04],'Value',0,...
-    'Callback',@checkbox_zscore_callback);
+    'Position',[0.01,.07,.24,.04],'Value',0); % 'Callback',@checkbox_zscore_callback);
+    
 
+guidata(hObject,handles);
+updatebuttergraph(hObject);
+handles = guidata(hObject);
 
 
 set(handles.panel_filter,'Visible','off')
 set(handles.panel_regressout,'Visible','off')
 set(handles.panel_smooth,'Visible','off')
+
 
 guidata(hObject,handles)

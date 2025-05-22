@@ -16,6 +16,14 @@ srcpath = get(handles.tools.applymask.edit_scrpath,'String');
 maskpath = get(handles.tools.applymask.edit_maskpath,'String');
 outdir = get(handles.tools.applymask.edit_outdir,'String');
 
+if isfield(handles,'opts')
+    opts = handles.opts;
+end
+
+handles = rmfield(handles,'opts');
+guidata(hObject,handles);
+
+
 opts.saveimg = get(handles.tools.applymask.checkbox_saveimg,'value');
 opts.savestats = get(handles.tools.applymask.checkbox_savestats,'value');
 opts.savets = get(handles.tools.applymask.checkbox_savets,'value');
