@@ -22,7 +22,7 @@ switch hObject
 
         set(handles.tools.settings.edit_confoundspath,'String',fullfile(pn,fn));
 
-        case handles.tools.settings.pbutton_selconf
+    case handles.tools.settings.pbutton_selconf
         extfilt = {'*.mat';'*.txt';'*.csv';'*.tsv'};
         [fn,pn,idx] = uigetfile(extfilt,'Select the confounds file','MultiSelect','off');
         if ~idx
@@ -30,4 +30,14 @@ switch hObject
         end
 
         set(handles.tools.settings.edit_selconf,'String',fullfile(pn,fn));
+
+    case handles.tools.settings.pbutton_brainmaskpath
+        extfilt = {'*.nii.gz';'*.nii'};
+        [fn,pn,idx] = uigetfile(extfilt,'Select the brainmask file','MultiSelect','off');
+        if ~idx
+            return
+        end
+
+        set(handles.tools.settings.edit_brainmaskpath,'String',fullfile(pn,fn));
+
 end

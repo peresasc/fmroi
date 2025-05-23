@@ -266,7 +266,33 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             
             auxts = srcdata2D(logical(mask1D),:); % Apply the mask in srcdata
             %==============================================================
-            %                   IMPLEMENT FILTERS
+            % CLEANING DATA
+            if isfield(opts,'regout') && ~isempty(opts.regout)              
+                auxts = preproc_regout(auxts,opts.regout.conf,...
+                    opts.regout.selconf,opts.regout.demean);
+            end
+            
+            if isfield(opts,'filter') && ~isempty(opts.filter)
+                auxts = preproc_butter(auxts,opts.filter.highpass,...
+                    opts.filter.lowpass,opts.filter.tr,opts.filter.order);
+            end
+
+            if isfield(opts,'smooth') && ~isempty(opts.smooth)
+                
+
+                % infmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm.nii';
+                % outfmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm_smooth.nii';
+                % spm_smooth(infmri, outfmri, opts.smooth.fwhm);
+
+            end
+
+            if isfield(opts,'zscore') && ~isempty(opts.zscore)
+
+            end
+
+
+
+
             %==============================================================
             ts(mi,:) = mean(auxts);
 

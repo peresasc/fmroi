@@ -120,29 +120,40 @@ end
 %==========================================================================
 % Retrieve GLM Regress Out options
 
-%--------------------------------------------------------------------------
-% load the confounds
 if handles.tools.settings.checkbox_regressout.Value
-    confpath = get(handles.tools.settings.edit_confoundspath,'string');
 
-    if ~isfile(confpath)
+    % load the confounds path
+    confpath = get(handles.tools.settings.edit_confoundspath,'string');
+    
+    % load the demean option
+    handles.opts.regout.demean = get(handles.tools.settings.checkbox_demean,'Value');
+
+    if ~isfile(confpath) && ~handles.opts.regout.demean
         he = errordlg('Invalid confounds path!');
         uiwait(he)
         return
     end
+    
+    if isfile(confpath)
+        [~,~,ext] = fileparts(confpath);
 
-    [~,~,ext] = fileparts(confpath);
-
-    if strcmpi(ext,'.mat')
-        auxconf = load(confpath);
-        varname = fieldnames(auxconf);
-        handles.opts.regout.conf = auxconf.(varname{1});
-    elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-        handles.opts.regout.conf = readmatrix(confpath);
+        if strcmpi(ext,'.mat')
+            auxconf = load(confpath);
+            varname = fieldnames(auxconf);
+            handles.opts.regout.conf = auxconf.(varname{1});
+            if istable(handles.opts.regout.conf)
+                handles.opts.regout.conf = table2array(handles.opts.regout.conf);
+            end
+        elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
+            handles.opts.regout.conf = readmatrix(confpath);            
+        else
+            he = errordlg('Invalid file format!');
+            uiwait(he)
+            return
+        end
+        handles.opts.regout.conf = nan2num(handles.opts.regout.conf);
     else
-        he = errordlg('Invalid file format!');
-        uiwait(he)
-        return
+        handles.opts.regout.conf = [];
     end
 
     %--------------------------------------------------------------------------
@@ -155,7 +166,7 @@ if handles.tools.settings.checkbox_regressout.Value
         if strcmpi(ext,'.mat')
             auxselconf = load(selconfpath);
             varname = fieldnames(auxselconf);
-            handles.opts.regout.conf = auxselconf.(varname{1});
+            handles.opts.regout.selconf = auxselconf.(varname{1});
         elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
             handles.opts.regout.selconf = readmatrix(selconfpath);
         else
@@ -170,9 +181,33 @@ if handles.tools.settings.checkbox_regressout.Value
             handles.opts.regout.selconf = [];
         end
     end
-    %--------------------------------------------------------------------------
-    % load the demean option
-    handles.opts.regout.demean = get(handles.tools.settings.checkbox_demean,'Value');
+
+    if ~isempty(handles.opts.regout.selconf)
+
+        handles.opts.regout.selconf = round(handles.opts.regout.selconf);
+        if ~isvector(handles.opts.regout.selconf)
+            he = errordlg('The selected confound indices must be provided as a vector.', ...
+                'Invalid Input');
+            uiwait(he)
+            return
+        end
+
+        if ~isrow(handles.opts.regout.selconf)
+            handles.opts.regout.selconf = handles.opts.regout.selconf';
+        end
+
+        maxsc = max(handles.opts.regout.selconf);
+        minsc = min(handles.opts.regout.selconf);
+        
+        n_conf_cols = size(handles.opts.regout.conf,2);  % número total de colunas em conf
+
+        if minsc < 1 || maxsc > n_conf_cols
+            he = errordlg('Invalid indices for selecting columns from the confound matrix.', ...
+                'Index Out of Bounds');
+            uiwait(he)
+            return
+        end
+    end
 end
 
 %==========================================================================

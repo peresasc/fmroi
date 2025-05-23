@@ -88,7 +88,6 @@ grid on;
 
 toc
 %%
-% Suponha que confounds seja sua tabela
 confounds = readtable("/home/andre/tmp/applymask_test/maismemoria/sub-01_ses-01_task-rest_desc-confounds_regressors.csv");
 varNames = confounds.Properties.VariableNames;
 

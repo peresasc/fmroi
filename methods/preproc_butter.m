@@ -3,9 +3,26 @@ function tsfilt = preproc_butter(ts,hp,lp,tr,n)
 %
 % Author: Andre Peres, 2025, peres.asc@gmail.com
 % Last update: Andre Peres, 21/05/2025, peres.asc@gmail.com
+if nargin ~= 5
+    he = errordlg({'Invalid number of input arguments!',...
+        'Exactly 5 arguments are required:',...
+        'Time series, High-pass freq (Hz), Low-pass freq (Hz), TR (s), Filter order'}, ...
+        'Input Error');
+    uiwait(he)
+    return
+end
 
 fs = 1/tr;  % Sampling frequency in Hz
 ts = ts';
+
+if isempty(hp)
+    hp = nan;
+end
+
+if isempty(lp)
+    lp = nan;
+end
+
 if isnan(hp) && isnan(lp) % No filter is applied
     tsfilt = ts;
 
