@@ -344,6 +344,7 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
                 imgmask4d = reshape(imgmask4d,sd);
 
                 [~,fn,~] = fileparts(srcpath{s});
+                [~,fn,~] = fileparts(fn);
                 filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],...
                                     m,maskidx(mi));
                 if size(imgmask4d,4) == 1 % check if the volume is 3D

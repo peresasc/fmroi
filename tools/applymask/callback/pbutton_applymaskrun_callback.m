@@ -22,9 +22,6 @@ if isfield(handles,'opts')
     guidata(hObject,handles);
 end
 
-
-
-
 opts.saveimg = get(handles.tools.applymask.checkbox_saveimg,'value');
 opts.savestats = get(handles.tools.applymask.checkbox_savestats,'value');
 opts.savets = get(handles.tools.applymask.checkbox_savets,'value');

@@ -15,7 +15,7 @@ handles = guidata(hObject);
 
 switch hObject
     case handles.tools.applymask.pbutton_srcpath
-        extfilt = {'*.nii';'*.nii.gz';'*.txt';'*.csv';'*.tsv'};
+        extfilt = {'*.nii.gz';'*.nii';'*.txt';'*.csv';'*.tsv'};
         [fn,pn,idx] = uigetfile(extfilt,'Select the source files','MultiSelect','on');
         if ~idx
             return
@@ -31,7 +31,7 @@ switch hObject
         end
 
     case handles.tools.applymask.pbutton_maskpath
-        extfilt = {'*.nii';'*.nii.gz';'*.txt';'*.csv';'*.tsv'};
+        extfilt = {'*.nii.gz';'*.nii';'*.txt';'*.csv';'*.tsv'};
         [fn,pn,idx] = uigetfile(extfilt,'Select the mask files','MultiSelect','on');
         if ~idx
             return
