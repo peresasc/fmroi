@@ -190,9 +190,11 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
 
         if opts.saveimg % Avoid unnecessary loading of the SPM vol structure to save RAM
             srcvol = spm_vol(srcpath{s});
-            srcdata = spm_data_read(srcvol);
+            voxelsize = sqrt(sum(srcvol(1).mat(1:3, 1:3).^2));
+            srcdata = spm_data_read(srcvol);            
         else
             srcdata = spm_vol(srcpath{s});
+            voxelsize = sqrt(sum(srcdata(1).mat(1:3, 1:3).^2));
             srcdata = spm_data_read(srcdata);
         end
         
@@ -228,7 +230,7 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
         
         sd = size(srcdata);
         sm = size(mask);
-        srcdata2D = reshape(srcdata,[],sd(4));  % reshape to (x*y*z,t)
+        srcdata2d = reshape(srcdata,[],sd(4));  % reshape to (x*y*z,t)
         if ~isequal(sd(1:3),sm) % check if the mask and srcdata have the same shape
             msg = sprintf(['The source image and the mask do not match',...
                 ' in spatial dimensions!\n', ...
@@ -258,42 +260,72 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             end
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
-            curmask = mask==maskidx(mi);           
-            mask1D = curmask(:);
-           
-            %------------------------------------------------------------------
-            % Calculates the average time-series           
+            curmask = mask==maskidx(mi);
             
-            auxts = srcdata2D(logical(mask1D),:); % Apply the mask in srcdata
+            %--------------------------------------------------------------
+            % If smoothing is requested, dilate the current mask to ensure that
+            % the smoothing kernel does not include zeros outside the ROI boundary.
+            % Smoothing (e.g., Gaussian) involves neighboring voxels within a certain
+            % spatial radius (typically 3×σ). If the ROI mask is too tight, smoothing
+            % near the mask edges may include background zeros, introducing edge artifacts.
+            if isfield(opts,'smooth') && ~isempty(opts.smooth)
+
+                orig_curmask = curmask;
+
+                sigma_mm = opts.smooth.fwhm/(2*sqrt(2*log(2))); % calculates sigma using fwhm
+                sigma_vox = sigma_mm./voxelsize; % convert sigma from mm to voxels                
+                r = ceil(3 * max(sigma_vox)); % defines radius as 3 sigmas
+
+                se = strel('sphere', r);
+                curmask = imdilate(curmask, se);  % expanded ROI for smoothing support
+            end
+            %------------------------------------------------------------------
+            
+            % apply mask in the time series (2D array)
+            mask1d = curmask(:);
+            auxts = srcdata2d(logical(mask1d),:); % Apply the mask in srcdata
+
             %==============================================================
             % CLEANING DATA
-            if isfield(opts,'regout') && ~isempty(opts.regout)              
+            if isfield(opts,'regout') && ~isempty(opts.regout)
                 auxts = preproc_regout(auxts,opts.regout.conf,...
                     opts.regout.selconf,opts.regout.demean);
             end
-            
+
             if isfield(opts,'filter') && ~isempty(opts.filter)
                 auxts = preproc_butter(auxts,opts.filter.highpass,...
                     opts.filter.lowpass,opts.filter.tr,opts.filter.order);
             end
 
             if isfield(opts,'smooth') && ~isempty(opts.smooth)
-                
 
-                % infmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm.nii';
-                % outfmri = '/home/andre/tmp/applymask_test/maismemoria/fmroi_cleanglm_smooth.nii';
-                % spm_smooth(infmri, outfmri, opts.smooth.fwhm);
+                % Preallocate output volume
+                imgmask4d = zeros(size(srcdata2d));
+                imgmask4d(logical(mask1d),:) = auxts;
+                imgmask4d = reshape(imgmask4d,sd);
 
+                % Apply the same Gaussian filter to each time volume
+                for t = 1:size(imgmask4d,4)
+                    imgmask4d(:,:,:,t) = imgaussfilt3(imgmask4d(:,:,:,t),...
+                        sigma_vox,'FilterDomain','auto','Padding','replicate');
+                end
+
+                imgmask2d = reshape(imgmask4d,[],sd(4));
+
+                % transform auxts back to the original mask shape
+                curmask = orig_curmask;
+                mask1d = curmask(:);
+                auxts = imgmask2d(logical(mask1d),:); % Apply the mask in srcdata
             end
 
-            if isfield(opts,'zscore') && ~isempty(opts.zscore)
-
+            if isfield(opts,'zscore') && opts.zscore
+                auxts = zscore(auxts');
+                auxts = auxts';
             end
 
-
-
-
+            
             %==============================================================
+            
             ts(mi,:) = mean(auxts);
 
             %------------------------------------------------------------------
@@ -306,24 +338,24 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
 
             %------------------------------------------------------------------
             % Save masked images to nifti files
-            if opts.saveimg                
-                imgmask = zeros(size(srcdata2D));
-                imgmask(logical(mask1D),:) = auxts;
-                imgmask = reshape(imgmask,sd);
+            if opts.saveimg
+                imgmask4d = zeros(size(srcdata2d));
+                imgmask4d(logical(mask1d),:) = auxts;
+                imgmask4d = reshape(imgmask4d,sd);
 
                 [~,fn,~] = fileparts(srcpath{s});
                 filename = sprintf([fn,'_mask-%03d_idx-%03d.nii'],...
                                     m,maskidx(mi));
-                if size(imgmask,4) == 1 % check if the volume is 3D
+                if size(imgmask4d,4) == 1 % check if the volume is 3D
                     srcvol.fname = fullfile(outdir,filename);
                     v = spm_create_vol(srcvol);
                     v.pinfo = [1;0;0]; % avoid SPM to rescale the masks
-                    spm_write_vol(v,imgmask);
+                    spm_write_vol(v,imgmask4d);
                 else
                     for k = 1:length(srcvol)
-                        srcvol(k).dat = squeeze(imgmask(:,:,:,k));
+                        srcvol(k).dat = squeeze(imgmask4d(:,:,:,k));
                     end
-                    clear imgmask
+                    clear imgmask4d
                     outpath = fullfile(outdir,filename);
                     array4dtonii(srcvol,outpath);
                 end                

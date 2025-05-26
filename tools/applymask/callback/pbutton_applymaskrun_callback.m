@@ -18,10 +18,11 @@ outdir = get(handles.tools.applymask.edit_outdir,'String');
 
 if isfield(handles,'opts')
     opts = handles.opts;
+    handles = rmfield(handles,'opts');
+    guidata(hObject,handles);
 end
 
-handles = rmfield(handles,'opts');
-guidata(hObject,handles);
+
 
 
 opts.saveimg = get(handles.tools.applymask.checkbox_saveimg,'value');
