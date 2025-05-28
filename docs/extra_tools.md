@@ -59,10 +59,10 @@ Connectome
     - **roinamespath:** (Optional) Path to the file containing ROI names. Supported formats are .mat, .txt, .csv, and .tsv. The file must have the same length as the number of time-series. Each ROI name in roinamespath corresponds to the ROI from which each time-series was extracted.
                  If not provided, generic names will be assigned.
     - **opts:** Structure with optional settings including preprocessing steps and output options:
-        - **opts.rsave**: (default: 1) Save Pearson correlation connectome (logical).
-        - **opts.psave**: (default: 1) Save p-values connectome (logical).
-        - **opts.zsave**: (default: 1) Save Fisher transformation connectome (logical).
-        - **opts.ftsave**: (default: 1) Save feature matrices for machine learning (logical).
+        - **opts.rsave**: (default: 1) Flag indicating if Pearson correlation connectome should be saved (logical, 1 to save, 0 to not save).
+        - **opts.psave**: (default: 1) Flag indicating if p-values connectome should be saved (logical, 1 to save, 0 to not save).
+        - **opts.zsave**: (default: 1) Flag indicating if Fisher transformation connectome should be saved (logical, 1 to save, 0 to not save).
+        - **opts.ftsave**: (default: 1) Flag indicating if feature matrices (e.g., used for machine learning) should be saved (logical, 1 to save, 0 to not save).
         
         - **opts.filter.tr**: Repetition time (TR) in seconds. Used to compute the sampling frequency for filtering.
         - **opts.filter.highpass**: High-pass filter cutoff frequency in Hz. Can be a numeric value or the string `'none'`. If numeric, a Butterworth filter is applied.
