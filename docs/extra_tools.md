@@ -5,7 +5,7 @@ The extra tools offer a range of additional functions that, while not crucial to
 Applymask
 ----------
 
-Applymask (or runapplymask for command line use) function applies masks to a set of source images, extracting time-series data and statistical measures from these masked regions, and saving the results to a specified output directory.
+Applymask (or runapplymask for command line use) function applies masks to a set fmri images, extracting time-series data and statistical measures from these masked regions, and saving the results to a specified output directory. Optional preprocessing can also be applied to the time series data prior to extraction.
 
 - **Syntax:**
     - *runapplymask(srcpath,maskpath,outdir,opts,hObject)*
@@ -14,11 +14,28 @@ Applymask (or runapplymask for command line use) function applies masks to a set
     - **srcpath:** String containg the paths to the source images separeted by semicolons, or a path to a text file (.txt, .csv, or .tsv) containing the images paths in a line (separated by tabs or semicolons) or in a column (1D array).
     - **maskpath:** String containg the paths to the mask images separeted by semicolons, or a path to a text file (.txt, .csv, or .tsv) containing the maskpaths paths separated by tabs orsemicolons. The number of mask paths must exactly match the number of source images or there can be only one mask. Each mask in the list is applied to the corresponding source image in the same order (i.e., first mask to first image, second mask to second image, and so on). If the maskpath points to a text file, each column represents a different mask type and will be processed separately. Each column can have as many lines as there are source images or only one mask to be applied to all images.
     - **outdir:** Path to the output directory (string).
-    - **opts:** (optional) A structure containing options for saving outputs.
-        - *opts.saveimg:* (default: 1) Flag indicating if masked images should be saved (logical, 1 to save, 0 to not save).
-        - *opts.savestats:* (default: 1) Flag indicating if statistics should be saved (logical, 1 to save, 0 to not save). The saved stats are mean, median, standard deviation, maximum value, and minimum value for each subject and ROI.
-        - *opts.savets:* (default: 1) Flag indicating if time series data should be saved (logical, 1 to save, 0 to not save).
-        - *opts.groupts:* (default: 0) Flag used to control how the time series data is saved. If opts.groupts is set to 1, then the time series data will be saved grouped by source image. This means that all of the time series for a particular source image will be saved together in a single file. However, if opts.groupts is set to 0, then the time series data will be saved for each mask separately. This means that there will be a separate file for each mask.
+   
+    - **opts:** Structure with optional settings including preprocessing steps and output options:
+        - **opts.saveimg**: (default: 0) Logical flag indicating if masked images should be saved (1 = save, 0 = do not save).
+        - **opts.savestats**: (default: 1) Logical flag indicating if statistics should be saved. The saved statistics include mean, median, standard deviation, maximum value, and minimum value for each subject and ROI.
+        - **opts.savets**: (default: 1) Logical flag indicating if time series data should be saved.
+        - **opts.groupts**: (default: 0) Controls how time series data are saved:
+            - If set to 1: time series are grouped and saved per source image (one file per subject).
+            - If set to 0: time series are saved separately for each mask (one file per mask).
+        
+        - **opts.filter.tr**: Repetition time (TR) in seconds. Used to compute the sampling frequency for filtering.
+        - **opts.filter.highpass**: High-pass filter cutoff frequency in Hz. Can be a numeric value or the string `'none'`. If numeric, a Butterworth filter is applied.
+        - **opts.filter.lowpass**: Low-pass filter cutoff frequency in Hz. Can be a numeric value or the string `'none'`. If numeric, a Butterworth filter is applied.
+        - **opts.filter.order**: (Optional, default = 1) Order of the Butterworth filter. Applies to high-pass, low-pass, or band-pass designs.
+        
+        - **opts.regout.conf**: Table, matrix, or cell array of confound files (numeric or table) to be regressed out via GLM. If multiple subjects are processed, this must be a cell array with one entry per subject.
+        - **opts.regout.selconf**: Vector of column indices to select specific confounds from `conf`. Can be empty to include all columns.
+        - **opts.regout.demean**: (default: false) Logical flag indicating whether to include a constant (intercept) regressor for mean removal during regression.
+        
+        - **opts.smooth.fwhm**: Full width at half maximum (FWHM) of the spatial Gaussian kernel in millimeters (scalar).
+        
+        - **opts.zscore**: Logical flag. If true, the time series of each voxel is z-scored (zero mean, unit standard deviation) after all other preprocessing steps.
+
     - **hObject:** (Optional - default: NaN) Handle to the graphical user interface object. Not provided for command line usage.
 
  - **Outputs:** runapplymask saves to the output directory the following data:
@@ -41,14 +58,23 @@ Connectome
     - **outdir:** Directory where the output files will be saved.
     - **roinamespath:** (Optional) Path to the file containing ROI names. Supported formats are .mat, .txt, .csv, and .tsv. The file must have the same length as the number of time-series. Each ROI name in roinamespath corresponds to the ROI from which each time-series was extracted.
                  If not provided, generic names will be assigned.
-    - **opts:** (Optional - default: 1) Structure containing options:
-        - opts.rsave: Save Pearson correlation connectome.
-        - opts.psave: Save p-values connectome.
-        - opts.zsave: Save Fisher transformation connectome.
-        - opts.ftsave: Save feature matrices.
-        - opts.tr: Repetition time (TR) in seconds. Used to compute the sampling frequency for filtering.
-        - opts.highpass: High-pass filter cutoff frequency in Hz. Can be a numeric value or the string 'none'. If a numeric value is given, a first-order Butterworth high-pass or band-pass filter is applied depending on whether opts.lowpass is also set.
-        - opts.lowpass: Low-pass filter cutoff frequency in Hz. Can be a numeric value or the string 'none'. If a numeric value is given, a first-order Butterworth low-pass or band-pass filter is applied depending on whether opts.highpass is also set.
+    - **opts:** Structure with optional settings including preprocessing steps and output options:
+        - **opts.rsave**: (default: 1) Save Pearson correlation connectome (logical).
+        - **opts.psave**: (default: 1) Save p-values connectome (logical).
+        - **opts.zsave**: (default: 1) Save Fisher transformation connectome (logical).
+        - **opts.ftsave**: (default: 1) Save feature matrices for machine learning (logical).
+        
+        - **opts.filter.tr**: Repetition time (TR) in seconds. Used to compute the sampling frequency for filtering.
+        - **opts.filter.highpass**: High-pass filter cutoff frequency in Hz. Can be a numeric value or the string `'none'`. If numeric, a Butterworth filter is applied.
+        - **opts.filter.lowpass**: Low-pass filter cutoff frequency in Hz. Can be a numeric value or the string `'none'`. If numeric, a Butterworth filter is applied.
+        - **opts.filter.order**: (Optional, default: 1) Order of the Butterworth filter. Applies to high-pass, low-pass, or band-pass configurations.
+
+        - **opts.regout.conf**: Table, matrix, or cell array of confound files (numeric or table) to be regressed out via GLM. If multiple subjects are processed, must be a cell array with one entry per subject.
+        - **opts.regout.selconf**: Vector of column indices to select specific confounds from `conf`. Can be empty to use all columns.
+        - **opts.regout.demean**: (default: false) Logical flag indicating whether to include a constant (intercept) regressor for mean removal during regression.
+
+        - **opts.zscore**: Logical flag. If true, the time series inside each ROI is z-scored (zero mean, unit std) after all other preprocessing steps.
+
         
     - **hObject:** (Optional - default: NaN) Handle to the graphical user 
                  interface object. Not provided for command line usage.
