@@ -8,7 +8,7 @@ function pbutton_connectomesettings_callback(hObject,~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2025, peres.asc@gmail.com
-% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
 
 create_panel_settings(hObject)
 handles = guidata(hObject);

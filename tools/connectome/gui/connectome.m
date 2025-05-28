@@ -10,7 +10,7 @@ function connectome(hObject,~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
 %
 %--------------------------------------------------------------------------
 %                        runconnectome header
@@ -49,26 +49,54 @@ function connectome(hObject,~)
 %                 time-series. Each ROI name in roinamespath corresponds
 %                 to the ROI from which each time-series was extracted.
 %                 If not provided, generic names will be assigned.
-%           opts: (Optional - default: 1) Structure containing options:
-%                    opts.rsave: Save Pearson correlation connectome.
-%                    opts.psave: Save p-values connectome.
-%                    opts.zsave: Save Fisher transformation connectome.
-%                   opts.ftsave: Save feature matrices.
-%                       opts.tr: Repetition time (TR) in seconds. Used to 
-%                                compute the sampling frequency for 
-%                                filtering.
-%                 opts.highpass: High-pass filter cutoff frequency in Hz. 
-%                                Can be a numeric value or the string 
-%                                'none'. If a numeric value is given, a 
-%                                first-order Butterworth high-pass or 
-%                                band-pass filter is applied depending
-%                                on whether opts.lowpass is also set.
-%                  opts.lowpass: Low-pass filter cutoff frequency in Hz. 
-%                                Can be a numeric value or the string 
-%                                'none'. If a numeric value is given, a 
-%                                first-order Butterworth low-pass or 
-%                                band-pass filter is applied depending
-%                                on whether opts.highpass is also set.
+%
+%           opts: Structure with optional settings including preprocessing
+%                 steps and output options. The following fields are
+%                 supported:
+%
+%                            *** Saving data ***
+%
+%             opts.rsave: (default: 1) Flag indicating if Pearson 
+%                         correlation connectome should be saved (logical,
+%                         1 to save, 0 to not save).
+%             opts.psave: (default: 1) Flag indicating if p-values
+%                         connectome should be saved (logical, 1 to save,
+%                         0 to not save).
+%             opts.zsave: (default: 1) Flag indicating if Fisher 
+%                         transformation connectome should be saved
+%                         (logical, 1 to save, 0 to not save).
+%            opts.ftsave: (default: 1) Flag indicating if feature
+%                         matrices (e.g. used for machine learning) should
+%                         be saved (logical, 1 to save, 0 to not save).
+% 
+%                            *** Cleaning data ***
+%
+%         opts.filter.tr: Repetition time (TR) in seconds. Used to compute 
+%                         the sampling frequency for filtering.
+%   opts.filter.highpass: High-pass cutoff frequency in Hz. Can be a 
+%                         numeric value or the string 'none'. If numeric, 
+%                         a Butterworth filter is applied.
+%    opts.filter.lowpass: Low-pass cutoff frequency in Hz. Can be a 
+%                         numeric value or the string 'none'. If numeric, 
+%                         a Butterworth filter is applied.
+%      opts.filter.order: (Optional, default = 1) Order of the Butterworth 
+%                         filter. Applies to high-pass, low-pass, or 
+%                         band-pass designs.
+%
+%       opts.regout.conf: Table, matrix, or cell array of confound files 
+%                         (numeric or table) to be regressed out via 
+%                         GLM. If multiple subjects are processed, must 
+%                         be a cell array with one entry per subject.
+%    opts.regout.selconf: Vector of column indices to select specific 
+%                         confounds from `conf`. Can be empty to use 
+%                         all columns.
+%     opts.regout.demean: Logical flag (default: false) indicating whether 
+%                         to include a constant (intercept) regressor 
+%                         for mean removal during regression.
+%
+%            opts.zscore: Logical flag. If true, the time series inside 
+%                         each ROI is z-scored (zero mean, unit std) 
+%                         after all other preprocessing steps.
 %
 %        hObject: (Optional - default: NaN) Handle to the graphical user
 %                 interface object. Not provided for command line usage.
@@ -81,7 +109,7 @@ function connectome(hObject,~)
 %   versions.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
 
 delete_panel_tools(hObject)
 create_panel_tools(hObject)

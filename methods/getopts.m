@@ -1,4 +1,14 @@
 function getopts(hObject,~)
+% getopts is an internal function of fMROI.
+%
+% Syntax:
+%   getopts(hObject,~)
+%
+% Inputs:
+%   hObject: handle of the figure that contains the fMROI main window.
+%
+% Author: Andre Peres, 2025, peres.asc@gmail.com
+% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
