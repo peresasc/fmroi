@@ -16,7 +16,7 @@ function st = stgen(hObject, img_path, st)
 %             the images. It is based on the st structure from SPM.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
 
 if ~exist('img_path','var')
     error('Provide a nifti image path')
@@ -32,7 +32,6 @@ end
 
 handles = guidata(hObject);
 nextcell = find(cellfun(@isempty,st.vols), 1);
-i = nextcell;
 
 %--------------------------------------------------------------------------
 
@@ -63,7 +62,7 @@ V.ax = cell(3,1); %???
 V.premul    = eye(4);
 V.window    = 'auto';
 V.mapping   = 'linear';
-st.vols{i} = V;
+st.vols{nextcell} = V;
 H = 1;
 st.vols{H}.area = [0 0 1 1];
 
@@ -77,10 +76,10 @@ if isempty(st.bb)
     mn = [Inf Inf Inf];
     mx = -mn;
     
-    premul = st.Space \ st.vols{i}.premul; % A\B == inv(A)*B
+    premul = st.Space \ st.vols{nextcell}.premul; % A\B == inv(A)*B
     
     % SPM function to compute volume's bounding box for full field of view.
-    bb = spm_get_bbox(st.vols{i}, 'fv', premul);
+    bb = spm_get_bbox(st.vols{nextcell}, 'fv', premul);
     
     mx = max([bb ; mx]);
     mn = min([bb ; mn]);
@@ -96,7 +95,7 @@ if ~isfield(st,'res')
     % Resolution is set to a isovoxel with edge size equal to the smallest
     % voxel dimension of the first loaded image.
     res = inf;
-    res = min([res,sqrt(sum((st.vols{i}.mat(1:3,1:3)).^2))]);
+    res = min([res,sqrt(sum((st.vols{nextcell}.mat(1:3,1:3)).^2))]);
     res = res/mean(svd(st.Space(1:3,1:3)));
     Mat = diag([res res res 1]);
     

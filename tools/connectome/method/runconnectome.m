@@ -107,127 +107,127 @@ if isempty(tspath) || isempty(outdir)
     return
 end
 
-%--------------------------------------------------------------------------
-% Get the parameters for filtering
-if ~isempty(opts.filter)
-    if isfield(opts.filter,'tr')
-        %--------------------------------------------------------------------------
-        % Convert opts.filter.tr to double
-        if isnumeric(opts.filter.tr) && isscalar(opts.filter.tr)
-            tr = double(opts.filter.tr);
-            disp(['TR equal to ',num2str(tr),' s.']);
-
-        elseif ischar(opts.filter.tr)
-            tr = str2double(opts.filter.tr);
-
-            if isnan(tr)
-                tr = 1;
-                disp(['Warning: Invalid TR value format. ',...
-                    'TR set to ',num2str(tr),' s.']);
-            else
-                disp(['TR equal to ',num2str(tr),' s.']);
-            end
-
-        else
-            tr = 1;
-            disp(['Warning: Invalid TR value format. ',...
-                'TR set to ',num2str(tr),' s.']);
-        end
-    else
-        tr = 1;
-        disp(['Warning: Invalid TR value format. ',...
-            'TR set to ',num2str(tr),' s.']);
-    end
-
-    %--------------------------------------------------------------------------
-    % Convert opts.filter.highpass to double
-    if isfield(opts.filter,'highpass')
-        if isnumeric(opts.filter.highpass) && isscalar(opts.filter.highpass)
-            hp = double(opts.filter.highpass);
-            disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
-
-        elseif ischar(opts.filter.highpass)
-            hp = str2double(opts.filter.highpass);
-
-            if strcmpi(opts.filter.highpass,'none')
-                disp('Warning: High-pass filter will not be applied.');
-            elseif isnan(hp)
-                disp(['Warning: Invalid High-pass filter value format. ',...
-                    'No filter will be applied.']);
-            else
-                disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
-            end
-
-        else
-            hp = nan;
-            disp(['Warning: Invalid High-pass filter value format. ',...
-                'No High-pass filter will be applied.']);
-        end
-    else
-        hp = nan;
-        disp(['Warning: Invalid High-pass filter value format. ',...
-            'No High-pass filter will be applied.']);
-    end
-
-    %--------------------------------------------------------------------------
-    % Convert opts.filter.lowpass to double
-    if isfield(opts.filter,'lowpass')
-        if isnumeric(opts.filter.lowpass) && isscalar(opts.filter.lowpass)
-            lp = double(opts.filter.lowpass);
-            disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
-
-        elseif ischar(opts.filter.lowpass)
-            lp = str2double(opts.filter.lowpass);
-
-            if strcmpi(opts.filter.lowpass,'none')
-                disp('Warning: Low-pass filter will not be applied.');
-            elseif isnan(lp)
-                disp(['Warning: Invalid Low-pass filter value format. ',...
-                    'No filter will be applied.']);
-            else
-                disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
-            end
-
-        else
-            lp = nan;
-            disp(['Warning: Invalid Low-pass filter value format. ',...
-                'No Low-pass filter will be applied.']);
-        end
-    else
-        lp = nan;
-        disp(['Warning: Invalid Low-pass filter value format. ',...
-            'No Low-pass filter will be applied.']);
-    end
-
-    %--------------------------------------------------------------------------
-    % Convert opts.filter.order to double
-    if isfield(opts.filter,'order')        
-        if isnumeric(opts.filter.order) && isscalar(opts.filter.order)
-            order = double(opts.filter.order);
-            disp(['Filter order equal to ',num2str(order),'.']);
-
-        elseif ischar(opts.filter.order)
-            order = str2double(opts.filter.order);
-
-            if isnan(order)
-                order = 1;
-                disp(['Warning: Invalid order value format. ',...
-                    'Order set to ',num2str(order),'.']);
-            else
-                disp(['Order equal to ',num2str(order),'.']);
-            end
-
-        else
-            order = 1;
-            disp(['Warning: Invalid order value format. ',...
-                    'Order set to ',num2str(order),'.']);
-        end
-    else
-        order = 1;
-        disp(['Warning: Invalid order value format. ',...
-                    'Order set to ',num2str(order),'.']);
-    end
-end
+% %--------------------------------------------------------------------------
+% % Get the parameters for filtering
+% if ~isempty(opts.filter)
+%     if isfield(opts.filter,'tr')
+%         %--------------------------------------------------------------------------
+%         % Convert opts.filter.tr to double
+%         if isnumeric(opts.filter.tr) && isscalar(opts.filter.tr)
+%             tr = double(opts.filter.tr);
+%             disp(['TR equal to ',num2str(tr),' s.']);
+% 
+%         elseif ischar(opts.filter.tr)
+%             tr = str2double(opts.filter.tr);
+% 
+%             if isnan(tr)
+%                 tr = 1;
+%                 disp(['Warning: Invalid TR value format. ',...
+%                     'TR set to ',num2str(tr),' s.']);
+%             else
+%                 disp(['TR equal to ',num2str(tr),' s.']);
+%             end
+% 
+%         else
+%             tr = 1;
+%             disp(['Warning: Invalid TR value format. ',...
+%                 'TR set to ',num2str(tr),' s.']);
+%         end
+%     else
+%         tr = 1;
+%         disp(['Warning: Invalid TR value format. ',...
+%             'TR set to ',num2str(tr),' s.']);
+%     end
+% 
+%     %--------------------------------------------------------------------------
+%     % Convert opts.filter.highpass to double
+%     if isfield(opts.filter,'highpass')
+%         if isnumeric(opts.filter.highpass) && isscalar(opts.filter.highpass)
+%             hp = double(opts.filter.highpass);
+%             disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
+% 
+%         elseif ischar(opts.filter.highpass)
+%             hp = str2double(opts.filter.highpass);
+% 
+%             if strcmpi(opts.filter.highpass,'none')
+%                 disp('Warning: High-pass filter will not be applied.');
+%             elseif isnan(hp)
+%                 disp(['Warning: Invalid High-pass filter value format. ',...
+%                     'No filter will be applied.']);
+%             else
+%                 disp(['High-pass filter of ',num2str(hp),' Hz will be applied.']);
+%             end
+% 
+%         else
+%             hp = nan;
+%             disp(['Warning: Invalid High-pass filter value format. ',...
+%                 'No High-pass filter will be applied.']);
+%         end
+%     else
+%         hp = nan;
+%         disp(['Warning: Invalid High-pass filter value format. ',...
+%             'No High-pass filter will be applied.']);
+%     end
+% 
+%     %--------------------------------------------------------------------------
+%     % Convert opts.filter.lowpass to double
+%     if isfield(opts.filter,'lowpass')
+%         if isnumeric(opts.filter.lowpass) && isscalar(opts.filter.lowpass)
+%             lp = double(opts.filter.lowpass);
+%             disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
+% 
+%         elseif ischar(opts.filter.lowpass)
+%             lp = str2double(opts.filter.lowpass);
+% 
+%             if strcmpi(opts.filter.lowpass,'none')
+%                 disp('Warning: Low-pass filter will not be applied.');
+%             elseif isnan(lp)
+%                 disp(['Warning: Invalid Low-pass filter value format. ',...
+%                     'No filter will be applied.']);
+%             else
+%                 disp(['Low-pass filter of ',num2str(lp),' Hz will be applied.']);
+%             end
+% 
+%         else
+%             lp = nan;
+%             disp(['Warning: Invalid Low-pass filter value format. ',...
+%                 'No Low-pass filter will be applied.']);
+%         end
+%     else
+%         lp = nan;
+%         disp(['Warning: Invalid Low-pass filter value format. ',...
+%             'No Low-pass filter will be applied.']);
+%     end
+% 
+%     %--------------------------------------------------------------------------
+%     % Convert opts.filter.order to double
+%     if isfield(opts.filter,'order')        
+%         if isnumeric(opts.filter.order) && isscalar(opts.filter.order)
+%             order = double(opts.filter.order);
+%             disp(['Filter order equal to ',num2str(order),'.']);
+% 
+%         elseif ischar(opts.filter.order)
+%             order = str2double(opts.filter.order);
+% 
+%             if isnan(order)
+%                 order = 1;
+%                 disp(['Warning: Invalid order value format. ',...
+%                     'Order set to ',num2str(order),'.']);
+%             else
+%                 disp(['Order equal to ',num2str(order),'.']);
+%             end
+% 
+%         else
+%             order = 1;
+%             disp(['Warning: Invalid order value format. ',...
+%                     'Order set to ',num2str(order),'.']);
+%         end
+%     else
+%         order = 1;
+%         disp(['Warning: Invalid order value format. ',...
+%                     'Order set to ',num2str(order),'.']);
+%     end
+% end
 
 
 %--------------------------------------------------------------------------
@@ -332,10 +332,34 @@ for k = 1:length(tspath)
     zconnec = nan([size(tscell{1},1),size(tscell{1},1),length(tscell)]);
     for s = 1:length(tscell)
         ts = tscell{s};
-        if ~isempty(opts.filter)
-            ts = preproc_butter(ts,hp,lp,tr,order);
+        %==================================================================
+        % CLEANING DATA
+        auxts = ts;
+        if isfield(opts,'regout') && ~isempty(opts.regout)
+            auxts = preproc_regout(auxts,opts.regout.conf,...
+                opts.regout.selconf,opts.regout.demean);
         end
-        tsfilt{s} = ts;
+
+        if isfield(opts,'filter') && ~isempty(opts.filter)
+            auxts = preproc_butter(auxts,opts.filter.highpass,...
+                opts.filter.lowpass,opts.filter.tr,opts.filter.order);
+        end
+
+        if isfield(opts,'zscore') && opts.zscore
+            auxts = zscore(auxts');
+            auxts = auxts';
+        end
+
+        if isequal(auxts,ts)
+            clear auxts
+        else
+            ts = auxts;
+            clear auxts
+            tsfilt{s} = ts;          
+        end
+        %==================================================================
+        
+        % calculate the connectomes
         for i = 1:size(ts,1)-1
             for j = i+1:size(ts,1)
                 [r,p] = corr(ts(i,:)',ts(j,:)','type','Pearson');
@@ -375,14 +399,14 @@ for k = 1:length(tspath)
 
     %----------------------------------------------------------------------
     % Save filtered time seriess
-
-    if length(tspath)==1
-        tsfilename = 'tsfilt.mat';
-    else
-        tsfilename = sprintf('tsfilt%d.mat',k);
+    if iscell(tsfilt)&&~isempty(tsfilt{1})
+        if length(tspath)==1
+            tsfilename = 'tsfilt.mat';
+        else
+            tsfilename = sprintf('tsfilt%d.mat',k);
+        end
+        save(fullfile(outdir,tsfilename),'tsfilt');
     end
-    save(fullfile(outdir,tsfilename),'tsfilt');
-
     %----------------------------------------------------------------------
     % Save Pearson correlation coefficient connectome
     if opts.rsave

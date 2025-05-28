@@ -9,7 +9,8 @@ handles.opts.zscore = [];
 
 %==========================================================================
 % Retrieve Filter options
-if get(handles.tools.settings.checkbox_butter,'Value')
+if isfield(handles.tools.settings,'checkbox_butter') && ...
+        get(handles.tools.settings.checkbox_butter,'Value')
     handles.opts.filter.tr = get(handles.tools.settings.edit_tr,'string');
     handles.opts.filter.highpass = get(handles.tools.settings.edit_highpass,'string');
     handles.opts.filter.lowpass = get(handles.tools.settings.edit_lowpass,'string');
@@ -120,11 +121,12 @@ end
 %==========================================================================
 % Retrieve GLM Regress Out options
 
-if handles.tools.settings.checkbox_regressout.Value
+if isfield(handles.tools.settings,'checkbox_regressout') &&...
+        get(handles.tools.settings.checkbox_regressout,'Value')
 
     % load the confounds path
     confpath = get(handles.tools.settings.edit_confoundspath,'string');
-    
+
     % load the demean option
     handles.opts.regout.demean = get(handles.tools.settings.checkbox_demean,'Value');
 
@@ -133,25 +135,25 @@ if handles.tools.settings.checkbox_regressout.Value
         uiwait(he)
         return
     end
-    
-    if isfile(confpath)
-        [~,~,ext] = fileparts(confpath);
 
-        if strcmpi(ext,'.mat')
-            auxconf = load(confpath);
-            varname = fieldnames(auxconf);
-            handles.opts.regout.conf = auxconf.(varname{1});
-            if istable(handles.opts.regout.conf)
-                handles.opts.regout.conf = table2array(handles.opts.regout.conf);
+    if isfile(confpath)
+        auxconf = readcell(confpath,'Delimiter',[";","\t"]);
+        if isfile(auxconf{1})
+            handles.opts.regout.conf = cell(length(auxconf),1);
+            for i = 1:length(auxconf)
+                handles.opts.regout.conf{i} = readconf(auxconf{i});
             end
-        elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-            handles.opts.regout.conf = readmatrix(confpath);            
         else
-            he = errordlg('Invalid file format!');
+            try
+                handles.opts.regout.conf = readconf(confpath);
+            catch
+            he = errordlg('Invalid confounds path!');
             uiwait(he)
             return
+            end
         end
-        handles.opts.regout.conf = nan2num(handles.opts.regout.conf);
+
+        
     else
         handles.opts.regout.conf = [];
     end
@@ -212,7 +214,8 @@ end
 
 %==========================================================================
 % Retrieve Smooth options
-if get(handles.tools.settings.checkbox_smooth,'Value')
+if isfield(handles.tools.settings,'checkbox_smooth') &&...
+        get(handles.tools.settings.checkbox_smooth,'Value')
     handles.opts.smooth.fwhm = get(handles.tools.settings.edit_smooth,'string');
    
     %--------------------------------------------------------------------------
@@ -239,9 +242,39 @@ end
 
 %==========================================================================
 % Retrieve Smooth options
-handles.opts.zscore = get(handles.tools.settings.checkbox_zscore,'Value');
+if isfield(handles.tools.settings,'checkbox_zscore')
+    handles.opts.zscore = get(handles.tools.settings.checkbox_zscore,'Value');
+end
 
 
 guidata(hObject,handles)
 
 delete_panel_settings(hObject)
+
+%==========================================================================
+% Auxiliar functions
+
+function conf = readconf(confpath)
+
+[~,~,ext] = fileparts(confpath);
+
+if strcmpi(ext,'.mat')
+    auxconf = load(confpath);
+    varname = fieldnames(auxconf);
+    conf = auxconf.(varname{1});
+    if istable(conf)
+        conf = table2array(conf);
+    end
+elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
+    if strcmpi(ext,'.tsv')
+        copyfile(confpath,[confpath(1:end-3),'csv']);
+        confpath = [confpath(1:end-3),'csv'];
+    end
+
+    conf = readmatrix(confpath);
+else
+    he = errordlg('Invalid confounds file format!');
+    uiwait(he)
+    return
+end
+conf = nan2num(conf);

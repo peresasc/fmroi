@@ -123,6 +123,15 @@ else
     srcpath = auxsrcpath;
 end
 
+if isfield(opts,'regout') && isfield(opts.regout,'conf') &&...
+        iscell(opts.regout.conf) && length(opts.regout.conf)~=length(srcpath)
+    he = errordlg(['The number of confound files must match the number of BOLD images.', ...
+                   newline, 'Check the field "opts.regout.conf".'], ...
+                   'Mismatched Input');
+    uiwait(he)
+    return
+end
+
 %--------------------------------------------------------------------------
 % loading the mask paths
 
@@ -288,8 +297,13 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             %==============================================================
             % CLEANING DATA
             if isfield(opts,'regout') && ~isempty(opts.regout)
-                auxts = preproc_regout(auxts,opts.regout.conf,...
-                    opts.regout.selconf,opts.regout.demean);
+                if iscell(opts.regout.conf)
+                    auxts = preproc_regout(auxts,opts.regout.conf{s},...
+                        opts.regout.selconf,opts.regout.demean);
+                else
+                    auxts = preproc_regout(auxts,opts.regout.conf,...
+                        opts.regout.selconf,opts.regout.demean);
+                end
             end
 
             if isfield(opts,'filter') && ~isempty(opts.filter)
@@ -321,9 +335,7 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
             if isfield(opts,'zscore') && opts.zscore
                 auxts = zscore(auxts');
                 auxts = auxts';
-            end
-
-            
+            end            
             %==============================================================
             
             ts(mi,:) = mean(auxts);
