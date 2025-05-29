@@ -189,7 +189,7 @@ if isfield(handles.tools.settings,'checkbox_regressout') &&...
             varname = fieldnames(auxselconf);
             handles.opts.regout.selconf = auxselconf.(varname{1});
         elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-            handles.opts.regout.selconf = readmatrix(selconfpath);
+            handles.opts.regout.selconf = readmatrix(selconfpath,'FileType','delimitedtext');
         else
             he = errordlg('Invalid file format!');
             uiwait(he)
@@ -267,8 +267,13 @@ end
 
 
 guidata(hObject,handles)
-
-delete_panel_settings(hObject)
+switch hObject
+    case handles.pbutton_panelsettingsdone
+        delete_panel_settings(hObject)
+    case handles.pbutton_panelsettingssaveopts
+        set(handles.text_panelsettingsstatus,...
+            'String','Structure Opts saved!')
+end
 
 %==========================================================================
 % Auxiliar functions
