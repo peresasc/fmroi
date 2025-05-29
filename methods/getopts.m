@@ -147,23 +147,32 @@ if isfield(handles.tools.settings,'checkbox_regressout') &&...
     end
 
     if isfile(confpath)
-        auxconf = readcell(confpath,'Delimiter',[";","\t"]);
-        if isfile(auxconf{1})
-            handles.opts.regout.conf = cell(length(auxconf),1);
-            for i = 1:length(auxconf)
-                handles.opts.regout.conf{i} = readconf(auxconf{i});
-            end
+
+        [~,~,ext] = fileparts(confpath);
+
+        if strcmpi(ext,'.mat')
+            handles.opts.regout.conf = readconf(confpath);
         else
-            try
-                handles.opts.regout.conf = readconf(confpath);
-            catch
-            he = errordlg('Invalid confounds path!');
-            uiwait(he)
-            return
+            auxconf = readcell(confpath,'FileType','delimitedtext',...
+                'Delimiter',[";","\t"]);
+            if isfile(auxconf{1})
+                handles.opts.regout.conf = cell(length(auxconf),1);
+                for i = 1:length(auxconf)
+                    handles.opts.regout.conf{i} = readconf(auxconf{i});
+                end
+            else
+                try
+                    handles.opts.regout.conf = readconf(confpath);
+                catch
+                    he = errordlg('Invalid confounds path!');
+                    uiwait(he)
+                    return
+                end
             end
         end
 
-        
+
+
     else
         handles.opts.regout.conf = [];
     end
@@ -276,12 +285,7 @@ if strcmpi(ext,'.mat')
         conf = table2array(conf);
     end
 elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv') || strcmpi(ext,'.tsv')
-    if strcmpi(ext,'.tsv')
-        copyfile(confpath,[confpath(1:end-3),'csv']);
-        confpath = [confpath(1:end-3),'csv'];
-    end
-
-    conf = readmatrix(confpath);
+    conf = readmatrix(confpath,'FileType','delimitedtext');
 else
     he = errordlg('Invalid confounds file format!');
     uiwait(he)
