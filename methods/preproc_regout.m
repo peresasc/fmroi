@@ -4,7 +4,7 @@ function regout_ts = preproc_regout(ts,conf,selconf,demean)
 ts = double(ts');  % (t x n_voxels)
 
 if ~isempty(selconf)
-    conf = double(conf(selconf));  % design matrix (t x n_confounds)
+    conf = double(conf(:,selconf));  % design matrix (t x n_confounds)
 end
 
 if ~isempty(conf) && size(ts,1) ~= size(conf,1)

@@ -272,7 +272,7 @@ switch hObject
         delete_panel_settings(hObject)
     case handles.pbutton_panelsettingssaveopts
         set(handles.text_panelsettingsstatus,...
-            'String','Structure Opts saved!')
+            'String','Saving structure opts!')
 end
 
 %==========================================================================
