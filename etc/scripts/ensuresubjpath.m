@@ -49,23 +49,79 @@ else
     disp('Subject IDs in functional images and confounds are properly matched.');
 end
 
-% varNames = conftable.Properties.VariableNames;
-% 
-% gs = contains(varNames, 'global', 'IgnoreCase', true);
-% wm = contains(varNames, 'csf', 'IgnoreCase', true);
-% csf = contains(varNames, 'white', 'IgnoreCase', true);
-% compcor = contains(varNames, 'comp', 'IgnoreCase', true);
-% trans = contains(varNames, 'trans', 'IgnoreCase', true);
-% rot = contains(varNames, 'rot', 'IgnoreCase', true);
-% 
-% sel = wm | csf | compcor | trans | rot;
-% 
-% deriv = contains(varNames, 'derivative', 'IgnoreCase', true);
-% sel = sel & ~deriv; 
-% 
-% selvars = varNames(sel);
-% 
-% selconf = table2array(conftable(:, selvars));
-% writematrix(selconf, 'confounds_selected.csv', 'Delimiter', 'tab');
+%% 
+
+% Paths
+source_nii = '/home/andre/tmp/applymask_test/ds30/Schaefer2018_100Parcels_7Networks_order_FSLMNI152_2mm.nii';       % atlas original 2x2x2mm
+target_nii = '/home/andre/tmp/applymask_test/ds30/sub-10159_task-rest_bold_space-MNI152NLin2009cAsym_brainmask.nii';   % imagem fMRI 3x3x4mm
+resampled_nii = '/home/andre/tmp/applymask_test/ds30/Schaefer2018_100Parcels_7Networks_order_FSLMNI152_resampled.nii';
+
+%% spm_covert_to_fmri_shape
+% Use SPM's reslice function
+
+spm('defaults','fmri');
+spm_jobman('initcfg');
+
+matlabbatch{1}.spm.spatial.coreg.write.ref = {target_nii};
+matlabbatch{1}.spm.spatial.coreg.write.source = {source_nii};
+matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 0;  % nearest neighbor (preserve labels)
+matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
+matlabbatch{1}.spm.spatial.coreg.write.roptions.mask = 0;
+matlabbatch{1}.spm.spatial.coreg.write.roptions.prefix = 'r_';
+
+spm_jobman('run', matlabbatch);
+
+% The resampled atlas will be saved as 'r_atlas_2mm.nii'
+movefile('r_atlas_2mm.nii', resampled_nii);
+
+
+%% matlab_covert_to_fmri_shape
+
+% Load volumes
+srcvol = spm_vol(source_nii);
+trgvol = spm_vol(target_nii);
+
+srcdata = spm_read_vols(srcvol);
+trgdata = spm_read_vols(trgvol);
+
+% Get target size
+trgsz = size(trgdata);
+
+% Compute new voxel size ratio
+resize_factor = size(srcdata)./trgsz;
+
+% Resize using nearest-neighbor interpolation
+resampled_src = imresize3(srcdata, trgsz(1:3), 'nearest');
+resampled_src = flip(resampled_src, 1); 
+
+
+% Create new header (based on fMRI image)
+new_hdr = trgvol(1);
+new_hdr.fname = resampled_nii;
+new_hdr.descrip = 'Atlas resampled to fMRI resolution';
+
+% Save resampled atlas
+spm_write_vol(new_hdr, resampled_src);
+
+
+%% get_confounds_fmriprep
+varNames = conftable.Properties.VariableNames;
+
+gs = contains(varNames, 'global', 'IgnoreCase', true);
+wm = contains(varNames, 'csf', 'IgnoreCase', true);
+csf = contains(varNames, 'white', 'IgnoreCase', true);
+compcor = contains(varNames, 'comp', 'IgnoreCase', true);
+trans = contains(varNames, 'trans', 'IgnoreCase', true);
+rot = contains(varNames, 'rot', 'IgnoreCase', true);
+
+sel = wm | csf | compcor | trans | rot;
+
+deriv = contains(varNames, 'derivative', 'IgnoreCase', true);
+sel = sel & ~deriv; 
+
+selvars = varNames(sel);
+
+selconf = table2array(conftable(:, selvars));
+writematrix(selconf, 'confounds_selected.csv', 'Delimiter', 'tab');
 
 

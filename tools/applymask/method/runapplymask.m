@@ -210,7 +210,7 @@ if isobject(hObject)
     wb2(3) = 0;
     set(handles.tools.applymask.wb2,'Position',wb2)
 else
-    wb = waitbar(0,'Loading images...');
+    dwb = doublewaitbar([],0,'Loading images...',0,[]);    
 end
 
 cellts = cell(length(srcpath),size(masktypespath,2));
@@ -301,14 +301,21 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
         auxmaskidxall = cell(length(maskidx),1);
 
         for mi = 1:length(maskidx) % Mask index loop
-            msg = sprintf('Source Image %d/%d - Mask %d/%d - idx %d/%d',...
-                s,length(srcpath),m,size(masktypespath,2),mi,length(maskidx));
+            
             if isobject(hObject)
-                set(handles.tools.applymask.text_wb,...
-                    'String',msg)
+                msg = sprintf('Source Image %d/%d - Mask %d/%d - idx %d/%d',...
+                    s,length(srcpath),m,size(masktypespath,2),mi,length(maskidx));
+                set(handles.tools.applymask.text_wb,'String',msg)
             else
-                waitbar((length(srcpath)*(m-1)+s-1)/...
-                (length(srcpath)*size(masktypespath,2)),wb,msg);
+                msg1 = sprintf('Source Image %d/%d - Mask %d/%d',...
+                    s,length(srcpath),m,size(masktypespath,2));
+                p1 = (length(srcpath)*(m-1)+s)/...
+                    (length(srcpath)*size(masktypespath,2));
+
+                msg2 = sprintf('Mask index %d/%d',mi,length(maskidx));
+                p2 = mi/length(maskidx);
+                
+                dwb = doublewaitbar(dwb,p1,msg1,p2,msg2);                
             end
             pause(.1)
             auxmaskidxall{mi} = sprintf('mask-%03d_idx-%03d',m,maskidx(mi));
@@ -427,11 +434,8 @@ for m = 1:size(masktypespath,2) % iterates over the different mask types
         % updates waitbar
         if isobject(hObject)
             wb2(3) = wb1(3)*((length(srcpath)*(m-1)+s)/...
-                (length(srcpath)*size(masktypespath,2))); % updates the waitbar
+                (length(srcpath)*size(masktypespath,2)));
             set(handles.tools.applymask.wb2,'Position',wb2)
-        else
-            waitbar((length(srcpath)*(m-1)+s)/...
-                (length(srcpath)*size(masktypespath,2)),wb,msg);
         end
         pause(.1)
     end
@@ -530,7 +534,7 @@ if isobject(hObject)
     set(handles.tools.applymask.text_wb,...
         'String','DONE!!!')
 else
-    waitbar(1,wb,'DONE!!!');
+    dwb = doublewaitbar(dwb,[],'DONE!!!',[],'');
 end
 
 disp('DONE!!!')

@@ -105,14 +105,12 @@ elseif nargin == 2
     opts.psave = 1;
     opts.zsave = 1;
     opts.ftsave = 1;
-    opts.filter = [];
     hObject = nan;
 elseif nargin == 3
     opts.rsave = 1;
     opts.psave = 1;srcvol
     opts.zsave = 1;
     opts.ftsave = 1;
-    opts.filter = [];
     hObject = nan;
 elseif nargin == 4
     hObject = nan;
