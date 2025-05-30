@@ -102,7 +102,7 @@ else
     end
 
     scr = get(0, 'ScreenSize');
-    x = .2;
+    x = .3;
     y = .15;
     hfig = figure('Name','Progress','MenuBar','none',...
         'ToolBar','none','Color','w','NumberTitle','off', ...
