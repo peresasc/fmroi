@@ -1,12 +1,15 @@
 %% load_paths
-funcpath = '/media/andre/data8t/ds000030/funcpath.txt';
+funcpath = '/media/andre/data8t/ds000030/derivatives/fmroi/funcpath.txt';
 funcpath = readcell(funcpath,'Delimiter',[";",'\t']);
 
-confpath = '/media/andre/data8t/ds000030/confpath.txt';
+confpath = '/media/andre/data8t/ds000030/derivatives/fmroi/confpath.txt';
 confpath = readcell(confpath,'Delimiter',[";",'\t']);
 
-selconfpath = '/media/andre/data8t/ds000030/selconfpath.txt';
+selconfpath = '/media/andre/data8t/ds000030/derivatives/fmroi/selconfpath.txt';
 selconfpath = readcell(selconfpath,'Delimiter',[";",'\t']);
+
+particpath = '/media/andre/data8t/ds000030/participants.tsv';
+participants = readtable("/media/andre/data8t/ds000030/participants.tsv",'FileType','delimitedtext');
 
 %% save_selected_confounds
 confsz = zeros(length(confpath),2);
@@ -33,8 +36,8 @@ end
 subjcmp = zeros(length(funcpath),1);
 for i = 1:length(funcpath)
     curfunc = funcpath{i};
-    f = strfind(curfunc, '_task-rest_bold');
-    a = curfunc(1:f-1);
+    s1 = strfind(curfunc, '_task-rest_bold');
+    a = curfunc(1:s1-1);
 
     curconf = confpath{i};
     c = strfind(curconf, '_task-rest_bold');
@@ -48,6 +51,33 @@ if any(subjcmp == 0)
 else
     disp('Subject IDs in functional images and confounds are properly matched.');
 end
+
+%%
+funcsubid = zeros(length(funcpath),1);
+for i = 1:length(funcpath)
+    [~,curfunc,~] = fileparts(funcpath{i});
+    s1 = strfind(curfunc,'_task-rest_bold');
+    funcsubid(i) = str2double(curfunc(5:s1-1));    
+end
+
+% Extract participant IDs and remove the "sub-" prefix
+id_strings = participants.participant_id;  % vector of strings, e.g., "sub-00123"
+id_numbers = str2double(erase(id_strings, "sub-"));  % convert to numeric IDs
+
+% Map diagnosis labels to numeric codes
+diagnosis_map = containers.Map({'CONTROL','SCHZ','BIPOLAR','ADHD'}, 1:4);
+
+% Extract diagnosis strings and convert to numeric codes
+diagnosis_strings = participants.diagnosis;  % cell array of char
+diagnosis_numbers = cellfun(@(s) diagnosis_map(s),diagnosis_strings);
+
+% Combine IDs and diagnosis codes into an Mx2 matrix
+participant_info = [id_numbers, diagnosis_numbers];
+
+[ispres,idx] = ismember(funcsubid, id_numbers);
+
+partinfo = participant_info(idx,:);
+writematrix(partinfo,'/media/andre/data8t/ds000030/derivatives/fmroi/participant_info.csv');
 
 %% 
 
@@ -73,6 +103,17 @@ spm_jobman('run', matlabbatch);
 
 % The resampled atlas will be saved as 'r_atlas_2mm.nii'
 movefile('r_atlas_2mm.nii', resampled_nii);
+
+% FreeSurfer transformation
+% mri_vol2vol --mov Schaefer2018_100Parcels_7Networks_order_FSLMNI152_2mm.nii.gz \
+% --targ sub-10159_task-rest_bold_space-MNI152NLin2009cAsym_brainmask.nii \
+% --o Schaefer2018_100Parcels_7Networks_order_FSLMNI152_fsresamp.nii.gz \
+% --regheader --interp nearest
+
+% mri_vol2vol --mov Schaefer2018_400Parcels_7Networks_order_FSLMNI152_2mm.nii.gz \
+% --targ sub-10159_task-rest_bold_space-MNI152NLin2009cAsym_brainmask.nii.gz \
+% --o Schaefer2018_400Parcels_7Networks_order_FSLMNI152_fsresamp.nii.gz \
+% --regheader --interp nearest
 
 
 %% matlab_covert_to_fmri_shape
