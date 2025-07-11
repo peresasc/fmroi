@@ -11,7 +11,7 @@ selconfpath = readcell(selconfpath,'Delimiter',[";",'\t']);
 particpath = '/media/andre/data8t/ds000030/participants.tsv';
 participants = readtable("/media/andre/data8t/ds000030/participants.tsv",'FileType','delimitedtext');
 
-%% save_selected_confounds
+%% Remove NaN confounds
 confsz = zeros(length(confpath),2);
 for i = 1:length(confpath)
     curconf = confpath{i};
@@ -22,12 +22,33 @@ for i = 1:length(confpath)
     selcols = ~any(isnan(conf));
     conf = conf(:,selcols);
     confsz(i,:) = size(conf);
-    writematrix(conf, fullfile(pn,[fn,'_selected.csv']),'Delimiter','tab');
+    % writematrix(conf, fullfile(pn,[fn,'_selected.csv']),'Delimiter','tab');
 end
 disp('DONE!!')
 
+%% get_confounds_fmriprep
+varNames = conftable.Properties.VariableNames;
+
+gs = contains(varNames, 'global', 'IgnoreCase', true);
+wm = contains(varNames, 'csf', 'IgnoreCase', true);
+csf = contains(varNames, 'white', 'IgnoreCase', true);
+compcor = contains(varNames, 'comp', 'IgnoreCase', true);
+trans = contains(varNames, 'trans', 'IgnoreCase', true);
+rot = contains(varNames, 'rot', 'IgnoreCase', true);
+
+sel = wm | csf | compcor | trans | rot;
+
+deriv = contains(varNames, 'derivative', 'IgnoreCase', true);
+sel = sel & ~deriv; 
+
+selvars = varNames(sel);
+
+selconf = table2array(conftable(:, selvars));
+% writematrix(selconf, 'confounds_selected.csv', 'Delimiter', 'tab');
+
+
 %%
-% confpath = selconfpath;
+
 if length(funcpath) ~= length(confpath)
     error(['The number of functional image paths does not match the number of confounds files.', ...
        newline, 'Please ensure that each subject''s functional data has a corresponding confound file.']);
@@ -53,6 +74,7 @@ else
 end
 
 %%
+
 funcsubid = zeros(length(funcpath),1);
 for i = 1:length(funcpath)
     [~,curfunc,~] = fileparts(funcpath{i});
@@ -143,26 +165,5 @@ new_hdr.descrip = 'Atlas resampled to fMRI resolution';
 
 % Save resampled atlas
 spm_write_vol(new_hdr, resampled_src);
-
-
-%% get_confounds_fmriprep
-varNames = conftable.Properties.VariableNames;
-
-gs = contains(varNames, 'global', 'IgnoreCase', true);
-wm = contains(varNames, 'csf', 'IgnoreCase', true);
-csf = contains(varNames, 'white', 'IgnoreCase', true);
-compcor = contains(varNames, 'comp', 'IgnoreCase', true);
-trans = contains(varNames, 'trans', 'IgnoreCase', true);
-rot = contains(varNames, 'rot', 'IgnoreCase', true);
-
-sel = wm | csf | compcor | trans | rot;
-
-deriv = contains(varNames, 'derivative', 'IgnoreCase', true);
-sel = sel & ~deriv; 
-
-selvars = varNames(sel);
-
-selconf = table2array(conftable(:, selvars));
-writematrix(selconf, 'confounds_selected.csv', 'Delimiter', 'tab');
 
 

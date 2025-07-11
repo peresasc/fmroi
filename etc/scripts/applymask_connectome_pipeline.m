@@ -1,8 +1,12 @@
-srcpath = '/media/andre/data8t/ds000030/derivatives/fmroi/funcpath.txt';
-maskpath = '/media/andre/data8t/ds000030/derivatives/fmroi/Schaefer2018_400Parcels_7Networks_3x3x4mm.nii.gz';
-outdir = '/media/andre/data8t/ds000030/derivatives/fmroi/timeseries_schaefer400';
-optspath = '/media/andre/data8t/ds000030/derivatives/fmroi/opts.mat';
+srcpath = 'funcpath.txt';
+maskpath = 'Schaefer2018_100Parcels_7Networks_3x3x4mm.nii.gz';
+optspath = 'opts.mat';
+outdir = 'timeseries_schaefer100';
 
+
+%==========================================================================
+%                            Apply Mask
+%==========================================================================
 clear opts
 
 % load the default cleaning time series parameters
@@ -16,15 +20,18 @@ opts = auxopts.(varname{1});
 opts.saveimg = 0;
 opts.savestats = 1;
 opts.savets = 1;
-opts.groupts = 1;
+opts.groupts = 0;
 
 runapplymask(srcpath,maskpath,outdir,opts)
 
+%==========================================================================
+%                            Connectome
+%==========================================================================
 clear opts
 
 % path to the time series extracted by runapplymask
-tspath = '/media/andre/data8t/ds000030/derivatives/fmroi/schaefer100/timeseries/timeseriestab_mask-001.mat';
-outdir = '/media/andre/data8t/ds000030/derivatives/fmroi/schaefer100/connectomes';
+tspath = '/schaefer100/timeseries/timeseriestab_mask-001.mat';
+outdir = '/schaefer100/connectomes';
 
 roinamespath = []; % let this way if you don't want to create labels for ploting connectomes
 opts.rsave = 1;
