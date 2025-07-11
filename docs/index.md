@@ -24,11 +24,14 @@ fMROI is a powerful and user-friendly software designed to simplify ROI creation
 <br/>
 
 --------
-*Maintained by members and collaborators of Proaction Lab*<br/>
-*FPCE, University of Coimbra*<br/>
-*Rua do Colégio Novo - 3001-802*<br/>
-*Coimbra, Portugal*<br/>
-<br/>
-[![proaction_logo](img/proaction_logo.png)](https://proactionlab.fpce.uc.pt)<br/>
-[https://proactionlab.fpce.uc.pt](https://proactionlab.fpce.uc.pt)
+*Maintained by André Peres and collaborators*  
+*Bioinformatics Multidisciplinary Environment*  
+*Digital Metropolis Institute*  
+*Federal University of Rio Grande do Norte*  
+*Av. Capitão-Mor Gouveia, S/N – Lagoa Nova*  
+*Natal/RN, Brazil – 59078-900*  
+[*peres.asc@gmail.com*](mailto:peres.asc@gmail.com)
 
+[![BioME logo](img/biome_logo.png)](https://bioinfo.imd.ufrn.br)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![Proaction logo](img/proaction_logo.png)](https://proactionlab.fpce.uc.pt)
