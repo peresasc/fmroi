@@ -1,5 +1,23 @@
 function [area,vol,inneredge,outeredge] = roi_areavol(data)
-
+% roi_areavol computes the surface area and volume of a 3D binary ROI mask.
+% It also returns the inner and outer edge voxels that define the ROI boundary.
+% The surface area is estimated by counting the number of exposed voxel faces.
+%
+% Syntax:
+%   [area,vol,inneredge,outeredge] = roi_areavol(data)
+%
+% Input:
+%    data: 3D binary matrix representing a mask, or path to a NIfTI file
+%          containing a 3D binary mask. Voxels inside the ROI must be non-zero.
+%
+% Outputs:
+%     area: Estimated surface area of the ROI, in number of exposed voxel faces.
+%      vol: Volume of the ROI, in number of voxels.
+% inneredge: 3D binary matrix marking voxels on the inner boundary of the ROI.
+% outeredge: 3D binary matrix marking external voxels adjacent to the ROI surface.
+%
+%  Author: Andre Peres, 2023, peres.asc@gmail.com
+%  Last update: Andre Peres, 11/07/2025, peres.asc@gmail.com
 
 if ischar(data)
     v = spm_vol(data);
