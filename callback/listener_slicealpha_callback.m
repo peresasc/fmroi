@@ -13,12 +13,16 @@ function listener_slicealpha_callback(~, eventdata, hObject)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
-hpos = get(hObject,'Position');
+value = get(eventdata.AffectedObject,'Value');
 
-value = get(eventdata.AffectedObject, 'Value');
+arrowsz = 0.055; % sliders arrow buttons width
+
+alpha_pos1 = handles.slider_alpha.Position(1)+arrowsz +...
+    value*(handles.slider_alpha.Position(3)-2*arrowsz) -...
+    handles.edit_slicealphaupdate.Position(3)/2;
+
+alpha_pos = get(handles.edit_slicealphaupdate,'Position');
+alpha_pos(1) = alpha_pos1;
+
 set(handles.edit_slicealphaupdate,'String',...
-    num2str(round(value*100)/100),'Position',...
-    [(value*.56+.22),...
-    hpos(2)+hpos(4),...
-    0.14,...
-    0.02]);
+    num2str(round(value*100)/100),'Position',alpha_pos);

@@ -154,18 +154,10 @@ else
     imgmin_str(imgmin_str=='+')=[];
 
     imgmax_str = sprintf('%0.2g',st.vols{ucidx}.clim(2));
-    pexp = find(imgmax_str=='e');
-    if isempty(pexp)
-        imgmax_alg = imgmax_str;
-        imgmax_exp = '';
-    else
-        imgmax_alg = imgmax_str(1:pexp-1);
-        imgmax_exp = imgmax_str(pexp:end);
-        imgmax_exp(imgmax_exp=='+')=[];
-    end
+    imgmax_str(imgmax_str=='+')=[];
+    
     handles.imgprop(ucidx).imgmin_str = imgmin_str;
-    handles.imgprop(ucidx).imgmax_alg = imgmax_alg;
-    handles.imgprop(ucidx).imgmax_exp = imgmax_exp;
+    handles.imgprop(ucidx).imgmax_str = imgmax_str;
 
     minthrs0_value = .01; % remove zeros from uc image
     minthrs = (minthrs0_value-st.vols{ucidx}.clim(1))/...
