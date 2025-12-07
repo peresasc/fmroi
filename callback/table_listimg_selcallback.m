@@ -17,20 +17,28 @@ if ~isempty(eventData.Indices)
         updateuicontrols(hObject,eventData.Indices(1));
         imgnamelist = getimgnamelist(hObject);
         handles = guidata(hObject);
-        
+
         handles.table_selectedcell = eventData.Indices;
-        
-        % Turns bold the name of the selected image
-        htmlbold = '<HTML><TABLE><TD><B>';
-        imgnamelist{handles.table_selectedcell(1)} =...
-            [htmlbold,imgnamelist{handles.table_selectedcell(1)}];
-        
+
+        % 1. Check Version
+        v_str = version('-release');
+        v_year = str2double(v_str(1:4));
+
+        % 2. Apply Legacy Hack Only
+        if v_year < 2025
+            % --- LEGACY MODE (Java Swing, 2024b and older) ---
+            % Turns bold the name of the selected image
+            htmlbold = '<HTML><TABLE><TD><B>';
+            imgnamelist{handles.table_selectedcell(1)} =...
+                [htmlbold,imgnamelist{handles.table_selectedcell(1)}];
+        end
+
         tdata = get(handles.table_listimg,'Data');
         tdata(:,3) = imgnamelist;
         set(handles.table_listimg,'Data',tdata);
-       
+
         guidata(hObject, handles);
-        
+
     end
 end
 
