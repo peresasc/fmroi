@@ -119,7 +119,7 @@ function applymask(hObject,~)
 % This function requires SPM12 to be installed.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 delete_panel_settings(hObject)
 delete_panel_tools(hObject)
@@ -142,8 +142,7 @@ handles.tools.applymask.text_srcpath = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01,.8,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.applymask.text_srcpath);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.applymask.text_srcpath);
 
 %--------------------------------------------------------------------------
 % creates the edit text for source path
@@ -169,8 +168,7 @@ handles.tools.applymask.text_maskpath = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01,.65,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.applymask.text_maskpath);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.applymask.text_maskpath);
         
 %--------------------------------------------------------------------------
 % creates the edit text for mask path
@@ -196,8 +194,7 @@ handles.tools.applymask.text_outdir = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01,.5,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.applymask.text_outdir);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.applymask.text_outdir);
         
 %--------------------------------------------------------------------------
 % creates the edit text for output path
@@ -266,8 +263,7 @@ handles.tools.applymask.text_wb = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01,.07,.98,.07]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.applymask.text_wb);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.applymask.text_wb);
 
 handles.tools.applymask.wb1 = axes(handles.panel_tools,...
     'Units','normalized','Position',[.01,.02,.98,.05],...

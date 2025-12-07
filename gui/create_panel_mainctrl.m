@@ -10,7 +10,7 @@ function create_panel_mainctrl(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 03/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -181,8 +181,8 @@ for i = 1:2
         'Style','text','Units','normalized','Position',textpos,...
         'String','','FontUnits','normalized','FontSize',.5,...
         'BackgroundColor', [.9 .9 .9],'HorizontalAlignment','center');
-    % jh = findjobj(handles.text_pos(i));
-    % jh.setVerticalAlignment(javax.swing.JLabel.CENTER) % Java fix due uicontrol missing vertical alignment property
+
+    uicontrol_textalign(handles.text_pos(i));
     
     textlabelpos = [.01, (i-1)*(h+.01)+bpos+.01, .21, hlabel];
     

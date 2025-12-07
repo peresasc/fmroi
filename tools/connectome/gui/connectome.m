@@ -109,7 +109,7 @@ function connectome(hObject,~)
 %   versions.
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 delete_panel_tools(hObject)
 create_panel_tools(hObject)
@@ -134,8 +134,7 @@ handles.tools.connectome.text_tspath = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01+x,.8+y,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.connectome.text_tspath);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.connectome.text_tspath);
 
 %--------------------------------------------------------------------------
 % creates the edit text for source path
@@ -160,8 +159,7 @@ handles.tools.connectome.text_roinamepath = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01+x,.65+y,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.connectome.text_roinamepath);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.connectome.text_roinamepath);
         
 %--------------------------------------------------------------------------
 % creates the edit text for mask path
@@ -186,8 +184,7 @@ handles.tools.connectome.text_outdir = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.01+x,.5+y,.4,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.connectome.text_outdir);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.connectome.text_outdir);
         
 %--------------------------------------------------------------------------
 % creates the edit text for output path
@@ -239,8 +236,7 @@ handles.tools.connectome.checkbox_ftsave = uicontrol(handles.panel_tools,...
 %     'HorizontalAlignment','center','Position',[.01+x,y-.01,.29,.08]);
 % 
 % % Java fix due uicontrol missing vertical alignment property
-% jh = findjobj(handles.tools.connectome.text_highpass);
-% jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+% uicontrol_textalign(handles.tools.connectome.text_highpass);
 % 
 % %--------------------------------------------------------------------------
 % % creates the edit text for high-pass filter
@@ -257,8 +253,7 @@ handles.tools.connectome.checkbox_ftsave = uicontrol(handles.panel_tools,...
 %     'HorizontalAlignment','center','Position',[.51+x,y-.01,.29,.08]);
 % 
 % % Java fix due uicontrol missing vertical alignment property
-% jh = findjobj(handles.tools.connectome.text_lowpass);
-% jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+% uicontrol_textalign(handles.tools.connectome.text_lowpass);
 % 
 % %--------------------------------------------------------------------------
 % % creates the edit text for low-pass filter
@@ -275,8 +270,7 @@ handles.tools.connectome.checkbox_ftsave = uicontrol(handles.panel_tools,...
 %     'HorizontalAlignment','center','Position',[.51+x,.08+y,.29,.08]);
 % 
 % % Java fix due uicontrol missing vertical alignment property
-% jh = findjobj(handles.tools.connectome.text_tr);
-% jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+% uicontrol_textalign(handles.tools.connectome.text_tr);
 % 
 % %--------------------------------------------------------------------------
 % % creates the edit text for TR
@@ -309,7 +303,6 @@ handles.tools.connectome.text_wb = uicontrol(handles.panel_tools,...
     'HorizontalAlignment','left','Position',[.62+x,.18+y,.25,.08]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.connectome.text_wb);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.connectome.text_wb);
 
 guidata(hObject,handles)
