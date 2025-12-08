@@ -32,7 +32,7 @@ function dwb = doublewaitbar(varargin)
 %       end
 %
 % Author: Andre Peres, 2024, peres.asc@gmail.com
-% Last update: Andre Peres, 28/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 if ~isempty(varargin{1}) && ishandle(varargin{1}(1))
     dwb = varargin{1};
@@ -113,9 +113,7 @@ else
         'Position',[.02,.7,.96,.2],'String',t1,'BackgroundColor','w');
 
     % Java fix due uicontrol missing vertical alignment property
-    jh = findjobj(ht1);
-    jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
-
+    uicontrol_textalign(ht1);
 
     bar1 = uicontrol(hfig,'Style','text','Units','normalized',...
         'BackgroundColor','b','Position',[.04,.55,.92*p1,.15]);
@@ -125,8 +123,7 @@ else
         'Position',[.02,.3,.96,.2],'String',t2,'BackgroundColor','w');
 
     % Java fix due uicontrol missing vertical alignment property
-    jh = findjobj(ht2);
-    jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+    uicontrol_textalign(ht2);
 
     bar2 = uicontrol(hfig,'Style','text','Units','normalized',...
         'BackgroundColor','g','Position',[.04,.15,.92*p2,.15]);

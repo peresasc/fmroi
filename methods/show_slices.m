@@ -181,15 +181,7 @@ imgmin_str = sprintf('%0.2g',st.vols{n_image}.clim(1));
 imgmin_str(imgmin_str=='+')=[];
 
 imgmax_str = sprintf('%0.2g',st.vols{n_image}.clim(2));
-pexp = find(imgmax_str=='e');
-if isempty(pexp)
-    imgmax_alg = imgmax_str;
-    imgmax_exp = '';
-else
-    imgmax_alg = imgmax_str(1:pexp-1);
-    imgmax_exp = imgmax_str(pexp:end);
-    imgmax_exp(imgmax_exp=='+')=[];
-end
+imgmax_str(imgmax_str=='+')=[];
 
 alphamin_str = num2str(handles.slider_alpha.Min);
 alphamax_str = num2str(handles.slider_alpha.Max);
@@ -213,8 +205,7 @@ handles.imgprop(n_image).alphamax_str = alphamax_str;
 handles.imgprop(n_image).renderalphamin_str = renderalphamin_str;
 handles.imgprop(n_image).renderalphamax_str = renderalphamax_str;
 handles.imgprop(n_image).imgmin_str = imgmin_str;
-handles.imgprop(n_image).imgmax_alg = imgmax_alg;
-handles.imgprop(n_image).imgmax_exp = imgmax_exp;
+handles.imgprop(n_image).imgmax_str = imgmax_str;
 
 %--------------------------------------------------------------------------
 % Update table_listimg

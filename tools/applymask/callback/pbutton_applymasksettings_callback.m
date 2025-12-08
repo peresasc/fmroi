@@ -8,7 +8,7 @@ function pbutton_applymasksettings_callback(hObject,~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2025, peres.asc@gmail.com
-% Last update: Andre Peres, 14/05/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 create_panel_settings(hObject)
 handles = guidata(hObject);
@@ -45,8 +45,7 @@ handles.tools.settings.text_tr = uicontrol(handles.panel_filter,...
     'HorizontalAlignment','right','Position',[tx,y(4),tw,th]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_tr);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_tr);
 
 % creates the edit text for TR
 handles.tools.settings.edit_tr = uicontrol(handles.panel_filter,...
@@ -63,8 +62,7 @@ handles.tools.settings.text_highpass = uicontrol(handles.panel_filter,...
     'HorizontalAlignment','right','Position',[tx,y(3),tw,th]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_highpass);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_highpass);
 
 % creates the edit text for high-pass filter
 handles.tools.settings.edit_highpass = uicontrol(handles.panel_filter,...
@@ -81,8 +79,7 @@ handles.tools.settings.text_lowpass = uicontrol(handles.panel_filter,...
     'HorizontalAlignment','right','Position',[tx,y(2),tw,th]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_lowpass);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_lowpass);
 
 % creates the edit text for low-pass filter
 handles.tools.settings.edit_lowpass = uicontrol(handles.panel_filter,...
@@ -99,8 +96,7 @@ handles.tools.settings.text_filterorder = uicontrol(handles.panel_filter,...
     'HorizontalAlignment','right','Position',[tx,y(1),tw,th]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_filterorder);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_filterorder);
 
 % creates the edit text for the filter order
 handles.tools.settings.edit_filterorder = uicontrol(handles.panel_filter,...
@@ -135,8 +131,7 @@ handles.tools.settings.text_confounds = uicontrol(handles.panel_regressout,...
     'HorizontalAlignment','left','Position',[.01,.82,.98,.15]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_confounds);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_confounds);
 
 % creates the edit text for confounds path
 handles.tools.settings.edit_confoundspath = uicontrol(handles.panel_regressout,...
@@ -159,8 +154,7 @@ handles.tools.settings.text_selconf = uicontrol(handles.panel_regressout,...
     'HorizontalAlignment','left','Position',[.01,.45,.98,.15]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_selconf);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_selconf);
 
 % creates the edit text for confounds path
 handles.tools.settings.edit_selconf = uicontrol(handles.panel_regressout,...
@@ -202,8 +196,7 @@ handles.tools.settings.text_fwhm = uicontrol(handles.panel_smooth,...
     'HorizontalAlignment','right','Position',[.01,.25,.26,.5]);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.tools.settings.text_fwhm);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
+uicontrol_textalign(handles.tools.settings.text_fwhm);
 
 % creates the edit text for FWHM
 handles.tools.settings.edit_smooth = uicontrol(handles.panel_smooth,...

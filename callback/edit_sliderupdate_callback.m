@@ -110,4 +110,5 @@ switch lower(tag)
         slider_maxcolor_callback(hObject)
 end
 
+set(hObject,'Style','text','Enable','inactive')
 guidata(hObject, handles);

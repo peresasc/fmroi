@@ -9,7 +9,7 @@ function create_panel_settings(hObject,~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 17/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 04/12/2025, peres.asc@gmail.com
 
 delete_panel_settings(hObject)
 handles = guidata(hObject);
@@ -47,9 +47,7 @@ handles.text_panelsettingsstatus = uicontrol(handles.panel_settings,...
     'Callback',@pbutton_panelsettingssaveopts_callback);
 
 % Java fix due uicontrol missing vertical alignment property
-jh = findjobj(handles.text_panelsettingsstatus);
-jh.setVerticalAlignment(javax.swing.JLabel.CENTER);
-
+uicontrol_textalign(handles.text_panelsettingsstatus);
 
 %--------------------------------------------------------------------------
 % creates the save opts pushbutton

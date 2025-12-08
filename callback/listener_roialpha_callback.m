@@ -13,12 +13,16 @@ function listener_roialpha_callback(~, eventdata, hObject)
 % Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
 
 handles = guidata(hObject);
-hpos = get(hObject,'Position');
+value = get(eventdata.AffectedObject,'Value');
 
-value = get(eventdata.AffectedObject, 'Value');
+arrowsz = 0.055; % sliders arrow buttons width
+
+roialpha_pos1 = handles.slider_roialpha.Position(1)+arrowsz +...
+    value*(handles.slider_roialpha.Position(3)-2*arrowsz) -...
+    handles.edit_roialphaupdate.Position(3)/2;
+
+roialpha_pos = get(handles.edit_roialphaupdate,'Position');
+roialpha_pos(1) = roialpha_pos1;
+
 set(handles.edit_roialphaupdate,'String', num2str(round(value*100)/100),...
-    'Position',...
-    [(value*.56+.22),...
-    hpos(2)+hpos(4),...
-    0.14,...
-    0.02]);
+    'Position',roialpha_pos);

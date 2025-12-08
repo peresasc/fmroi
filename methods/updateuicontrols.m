@@ -58,33 +58,27 @@ set(handles.slider_mincolor,'value',handles.imgprop(n_image).mincolor)
 set(handles.slider_maxcolor,'value',handles.imgprop(n_image).maxcolor)
 
 set(handles.edit_minthrs0,'String',handles.imgprop(n_image).imgmin_str)
-set(handles.edit_minthrs100,'String',handles.imgprop(n_image).imgmax_alg)
-set(handles.text_expminthrs100,'String',handles.imgprop(n_image).imgmax_exp)
+set(handles.edit_minthrs100,'String',handles.imgprop(n_image).imgmax_str)
 set(handles.edit_minthrsupdate,'String',currminthrs_str)
 
 set(handles.edit_maxthrs0,'String',handles.imgprop(n_image).imgmin_str)
-set(handles.edit_maxthrs100,'String',handles.imgprop(n_image).imgmax_alg)
-set(handles.text_expmaxthrs100,'String',handles.imgprop(n_image).imgmax_exp)
+set(handles.edit_maxthrs100,'String',handles.imgprop(n_image).imgmax_str)
 set(handles.edit_maxthrsupdate,'String',currmaxthrs_str)
 
 set(handles.edit_slicealpha0,'String',handles.imgprop(n_image).alphamin_str)
 set(handles.edit_slicealpha100,'String',handles.imgprop(n_image).alphamax_str)
-set(handles.text_expslicealpha100,'String','')
 set(handles.edit_slicealphaupdate,'String',sprintf('%0.2g',handles.imgprop(n_image).alpha))
 
 set(handles.edit_roialpha0,'String',handles.imgprop(n_image).renderalphamin_str)
 set(handles.edit_roialpha100,'String',handles.imgprop(n_image).renderalphamax_str)
-set(handles.text_exproialpha100,'String','')
 set(handles.edit_roialphaupdate,'String',sprintf('%0.2g',handles.imgprop(n_image).roialpha))
 
 set(handles.edit_mincolor0,'String',handles.imgprop(n_image).imgmin_str)
-set(handles.edit_mincolor100,'String',handles.imgprop(n_image).imgmax_alg)
-set(handles.text_expmincolor100,'String',handles.imgprop(n_image).imgmax_exp)
+set(handles.edit_mincolor100,'String',handles.imgprop(n_image).imgmax_str)
 set(handles.edit_mincolorupdate,'String',currmincolor_str)
 
 set(handles.edit_maxcolor0,'String',handles.imgprop(n_image).imgmin_str)
-set(handles.edit_maxcolor100,'String',handles.imgprop(n_image).imgmax_alg)
-set(handles.text_expmaxcolor100,'String',handles.imgprop(n_image).imgmax_exp)
+set(handles.edit_maxcolor100,'String',handles.imgprop(n_image).imgmax_str)
 set(handles.edit_maxcolorupdate,'String',currmaxcolor_str)
 
 guidata(hObject, handles);
