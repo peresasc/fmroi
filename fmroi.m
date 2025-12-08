@@ -10,7 +10,7 @@ function fmroi()
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 22/02/2024, peres.asc@gmail.com
+% Last update: Andre Peres, 08/12/2025, peres.asc@gmail.com
 
 clear global
 
@@ -38,7 +38,7 @@ if ~exist(roimethdir,'dir')
    mkdir(roimethdir);
 end
 
-handles.version = 'fMROI 1.0.0';
+handles.version = 'fMROI 1.1.0';
 handles.webdoc = 'https://fmroi.readthedocs.io';
 handles.github = 'https://github.com/peresasc/fmroi';
 
