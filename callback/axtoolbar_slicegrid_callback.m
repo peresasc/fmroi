@@ -1,4 +1,15 @@
 function axtoolbar_slicegrid_callback(hObject, event)
+% axtoolbar_slicegrid_callback is an internal function of fMROI.
+%
+% Syntax:
+%   axtoolbar_slicegrid_callback(hObject, event)
+%
+% Inputs:
+%   hObject: handle of the toolbar button.
+%     event: event data containing Axes reference.
+%
+% Author: Andre Peres, 2023, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -24,7 +35,12 @@ if panelpos(4) ~= origpos(1,4)
     end
 else
     hObject.Icon = 'gridon.png';
-    switch event.Axes.Tag(1:3)
+    if isempty(event.Axes.Tag) || length(event.Axes.Tag) < 3
+        tag_prefix = '';
+    else
+        tag_prefix = event.Axes.Tag(1:3);
+    end
+    switch tag_prefix
         case 'tra'
         set(handles.panel_graph(1),'Position',origpos(5,:),'Visible','on')
         case 'cor'

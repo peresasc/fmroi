@@ -8,7 +8,7 @@ function popup_colormap_callback(hObject, ~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -18,15 +18,7 @@ s = get(handles.popup_colormap,'String');
 n = handles.table_selectedcell(1);
 cmap = s{v};
 
-cmin = handles.imgprop(n).mincolor;
-cmax = handles.imgprop(n).maxcolor;
 
-     
-cmin = cmin*(st.vols{n}.clim(2)-st.vols{n}.clim(1))+...
-            st.vols{n}.clim(1);
-        
-cmax = cmax*(st.vols{n}.clim(2)-st.vols{n}.clim(1))+...
-            st.vols{n}.clim(1);
 
 switch lower(cmap)    
     case 'custom'
@@ -62,14 +54,19 @@ switch lower(cmap)
         
 end
 
-for i = 1:3
-    colormap(handles.ax{n,i}.ax,cmap)
-    handles.ax{n,i}.ax.CLim = [cmin cmax];
+if ischar(cmap)
+    try
+        cmap_matrix = feval(cmap, 256);
+    catch
+        cmap_matrix = gray(256);
+    end
+else
+    cmap_matrix = cmap;
 end
 
-
-c = gettruecolor(handles.ax{n,1}.d.CData,st.vols{n}.clim,handles.ax{n,1}.ax.Colormap);
-handles.ax{n,4}.d.CData = c;
+handles.imgprop(n).cmap = cmap_matrix;
 handles.imgprop(n).colormap = v;
 
 guidata(hObject, handles);
+
+draw_slices(hObject);

@@ -8,7 +8,7 @@ function save_axes(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 24/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -37,17 +37,36 @@ else
     sl2save = [];
 end
 
+global st
+if isfield(handles, 'table_selectedcell') && ~isempty(handles.table_selectedcell)
+    n = handles.table_selectedcell(1);
+else
+    n = find(~cellfun(@isempty, st.vols), 1, 'last');
+end
+if isempty(n) || n == 0 || n > length(st.vols) || isempty(st.vols{n})
+    n = 1;
+end
+[~, ax_dim] = max(abs(st.vols{n}.mat(1:3, 1:3)), [], 2);
+
 ax_tag = {'axi','cor','sag','vol'};
 for i = actax
     ax = axes('Parent',handles.panel_graph(i),...
         'Box','off','Units','normalized','XTick',[],'YTick',[],...
         'color','none','Position',[0,0,1,1]);
 
+    if i ~= 4
+        switch i
+            case 1, target_col = ax_dim(3); % Axi
+            case 2, target_col = ax_dim(2); % Cor
+            case 3, target_col = ax_dim(1); % Sag
+        end
+    end
+
     if i==4 || isempty(sl2save)
         if i==4
             ss = [];
         else
-            ss = get(handles.edit_pos(2,4-i),'String');
+            ss = get(handles.edit_pos(2, target_col),'String');
         end
 
         f = getframe(ax);
@@ -64,8 +83,8 @@ for i = actax
 
     else
         for s = sl2save{i}
-            set(handles.edit_pos(2,4-i),'String',num2str(s))
-            editpos_callback(handles.edit_pos(2,4-i),[])
+            set(handles.edit_pos(2, target_col),'String',num2str(s))
+            editpos_callback(handles.edit_pos(2, target_col),[])
 
             f = getframe(ax);
             im = frame2im(f);

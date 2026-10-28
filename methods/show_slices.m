@@ -9,7 +9,7 @@ function show_slices(hObject,fn)
 %        fn: Full path of the nifti file to be displayed.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -30,11 +30,7 @@ if ~nnz(st.vols{n_image}.clim) % if all elements of the image are zeros
 end
 
 
-axes_pos = zeros(4);
-axes_pos(1,:) = [0, 0, 0.5, 0.5];
-axes_pos(2,:) = [0, .5, 0.5, 0.5];
-axes_pos(3,:) = [.5, .5, 0.5, 0.5];
-axes_pos(4,:) = [.5, 0, 0.5, 0.5];
+
 
 
 axtags{1} = ['transversal_', num2str(n_image)];
@@ -42,96 +38,68 @@ axtags{2} = ['coronal_', num2str(n_image)];
 axtags{3} = ['sagital_', num2str(n_image)];
 axtags{4} = ['rendering_', num2str(n_image)];
 
-% deletes the cursor
-if n_image > 1
-    for j = 1:n_image-1
-        for v = 1:3
-            delete(handles.ax{j,v}.lx);
-            handles.ax{j,v}.lx = [];
-            delete(handles.ax{j,v}.ly);
-            handles.ax{j,v}.ly = [];
-        end
-    end
-end
-
 maxdim = max(round(diff(st.bb)+1));
 
-for i = 1:4
-    if i == 4
-        if n_image == 1
+if n_image == 1
+    for i = 1:4
+        if i == 4
             ax = axes('Parent', handles.panel_graph(i),...
                 'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
             set(ax,'Visible','off', 'Ydir','normal',...
-                'CameraTargetMode','manual','view',[-35 35]);
+                'CameraTargetMode','manual','view',[-35 35], 'Tag', axtags{i});
             st.dims = round(diff(st.bb)'+1);
             set(ax,'Xlim',[0 st.dims(1)],'Ylim',[0 st.dims(2)],'Zlim',[0 st.dims(3)])
-%             handles.hrotate = rotate3d(ax);
-%             handles.hrotate.Enable = 'off';
 
             hold(ax,'on')
-            handles.ax{n_image,i} = struct('ax',ax);
             
+            slices = getslices(st,1);
+            cpdpl = st.Space\[st.centre,1]'-[st.bb(1,:)-1,1]';
+            [x,y,z] = meshgrid(1:size(slices{1},2),1:size(slices{1},1),cpdpl(3));
+            c = gettruecolor(slices{1},st.vols{1}.clim,gray(256));
+            d  = surface('Parent',ax,'XData',x,'YData',y,'ZData',z,'CData',c,...
+                'FaceColor','flat','EdgeColor','none','AlphaData',ones(size(z)));
+            
+            tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan','rotate'});
+            btn = axtoolbarbtn(tb,'push');
+            btn.Icon = 'gridoff.png';
+            btn.Tooltip = 'Grid view';
+            btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
+
+            handles.ax{1,i} = struct('ax',ax,'d',d,'tb',tb);
+        else
+            ax = axes('Parent', handles.panel_graph(i),...
+                'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
+            d  = imagesc(0, 'Tag',['img_',axtags{i}], 'Parent',ax);
+
+            set(ax, 'Ydir','normal','XLimMode', 'auto', 'YLimMode', 'auto',...
+                'XTick', [],'YTick', [], 'Tag', axtags{i},...
+                'ButtonDownFcn', @axes_buttondownfcn_callback, 'Color', 'none','XColor','none','YColor','none');
+
+            axis([0 maxdim 0 maxdim])
+            axis image %equal
+
+            lx = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw horizontal line cursor
+            ly = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw vertical line cursor
+
+            txy = text(0, 0, '+', 'Parent', ax, 'Color',[1 0 0],...
+                'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
+            set(txy,'Visible','off')
+
+            % Create a custom floating toolbar
+            tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan'},...
+                'SelectionChangedFcn',@toolbarselection);
+            btn = axtoolbarbtn(tb,'push');
+            btn.Icon = 'gridoff.png';
+            btn.Tooltip = 'Grid view';
+            btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
+
+            handles.ax{1,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,...
+                                     'tb',tb,'txy',txy);
         end
-        ax = handles.ax{1,4}.ax;
-        set(ax,'Tag',axtags{i});
-
-        slices = getslices(st,n_image);
-
-        % Current position to display (cpdpl): converts the position
-        % in the scanner coordinates (st.centre in mm) to display
-        % coordinates (st.Space in isovoxel units).
-        cpdpl = st.Space\[st.centre,1]'-[st.bb(1,:)-1,1]'; % A\B == inv(A)*B
-
-        [x,y,z] = meshgrid(1:size(slices{1},2),1:size(slices{1},1),cpdpl(3));
-        c = gettruecolor(slices{1},st.vols{n_image}.clim,ax.Colormap);
-        d  = surface('Parent',ax,'XData',x,'YData',y,'ZData',z,'CData',c,...
-            'FaceColor','flat','EdgeColor','none');
-        
-        % Create a custom floating toolbar
-        tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan','rotate'});
-        btn = axtoolbarbtn(tb,'push');
-        btn.Icon = 'gridoff.png';
-        btn.Tooltip = 'Grid view';
-        btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
-
-        handles.ax{n_image,i} = struct('ax',ax,'d',d,'tb',tb);
-    else
-        ax = axes('Parent', handles.panel_graph(i),...
-            'Position',[0 0 1 1], 'Box', 'off', 'Units', 'normalized','XTick', [],'YTick', []);
-        d  = imagesc(0, 'Tag',['img_',axtags{i}], 'Parent',ax);
-
-        set(ax, 'Ydir','normal','XLimMode', 'auto', 'YLimMode', 'auto',...
-            'XTick', [],'YTick', [], 'Tag', axtags{i},...
-            'ButtonDownFcn', @axes_buttondownfcn_callback, 'Color', 'none','XColor','none','YColor','none');
-
-        colormap(ax,'gray');        
-        caxis(st.vols{n_image}.clim);
-        
-        axis([0 maxdim 0 maxdim])
-        axis image %equal
-
-        lx = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw horizontal line cursor
-        ly = line(0,0, 'Parent',ax, 'Color',[1 0 0]); % Draw vertical line cursor
-
-        txy = text(0, 0, '+', 'Parent', ax, 'Color',[1 0 0],...
-            'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle');
-        set(txy,'Visible','off')
-
-        % Create a custom floating toolbar
-        tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan'},...
-            'SelectionChangedFcn',@toolbarselection);
-        btn = axtoolbarbtn(tb,'push');
-        btn.Icon = 'gridoff.png';
-        btn.Tooltip = 'Grid view';
-        btn.ButtonPushedFcn = @axtoolbar_slicegrid_callback;
-
-        handles.ax{n_image,i} = struct('ax',ax,'d',d,'lx',lx,'ly',ly,...
-                                       'tb',tb,'txy',txy);
-        
-        % Synchronizes the axes limits allowing to zoom or pan in one axes and display the same range of data in the another axis.
-        if n_image > 1
-            linkaxes([handles.ax{n_image,i}.ax,handles.ax{n_image-1,i}.ax],'xy')
-        end
+    end
+else
+    for i = 1:4
+        handles.ax{n_image, i} = handles.ax{1, i};
     end
 end
 
@@ -191,6 +159,7 @@ renderalphamax_str = num2str(handles.slider_roialpha.Max);
 handles.imgprop(n_image).viewslices = 1;
 handles.imgprop(n_image).viewrender = 0;
 handles.imgprop(n_image).colormap = v;
+handles.imgprop(n_image).cmap = gray(256);
 handles.imgprop(n_image).roicolor = 1;
 
 handles.imgprop(n_image).minthrs = handles.slider_minthrs.Min;

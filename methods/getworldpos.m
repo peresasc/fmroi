@@ -13,7 +13,7 @@ function centre = getworldpos(h)
 %
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 global st
 
 centre = [];
@@ -30,7 +30,13 @@ else
     tag = get(h,'Tag');
 end
     
-tag = tag(1:end-2);
+if contains(tag, 'transversal')
+    tag = 'transversal';
+elseif contains(tag, 'coronal')
+    tag = 'coronal';
+elseif contains(tag, 'sagital')
+    tag = 'sagital';
+end
 
 if ~isempty(cp)
     cp   = cp(1,1:2);
