@@ -16,6 +16,16 @@ handles = guidata(hObject);
 n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 
 for i = 1:n_image
+    if ~handles.imgprop(i).viewslices
+        for j = 1:3
+            set(handles.ax{i,j}.d, 'Visible', 'off');
+        end
+        if isfield(handles.ax{i,4}, 'd') && ishandle(handles.ax{i,4}.d)
+            set(handles.ax{i,4}.d, 'Visible', 'off');
+        end
+        continue;
+    end
+
     slices = getslices(st,i);
     for j = 1:3
         set(handles.ax{i,j}.d,'HitTest','off', 'Cdata',slices{j});
@@ -47,12 +57,12 @@ for i = 1:n_image
             p3 = pos(3);
             z = p3*ones(size(handles.ax{1,4}.d.ZData));
             handles.ax{i,4}.d.ZData = z;
-            c = gettruecolor(slices{j},st.vols{i}.private.dat(:,:,:),handles.ax{i,j}.ax.Colormap);
+            c = gettruecolor(slices{j},st.vols{i}.clim,handles.ax{i,j}.ax.Colormap);
             handles.ax{i,4}.d.CData = c;
             handles.ax{i,4}.d.AlphaData = handles.ax{i,j}.d.AlphaData;
             handles.ax{i,4}.ax.Colormap = handles.ax{i,j}.ax.Colormap;
             set(handles.ax{i,4}.d, 'FaceAlpha', 'flat','FaceColor',...
-                'flat','EdgeColor','none','alphadatamapping','none')
+                'flat','EdgeColor','none','alphadatamapping','none', 'Visible', 'on')
         end
     end
 end

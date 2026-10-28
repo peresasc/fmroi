@@ -38,22 +38,24 @@ if nargin == 1 || handles.mousehold && not(handles.toolbar)
     set(handles.text_pos(1),'String',num2str(round(centre)))
     set(handles.text_pos(2),'String',num2str(cpima))
     
-    voxelvalue = cell(n_image,1);
-    for k = 1:n_image
-        cp = st.vols{k}.mat\[centre';1];
-        cp = round(cp(1:3))';
-        
-        s = size(st.vols{k}.private.dat);
-        if sum((cp<1)+(cp>s))
-            voxelvalue{k} = NaN;
-        else
-            voxelvalue{k} = st.vols{k}.private.dat(cp(1),cp(2),cp(3));
+    if nargin == 1
+        voxelvalue = cell(n_image,1);
+        for k = 1:n_image
+            cp = st.vols{k}.mat\[centre';1];
+            cp = round(cp(1:3))';
+            
+            s = size(st.vols{k}.private.dat);
+            if sum((cp<1)+(cp>s))
+                voxelvalue{k} = NaN;
+            else
+                voxelvalue{k} = st.vols{k}.private.dat(cp(1),cp(2),cp(3));
+            end
         end
+        
+        tdata = get(handles.table_listimg,'Data');
+        tdata(:,2) = voxelvalue;
+        set(handles.table_listimg,'Data',tdata);
     end
-    
-    tdata = get(handles.table_listimg,'Data');
-    tdata(:,2) = voxelvalue;
-    set(handles.table_listimg,'Data',tdata);
     
 else
     

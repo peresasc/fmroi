@@ -55,7 +55,7 @@ if n ~= lastimg
             end
         end
         
-        c = gettruecolor(handles.ax{curr_img,1}.d.CData,st.vols{curr_img}.private.dat(:,:,:),handles.ax{curr_img,1}.ax.Colormap);
+        c = gettruecolor(handles.ax{curr_img,1}.d.CData,st.vols{curr_img}.clim,handles.ax{curr_img,1}.ax.Colormap);
         handles.ax{curr_img,4}.d.CData = c;
         handles.imgprop(curr_img).colormap = v;
     end

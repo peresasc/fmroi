@@ -68,7 +68,7 @@ for i = 1:3
 end
 
 
-c = gettruecolor(handles.ax{n,1}.d.CData,st.vols{n}.private.dat(:,:,:),handles.ax{n,1}.ax.Colormap);
+c = gettruecolor(handles.ax{n,1}.d.CData,st.vols{n}.clim,handles.ax{n,1}.ax.Colormap);
 handles.ax{n,4}.d.CData = c;
 handles.imgprop(n).colormap = v;
 

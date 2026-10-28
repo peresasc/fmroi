@@ -83,7 +83,7 @@ for i = 1:4
         cpdpl = st.Space\[st.centre,1]'-[st.bb(1,:)-1,1]'; % A\B == inv(A)*B
 
         [x,y,z] = meshgrid(1:size(slices{1},2),1:size(slices{1},1),cpdpl(3));
-        c = gettruecolor(slices{1},st.vols{1}.private.dat(:,:,:),ax.Colormap);
+        c = gettruecolor(slices{1},st.vols{n_image}.clim,ax.Colormap);
         d  = surface('Parent',ax,'XData',x,'YData',y,'ZData',z,'CData',c,...
             'FaceColor','flat','EdgeColor','none');
         
