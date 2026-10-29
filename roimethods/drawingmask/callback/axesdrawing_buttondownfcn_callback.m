@@ -61,20 +61,51 @@ if strcmpi(waxis,tag)
             handles.drawingroi.wroi = wroi;
             handles.drawingroi.ucidx = ucidx;
 
+            % Get brush color from edits (or fallback)
+            if isfield(handles, 'edit_brushcolor_r') && ishandle(handles.edit_brushcolor_r)
+                r_w = str2double(get(handles.edit_brushcolor_r, 'String'));
+                g_w = str2double(get(handles.edit_brushcolor_g, 'String'));
+                b_w = str2double(get(handles.edit_brushcolor_b, 'String'));
+                if isnan(r_w) || r_w < 0, r_w = 0; elseif r_w > 255, r_w = 255; else, r_w = round(r_w); end
+                if isnan(g_w) || g_w < 0, g_w = 0; elseif g_w > 255, g_w = 255; else, g_w = round(g_w); end
+                if isnan(b_w) || b_w < 0, b_w = 0; elseif b_w > 255, b_w = 255; else, b_w = round(b_w); end
+                active_color = [r_w, g_w, b_w] / 255;
+            else
+                active_color = [1, 0, 1];
+            end
+
+            % Get brush alpha from edit (or fallback)
+            if isfield(handles, 'edit_brushalpha') && ishandle(handles.edit_brushalpha)
+                alphavalue = str2double(get(handles.edit_brushalpha, 'String'));
+                if isnan(alphavalue) || alphavalue < 0
+                    alphavalue = 0;
+                elseif alphavalue > 1
+                    alphavalue = 1;
+                end
+            else
+                alphavalue = handles.imgprop(ucidx).alpha;
+                if isempty(alphavalue) || alphavalue == 0
+                    alphavalue = 0.5;
+                end
+            end
+
+            roi_val = datalut{wroi, 1};
+            if iscell(roi_val), roi_val = roi_val{1}; end
+
             overlay_rgb = zeros(size(mask2d, 1), size(mask2d, 2), 3);
             alpha2d = zeros(size(mask2d));
-            alphavalue = handles.imgprop(ucidx).alpha;
-            if isempty(alphavalue) || alphavalue == 0
-                alphavalue = 0.5;
-            end
 
             for k = 1:size(datalut, 1)
                 k_val = datalut{k, 1};
                 if iscell(k_val), k_val = k_val{1}; end
-                r_k = datalut{k, 3}; if ischar(r_k), r_k = str2double(r_k); end
-                g_k = datalut{k, 4}; if ischar(g_k), g_k = str2double(g_k); end
-                b_k = datalut{k, 5}; if ischar(b_k), b_k = str2double(b_k); end
-                k_color = double([r_k, g_k, b_k]) / 255;
+                if k_val == roi_val
+                    k_color = active_color;
+                else
+                    r_k = datalut{k, 3}; if ischar(r_k), r_k = str2double(r_k); end
+                    g_k = datalut{k, 4}; if ischar(g_k), g_k = str2double(g_k); end
+                    b_k = datalut{k, 5}; if ischar(b_k), b_k = str2double(b_k); end
+                    k_color = double([r_k, g_k, b_k]) / 255;
+                end
                 k_mask = (mask2d == k_val);
                 if any(k_mask(:))
                     overlay_rgb(:,:,1) = overlay_rgb(:,:,1) + k_color(1) * k_mask;
@@ -84,13 +115,9 @@ if strcmpi(waxis,tag)
                 end
             end
 
-            r_w = datalut{wroi, 3}; if ischar(r_w), r_w = str2double(r_w); end
-            g_w = datalut{wroi, 4}; if ischar(g_w), g_w = str2double(g_w); end
-            b_w = datalut{wroi, 5}; if ischar(b_w), b_w = str2double(b_w); end
-            active_color = double([r_w, g_w, b_w]) / 255;
-
             handles.drawingroi.overlay_rgb = overlay_rgb;
             handles.drawingroi.active_color = active_color;
+            handles.drawingroi.alphavalue = alphavalue;
 
             handles.drawingroi.hbrush = image('Parent', handles.ax{1, selaxis}.ax, ...
                 'CData', overlay_rgb, 'AlphaData', alpha2d, ...
@@ -118,16 +145,28 @@ if strcmpi(waxis,tag)
         [My,Mx] = ndgrid(1:x,1:y);
         auxmask = (sqrt((Mx-cp(1)).^2 + (My-cp(2)).^2) < r);
 
-        r_w = datalut{wroi, 3}; if ischar(r_w), r_w = str2double(r_w); end
-        g_w = datalut{wroi, 4}; if ischar(g_w), g_w = str2double(g_w); end
-        b_w = datalut{wroi, 5}; if ischar(b_w), b_w = str2double(b_w); end
-        active_color = double([r_w, g_w, b_w]) / 255;
+        if isfield(handles.drawingroi, 'active_color')
+            active_color = handles.drawingroi.active_color;
+        elseif isfield(handles, 'edit_brushcolor_r') && ishandle(handles.edit_brushcolor_r)
+            r_w = str2double(get(handles.edit_brushcolor_r, 'String'));
+            g_w = str2double(get(handles.edit_brushcolor_g, 'String'));
+            b_w = str2double(get(handles.edit_brushcolor_b, 'String'));
+            active_color = [r_w, g_w, b_w] / 255;
+        else
+            active_color = [1, 0, 1];
+        end
 
         overlay_rgb = handles.drawingroi.overlay_rgb;
         alpha2d = get(handles.drawingroi.hbrush, 'AlphaData');
-        alphavalue = handles.imgprop(ucidx).alpha;
-        if isempty(alphavalue) || alphavalue == 0
-            alphavalue = 0.5;
+
+        if isfield(handles, 'edit_brushalpha') && ishandle(handles.edit_brushalpha)
+            alphavalue = str2double(get(handles.edit_brushalpha, 'String'));
+            if isnan(alphavalue) || alphavalue < 0, alphavalue = 0; elseif alphavalue > 1, alphavalue = 1; end
+        elseif isfield(handles.drawingroi, 'alphavalue')
+            alphavalue = handles.drawingroi.alphavalue;
+        else
+            alphavalue = handles.imgprop(ucidx).alpha;
+            if isempty(alphavalue) || alphavalue == 0, alphavalue = 0.5; end
         end
 
         roi_val = datalut{wroi, 1};
