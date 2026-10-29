@@ -81,6 +81,12 @@ for i = 1:n_image
     alphavalue = handles.imgprop(i).alpha;
     
     for j = 1:3
+        if isfield(handles, 'drawingroi') && isfield(handles.drawingroi, 'hbrush') && ...
+                ishandle(handles.drawingroi.hbrush) && isfield(handles.drawingroi, 'ucidx') && ...
+                isfield(handles.drawingroi, 'selaxis') && i == handles.drawingroi.ucidx && j == handles.drawingroi.selaxis
+            continue;
+        end
+        
         slice2d = slices{j};
         
         if minthrs <= maxthrs

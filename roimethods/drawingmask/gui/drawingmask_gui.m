@@ -9,7 +9,7 @@ function drawingmask_gui(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 04/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 set(handles.pbutton_findmax,'Enable','off')
@@ -19,6 +19,11 @@ if isfield(handles, 'drawingroi') &&...
         isfield(handles.drawingroi,'hroi') &&...
         ishandle(handles.drawingroi.hroi)
     delete(handles.drawingroi.hroi)
+end
+if isfield(handles, 'drawingroi') &&...
+        isfield(handles.drawingroi,'hbrush') &&...
+        ishandle(handles.drawingroi.hbrush)
+    delete(handles.drawingroi.hbrush)
 end
 
 %--------------------------------------------------------------------------
