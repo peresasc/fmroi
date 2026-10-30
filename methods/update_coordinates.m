@@ -10,7 +10,7 @@ function update_coordinates(hObject, varargin)
 %             images (axial, coronal and sagittal).
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 30/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -24,7 +24,15 @@ if nargin == 1 || handles.mousehold && not(handles.toolbar)
     else
         centre = getworldpos(varargin{1});
     end
-    st.centre = centre(1:3);
+    
+    if isempty(centre)
+        if ~isfield(st, 'centre') || isempty(st.centre)
+            return;
+        end
+        centre = st.centre;
+    else
+        st.centre = centre(1:3);
+    end
     
     cpima = st.vols{n}.mat\[centre';1];
     cpima = round(cpima(1:3))';
@@ -60,6 +68,9 @@ if nargin == 1 || handles.mousehold && not(handles.toolbar)
 else
     
     centre = getworldpos(varargin{1});
+    if isempty(centre)
+        return;
+    end
     cpima = st.vols{n}.mat\[centre';1];
     cpima = round(cpima(1:3))';
     

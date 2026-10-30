@@ -2,7 +2,7 @@ function axesdrawing_buttondownfcn_callback(hObject,event)
 % axesdrawing_buttondownfcn_callback is an internal function of fMROI.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
+% Last update: Andre Peres, 30/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -195,13 +195,15 @@ end
 % %--------------------------------------------------------------------------
 % % update current position mousemove
 if ~isempty(h)
-    n = handles.table_selectedcell(1);
     centre = getworldpos(h);
-    cpima = st.vols{n}.mat\[centre';1];
-    cpima = round(cpima(1:3))';
+    if ~isempty(centre) && numel(centre) >= 3
+        n = handles.table_selectedcell(1);
+        cpima = st.vols{n}.mat\[centre';1];
+        cpima = round(cpima(1:3))';
 
-    set(handles.text_pos(1),'String',num2str(round(centre)))
-    set(handles.text_pos(2),'String',num2str(cpima))
+        set(handles.text_pos(1),'String',num2str(round(centre)))
+        set(handles.text_pos(2),'String',num2str(cpima))
+    end
 end
 
 guidata(hObject, handles);
