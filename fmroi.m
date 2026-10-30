@@ -3,7 +3,7 @@ function fmroi()
 % creation and enhance neuroimage visualization. Developed with a focus on
 % ease of use and compatibility, fMROI offers a range of features that make
 % it an ideal tool for researchers in the field of neuroimaging.
-% 
+%
 % Visit the user guide webpage for usage instructions:
 % https://fmroi.readthedocs.io
 %
@@ -25,20 +25,20 @@ mkdir(tmpdir);
 
 templatedir = fullfile(fmroirootdir,'templates');
 if ~exist(templatedir,'dir')
-   mkdir(templatedir);
+    mkdir(templatedir);
 end
 
 toolsdir = fullfile(fmroirootdir,'tools');
 if ~exist(toolsdir,'dir')
-   mkdir(toolsdir);
+    mkdir(toolsdir);
 end
 
 roimethdir = fullfile(fmroirootdir,'roimethods');
 if ~exist(roimethdir,'dir')
-   mkdir(roimethdir);
+    mkdir(roimethdir);
 end
 
-handles.version = 'fMROI 1.1.0';
+handles.version = 'fMROI 1.2.0';
 handles.webdoc = 'https://fmroi.readthedocs.io';
 handles.github = 'https://github.com/peresasc/fmroi';
 
@@ -65,7 +65,7 @@ if any(~ismember(ptoaddcell,matlabpathcell))
 
     a = questdlg(['Do you wish to save the fMROI paths for use in ',...
         'future MATLAB sessions?'],'Save fMROI paths','Yes','No','Yes');
-    
+
     if strcmpi(a,'yes')
         savepath
     end
@@ -116,7 +116,7 @@ hmenufile_exit = uimenu(hmenufile,'Label','Exit',...
 hmenuconfig = uimenu('Label','Config','Parent',hObject);
 
 hmenuconfig_imptpl = uimenu(hmenuconfig,'Label','Import template',...
-     'Callback',@menuconfig_imptpl_callback);
+    'Callback',@menuconfig_imptpl_callback);
 
 hmenuconfig_cleartpl = uimenu(hmenuconfig,...
     'Label','Clear template folder',...
@@ -188,9 +188,9 @@ hmenuhelp_github = uimenu(hmenuhelp,'Label','Github webpage',...
 % creates the Axes Panel
 
 panelgraph_pos = [.26,.01,.365,.49;...
-                  .26,.5,.365,.49;...
-                  .625,.5,.365,.49;...
-                  .625,.01,.365,.49];
+    .26,.5,.365,.49;...
+    .625,.5,.365,.49;...
+    .625,.01,.365,.49];
 
 for i = 1:4
     handles.panel_graph(i) = uipanel(hObject,'BackgroundColor','k',...
@@ -244,9 +244,9 @@ qgtext = {['Welcome to ',handles.version];...
 
 
 handles.text_quickguide = uicontrol(handles.panel_logo,'Style','text',...
-        'Units','normalized','String',qgtext,...
-        'BackgroundColor','w','FontUnits','normalized','FontSize',1/45,...
-        'HorizontalAlignment','left','Position',[.01,.35,.98,.64]);
+    'Units','normalized','String',qgtext,...
+    'BackgroundColor','w','FontUnits','normalized','FontSize',1/45,...
+    'HorizontalAlignment','left','Position',[.01,.35,.98,.64]);
 
 %--------------------------------------------------------------------------
 % creates the Logo axis and text
@@ -254,7 +254,7 @@ handles.text_quickguide = uicontrol(handles.panel_logo,'Style','text',...
 handles.axislogo = axes('Parent',handles.panel_logo,...
     'Box','off','Units','normalized','XTick',[],'YTick',[],...
     'Position',[.2545,.12,.4711,.2000]);
-            
+
 imshow(fullfile(fmroirootdir,'etc','figs','fmroi_logo.png'))
 
 set(handles.axislogo,'Tag','axislogo')
@@ -297,13 +297,13 @@ guidata(hObject,handles);
 % fMROI internal functions
 function menufile_exit_callback(hObject, ~)
 
-handles = guidata(hObject);
-selection = questdlg('Do you want to exit fMROI?',...
-    'Exit fMROI',...
-    'Yes','No','Yes');
-switch selection
-    case 'Yes'
-        delete(handles.fig)
-    case 'No'
-        return
-end
+    handles = guidata(hObject);
+    selection = questdlg('Do you want to exit fMROI?',...
+        'Exit fMROI',...
+        'Yes','No','Yes');
+    switch selection
+        case 'Yes'
+            delete(handles.fig)
+        case 'No'
+            return
+    end
