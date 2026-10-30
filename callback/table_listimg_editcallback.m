@@ -10,7 +10,7 @@ function table_listimg_editcallback(hObject,eventData)
 %              within the table_listimg.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 if eventData.Indices(2) == 1
     
@@ -21,16 +21,5 @@ if eventData.Indices(2) == 1
     guidata(hObject, handles);
     
     
-    if handles.imgprop(n).viewslices
-        for i = 1:4
-            handles.ax{n,i}.d.Visible = 'on';
-        end
-    else
-        for i = 1:4
-            handles.ax{n,i}.d.Visible = 'off';
-        end
-    end
-    
-    
-    guidata(hObject, handles);
+    draw_slices(hObject);
 end

@@ -10,7 +10,7 @@ function fmroi()
 % Syntax: fmroi
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 08/12/2025, peres.asc@gmail.com
+% Last update: Andre Peres, 30/10/2026, peres.asc@gmail.com
 
 clear global
 
@@ -146,6 +146,9 @@ hmenuconfig_restoretools = uimenu(hmenuconfig,...
 % Create View menu
 
 hmenuview = uimenu('Label','View','Parent',hObject);
+
+hmenuview_restoreview = uimenu(hmenuview,'Label','Restore view',...
+    'Callback',@axtoolbar_restoreview_callback);
 
 hmenuconfig_dplres = uimenu(hmenuview,'Label','Display resolution',...
     'Callback',@menuconfig_dplres_callback);

@@ -8,7 +8,7 @@ function pbutton_imgup_callback(hObject, ~)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 09/05/2022, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -42,42 +42,15 @@ if n ~= 1
     handles.imgprop(n) = imgprop0;
     
     %----------------------------------------------------------------------
-    % update the color of the axes that are being permuted
-    for curr_img = n-1:n
-        v = handles.imgprop(curr_img).colormap;
-        s = get(handles.popup_colormap,'String');
-
-        cmap = s{v};
-        
-        % workaround to avoid crashing when using custom colormaps
-        if strcmp(cmap,'custom') || strcmp(cmap,'colorLUT')
-            cmap = 'gray';
-        end
-
-        for i = 1:3
-            colormap(handles.ax{curr_img,i}.ax,cmap)
-        end
-
-
-        c = gettruecolor(handles.ax{curr_img,1}.d.CData,st.vols{curr_img}.private.dat(:,:,:),handles.ax{curr_img,1}.ax.Colormap);
-        handles.ax{curr_img,4}.d.CData = c;
-        handles.imgprop(curr_img).colormap = v;
-    end
-    
-    guidata(hObject, handles);
-    
-    %----------------------------------------------------------------------
     % change the roipath FaceAlpha of the axes that are being permuted
     if isfield(handles.ax{n-1,4},'roipatch') || isfield(handles.ax{n,4},'roipatch')
         if isfield(handles.ax{n-1,4},'roipatch') && isfield(handles.ax{n,4},'roipatch')
             roipatch0 = handles.ax{n-1,4}.roipatch;
             handles.ax{n-1,4}.roipatch = handles.ax{n,4}.roipatch;
             handles.ax{n,4}.roipatch = roipatch0;
-        
         elseif isfield(handles.ax{n-1,4},'roipatch')
             handles.ax{n,4}.roipatch = handles.ax{n-1,4}.roipatch;
             handles.ax{n-1,4} = rmfield(handles.ax{n-1,4},'roipatch');
-        
         else
             handles.ax{n-1,4}.roipatch = handles.ax{n,4}.roipatch;
             handles.ax{n,4} = rmfield(handles.ax{n,4},'roipatch');
@@ -91,36 +64,13 @@ if n ~= 1
     st.vols{n} = vol0;
     
     %----------------------------------------------------------------------
-    % Makes the updates in the sliser_thrs, slider_alpha and popup_colormap
-    
+    % Update UI controls and redraw slices
     evData.Indices = handles.table_selectedcell;
-    
     guidata(hObject, handles);
     table_listimg_selcallback(hObject, evData)
     handles = guidata(hObject);
     
-    %----------------------------------------------------------------------
-    % Redraw the slices
     draw_slices(hObject)
-    
-    handles.table_selectedcell(1) = n;
-    
-    evData.Indices = handles.table_selectedcell;
-    guidata(hObject, handles);
-    table_listimg_selcallback(hObject, evData)
-    handles = guidata(hObject);
-    
-    popup_colormap_callback(hObject)
-    
-    
-    handles.table_selectedcell(1) = n-1;
-    
-    evData.Indices = handles.table_selectedcell;
-    guidata(hObject, handles);
-    table_listimg_selcallback(hObject, evData)
-    handles = guidata(hObject);
-    
-    popup_colormap_callback(hObject)
     
     
 end

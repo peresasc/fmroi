@@ -8,7 +8,7 @@ function mosaic(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -68,7 +68,25 @@ end
 %--------------------------------------------------------------------------
 % Get parameters for generating multi slices
 
+global st
+if isfield(handles, 'table_selectedcell') && ~isempty(handles.table_selectedcell)
+    n = handles.table_selectedcell(1);
+else
+    n = find(~cellfun(@isempty, st.vols), 1, 'last');
+end
+if isempty(n) || n == 0 || n > length(st.vols) || isempty(st.vols{n})
+    n = 1;
+end
+
+[~, ax_dim] = max(abs(st.vols{n}.mat(1:3, 1:3)), [], 2);
+
 v = handles.popup_scrshtax.Value;
+switch v
+    case 1, target_col = ax_dim(3); % Axial
+    case 2, target_col = ax_dim(2); % Coronal
+    case 3, target_col = ax_dim(1); % Sagittal
+end
+
 nx = round(str2double(handles.edit_mosaiccol.String));
 ny = round(str2double(handles.edit_mosaiclin.String));
 
@@ -105,8 +123,8 @@ for j = 1:ny % lines
             'Position',[x,y,w,h],'Units','normalized',...
             'Box','off','XTick',[],'YTick',[],'Color','none');
 
-        set(handles.edit_pos(2,4-v),'String',num2str(s(c)))
-        editpos_callback(handles.edit_pos(2,4-v),[])
+        set(handles.edit_pos(2, target_col), 'String', num2str(s(c)))
+        editpos_callback(handles.edit_pos(2, target_col), [])
         
         pos = GetLayoutInformation(handles.ax{1,v}.ax);
         rect = pos.PlotBox - [0,0,2,2];

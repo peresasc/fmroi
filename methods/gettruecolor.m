@@ -21,11 +21,20 @@ if nargin == 0
 end
 
 if exist('img3d','var') && ~isempty(img3d)
-    cmin = min(img3d(:));
-    cmax = max(img3d(:));
+    if numel(img3d) == 2
+        cmin = img3d(1);
+        cmax = img3d(2);
+    else
+        cmin = min(img3d(:));
+        cmax = max(img3d(:));
+    end
 else
     cmin = min(img2d(:));
     cmax = max(img2d(:));
+end
+
+if cmin == cmax
+    cmax = cmin + eps;
 end
 
 s = size(cmap,1);

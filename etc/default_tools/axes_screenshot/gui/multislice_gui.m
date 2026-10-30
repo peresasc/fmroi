@@ -8,7 +8,7 @@ function multislice_gui(hObject)
 %   hObject: handle of the figure that contains the fMROI main window.
 %
 % Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 22/08/2023, peres.asc@gmail.com
+% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 fss = handles.fss; % font size scale
@@ -62,8 +62,22 @@ handles.text_scrshtlastslice = uicontrol(handles.panel_scrshtctrl,...
     'FontUnits','normalized','FontSize',fss*.7,...
     'Position',[.67,.68,.32,.15],'HorizontalAlignment','left');
 
+max_slice = 70;
+global st
+if isfield(st, 'vols') && ~isempty(st.vols)
+    if isfield(handles, 'table_selectedcell') && ~isempty(handles.table_selectedcell)
+        n = handles.table_selectedcell(1);
+    else
+        n = find(~cellfun(@isempty, st.vols), 1, 'last');
+    end
+    if ~isempty(n) && n > 0 && n <= length(st.vols) && ~isempty(st.vols{n})
+        [~, ax_dim] = max(abs(st.vols{n}.mat(1:3, 1:3)), [], 2);
+        max_slice = st.vols{n}.dim(ax_dim(3));
+    end
+end
+
 handles.edit_scrshtlastslice = uicontrol(handles.panel_scrshtctrl,...
-    'Style','edit','Units','normalized','String','70',...
+    'Style','edit','Units','normalized','String',num2str(max_slice),...
     'FontUnits','normalized','FontSize',fss*.7,'BackgroundColor','w',...
     'HorizontalAlignment','center','Position',[.51,.68,.15,.15]);
 
@@ -79,7 +93,8 @@ handles.text_scrshtax = uicontrol(handles.panel_scrshtctrl,...
 handles.popup_scrshtax = uicontrol(handles.panel_scrshtctrl,...
     'Style','popup','Units','normalized','Position',[.515,.48,.3,.13],...
     'String',{'Axial';'Coronal';'Sagittal'},...
-    'FontUnits','normalized','FontSize',fss*.75,'background','w');
+    'FontUnits','normalized','FontSize',fss*.75,'background','w',...
+    'Callback',@popup_scrshtax_callback);
 
 %--------------------------------------------------------------------------
 %creates the edit text for the overlap percentage
