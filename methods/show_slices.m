@@ -9,7 +9,7 @@ function show_slices(hObject,fn)
 %        fn: Full path of the nifti file to be displayed.
 %
 % Author: Andre Peres, 2019, peres.asc@gmail.com
-% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
+% Last update: Andre Peres, 30/10/2026, peres.asc@gmail.com
 
 global st
 handles = guidata(hObject);
@@ -60,6 +60,10 @@ if n_image == 1
                 'FaceColor','flat','EdgeColor','none','AlphaData',ones(size(z)));
             
             tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan','rotate'});
+            btn_restore = findobj(tb.Children, 'Tooltip', 'Restore view');
+            if ~isempty(btn_restore)
+                btn_restore.ButtonPushedFcn = @axtoolbar_restoreview_callback;
+            end
             btn = axtoolbarbtn(tb,'push');
             btn.Icon = 'gridoff.png';
             btn.Tooltip = 'Grid view';
@@ -88,6 +92,10 @@ if n_image == 1
             % Create a custom floating toolbar
             tb = axtoolbar(ax,{'zoomin','zoomout','restoreview','pan'},...
                 'SelectionChangedFcn',@toolbarselection);
+            btn_restore = findobj(tb.Children, 'Tooltip', 'Restore view');
+            if ~isempty(btn_restore)
+                btn_restore.ButtonPushedFcn = @axtoolbar_restoreview_callback;
+            end
             btn = axtoolbarbtn(tb,'push');
             btn.Icon = 'gridoff.png';
             btn.Tooltip = 'Grid view';

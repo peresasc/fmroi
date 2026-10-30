@@ -5,7 +5,8 @@ function update_coordinates(hObject, varargin)
 %   update_coordinates(hObject, varargin)
 %
 % Inputs:
-%    hObject: handle of the figure that contains the fMROI main window.
+%    hObject: handle of the figure that contains the fMROI main window,
+%             or handle of the clicked axis.
 %   varargin: handle of the axis that contains one of the three planar
 %             images (axial, coronal and sagittal).
 %
@@ -17,12 +18,20 @@ handles = guidata(hObject);
 n_image = find(~cellfun(@isempty,st.vols), 1, 'last');
 n = handles.table_selectedcell(1);
 
+% Identify target axis if provided directly or as varargin
+hAx = [];
+if nargin > 1 && ~isempty(varargin{1}) && ishandle(varargin{1}) && strcmp(get(varargin{1}, 'Type'), 'axes')
+    hAx = varargin{1};
+elseif ishandle(hObject) && strcmp(get(hObject, 'Type'), 'axes')
+    hAx = hObject;
+end
+
 if nargin == 1 || handles.mousehold && not(handles.toolbar)
     
-    if nargin == 1
-        centre = getworldpos;
+    if ~isempty(hAx)
+        centre = getworldpos(hAx);
     else
-        centre = getworldpos(varargin{1});
+        centre = getworldpos;
     end
     
     if isempty(centre)
@@ -67,7 +76,11 @@ if nargin == 1 || handles.mousehold && not(handles.toolbar)
     
 else
     
-    centre = getworldpos(varargin{1});
+    if ~isempty(hAx)
+        centre = getworldpos(hAx);
+    else
+        centre = getworldpos;
+    end
     if isempty(centre)
         return;
     end

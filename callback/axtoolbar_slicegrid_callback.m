@@ -9,7 +9,7 @@ function axtoolbar_slicegrid_callback(hObject, event)
 %     event: event data containing Axes reference.
 %
 % Author: Andre Peres, 2023, peres.asc@gmail.com
-% Last update: Andre Peres, 28/10/2026, peres.asc@gmail.com
+% Last update: Andre Peres, 30/10/2026, peres.asc@gmail.com
 
 handles = guidata(hObject);
 
@@ -32,6 +32,13 @@ if panelpos(4) ~= origpos(1,4)
     hObject.Icon = 'gridoff.png';
     for i = 1:4
         set(handles.panel_graph(i),'Position',origpos(i,:),'Visible','on')
+        if isfield(handles, 'ax') && size(handles.ax, 2) >= i && ...
+                isfield(handles.ax{1, i}, 'tb') && ishandle(handles.ax{1, i}.tb)
+            btn = findobj(handles.ax{1, i}.tb.Children, 'Tooltip', 'Grid view');
+            if ~isempty(btn)
+                btn.Icon = 'gridoff.png';
+            end
+        end
     end
 else
     hObject.Icon = 'gridon.png';
